@@ -5,36 +5,19 @@ import express from 'express';
 
 // Import des routes spécifiques de l'api
 import healthRouter from './healthRouter.js';
+import livresRouter from './livresRoutes.js';
 
 /**
- * Router - Classe pour définir et organiser les routes de l'application.
- * Cette classe regroupe les routes par fonctionnalité.
+ * Router - pour définir et organiser les routes de l'application.
  */
-export default class Router {
-    constructor() {
-        this.router = express.Router();
-        // Initialisation des routes
-        this.defineRoutes();
-    }
+const router = express.Router();
 
-    /**
-    ** Fonction pour définir les routes de l'application
-    */
-    defineRoutes() {
-        
-        //* Endpoints de l'API
-        // dirige les appels vers la route associé healthRouter
-        this.router.use('/health',healthRouter);
-    }
+    //* Endpoints de l'API
 
-    /**
-     * Fournit l'objet Router de l'API
-     * Centralise les routes du serveur
-     *  
-     * @return {express.Router} - L'objet Router contenant les routes de l'API 
-     * @memberof Router
-     */
-    getRouter() {
-        return this.router;
-    }
-}
+    // dirige les appels vers la route associé healthRouter
+    router.use('/health',healthRouter);
+
+    // dirige les appels vers la route associé livresRouter
+    router.use('/livres',livresRouter);
+
+export default router;

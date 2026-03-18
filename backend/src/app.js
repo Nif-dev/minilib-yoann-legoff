@@ -32,6 +32,7 @@ app.use((err, req, res, next) => {
 // Import du Router
 //! je vais favoriser un import via routes/index.js, via middleware 
 import apiRouter from './routes/index.js';
+
 app.use('/api/v1', apiRouter);
 
 
