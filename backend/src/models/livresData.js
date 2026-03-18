@@ -66,8 +66,23 @@ let nextID = livres.length +1;
  */
 const findAll = (filtres ={}) => {
     const { genre, disponible, recherche } = filtres;
+
+  // Conversion propre de string a boolean avec switch
+    let disponibleBool;
+    switch (disponible) {
+        case 'true':
+            disponibleBool = true;
+            break;
+        case 'false':
+            disponibleBool = false;
+            break;
+        default:
+            disponibleBool = undefined;
+    }
+
     return livres.filter(livre => {
-        if (disponible !== undefined && livre.disponible !== disponible) {
+        
+        if (disponibleBool !== undefined && livre.disponible !== disponibleBool) {
             return false;
         }
         if (genre && livre.genre !== genre) {
