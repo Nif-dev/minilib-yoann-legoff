@@ -8,7 +8,7 @@
   "main": "src/app.js",
   "scripts": {
     "start": "node --env-files=.env src/app.js",
-    "dev": "node --watch --env-files=.env.dev src/app.js",
+    "dev": "node --watch --env-file=.env.dev src/app.js",
     "test": "echo \"Error: no test specified...YET !\" && exit 1"
   },
   "dependencies": {
