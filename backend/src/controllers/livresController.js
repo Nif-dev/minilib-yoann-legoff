@@ -72,9 +72,10 @@ const createLivre = (req, res) => {
     // Si des champs sont manquants, renvoyer une information
     if (champsManquants.length > 0) {
         res.status(400).json({ 
-            message: 'Champs obligatoiires manquants',
+            message: 'Champs obligatoires manquants',
             champs: champsManquants 
         });
+        return;
     }
 
     try {
@@ -113,13 +114,21 @@ const updateLivre = (req, res) => {
  * @param {import ('express').Response} res - Résponse Express
  */
 const deleteLivre = (req, res) => {
-    const supprime = livresModel.remove(req.params.id);
-    if (!supprime) {
-        res.status(204);
-    } else {
-        res.status(404).json({ message: `Livre non trouvé avec id : ${req.params.id}` });
+    try {
+        const livre = livresModel.findById(req.params.id);
+        if (livre) {
+            livresModel.remove(req.params.id);
+            res.status(204).json(); //JSON vide cause bruno qui attend un retour meme avec 204 (no content) - inattendu
+        } else {
+            res.status(404).json({ message: `Livre non trouvé avec id : ${req.params.id}` });
+        }
+    } catch (error) {
+        res.status(500).json({ 
+            message: 'Erreur lors de la suppression du livre',
+            error: error,
+        });
     }
-}
+};
 
 export {
     getLivres,
