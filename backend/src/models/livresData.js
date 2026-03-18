@@ -1,6 +1,7 @@
 //% backend/src/models/livresData.js
-//? Données de test en mémoire pour les livres
+//? Model de Livre, fonctions de manipulation des livres
 
+//! Données de test en mémoire pour les livres
 let livres = [
   {
     "id": 1,
