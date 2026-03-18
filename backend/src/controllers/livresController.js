@@ -61,7 +61,7 @@ const getLivreById = (req, res) => {
  */
 const createLivre = (req, res) => {
     // Récupération des données du corps de la requête
-    const { isbn, titre, auteur, annee, genre } = req.body;
+    const { isbn, titre, auteur } = req.body;
 
     // Validation des données
     const champsManquants = [];
