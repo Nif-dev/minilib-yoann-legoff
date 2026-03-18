@@ -4,7 +4,7 @@
 import express from 'express';
 
 // Import des controllers spécifiques de l'api
-import { healthController } from '../controllers/healthController.js';
+import healthController from '../controllers/healthController.js';
 
 /**
  * Router - Classe pour définir et organiser les routes de l'application.
