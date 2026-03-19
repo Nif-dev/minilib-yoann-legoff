@@ -28,6 +28,33 @@ const getLivres = (req, res) => {
     }
 }
 
+/**  
+ * Route de recherche par auteur ou titre ( 1 champ de recherche obligatoire -> query params)
+ * GET /api/v1/livres/recherche?q=antoine
+ *
+ * @param {import ('express').Request} req - Requête Express
+ * @param {import ('express').Response} res - Résponse Express
+ */
+const queryLivres = (req, res) => {
+    try {
+        const { q } = req.query;
+        console.log("🚀 ~ queryLivres ~ recherche:", q)
+        if (!q) {
+            return res.status(400).json({ message: 'Paramètre de recherche q obligatoire' });
+        }
+        const results = livresModel.findAll({ recherche: q });
+        console.log("🚀 ~ queryLivres ~ results:", results)
+        res.status(200).json({ query: q, total: results.length, results });
+    } catch (error) {
+        console.log("🚀 ~ queryLivres ~ error:", error)
+        res.status(500).json({ 
+            message: 'Erreur lors de la récupération des livres',
+            error: error,
+        });
+    }
+}
+
+
 /**
  * Récupère un livre poar son id
  * GET /api/v1/livres/:id
@@ -132,6 +159,7 @@ const deleteLivre = (req, res) => {
 
 export {
     getLivres,
+    queryLivres,
     getLivreById,
     createLivre,
     updateLivre,

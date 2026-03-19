@@ -9,9 +9,13 @@ import * as controller from '../controllers/livresController.js';
 
 //* Endpoints
 
-// Récupérer tous les livres (OPTIONNELS: filtres -> query params)
+// Récupérer tous les livres
 // GET /api/v1/livres
 router.get('/', controller.getLivres);
+
+// Route de recherche (OPTIONNELS: filtres -> query params)
+// GET /api/v1/livres/recherche?q=clean
+router.get('/recherche', controller.queryLivres);
 
 // Détails d'un livre (id en param)
 // GET /api/v1/livres/:id
