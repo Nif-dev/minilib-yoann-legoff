@@ -22,35 +22,104 @@ Centralise la gestion des **livres**, **adhérents** et **emprunts** avec suivi 
 
 ## 🏗️ Architecture technique
 
-3-tiers MVC | API REST | Docker
-▲
-docker-compose.yml
+3-tiers MVC | Front React | API REST | DB PostGreSQL | Docker
+
 
 ## 📁 Structure du projet
 
 **minilib**/
+
 ├── **frontend**/ # React 18
+
 │ ├── **src**/
+
 │ │ ├── **components**/ # BookCard, MemberCard, Modal...
+
 │ │ ├── **pages**/ # Books, Members, Loans...
+
 │ │ └── **services**/ # api.js, bookService.js
+
 ├── **backend**/ # Node.js / Express
+
 │ ├── **src**/
+
 │ │ ├── **controllers**/ # bookController.js
+
 │ │ ├── **routes**/ # bookRoutes.js
+
 │ │ ├── **models**/ # book.js
+
 │ │ └── **middleware**/
+
 ├── **database**/ # PostgreSQL
+
 │ ├── schema.sql
+
 │ └── seed.sql
+
 ├── docker-compose.yml
+
 ├── .env.example
+
 └── README.md
+
+## ⚙️ Installation
+Depuis le terminal  
+
+1. **Cloner le dépôt**
+   ```
+   git clone https://github.com/Nif-dev/minilib-yoann-legoff.git
+   cd minilib
+    ```
+2. **Backend (Node.js/Express)** 
+    ``` 
+    cd backend
+    npm install
+    npm run dev
+    ```
+
+## 📚 Routes API – Livres
+
+**Toutes les routes de l’API Livres sont préfixées par `/api/v1/livres`**.  
+
+### Catalogue principal
+
+- **GET /**  
+  Récupère **tous les livres**, avec filtres optionnels via query params (`genre`, `disponible`, etc.).  
+  Exemple :  
+  `GET /api/v1/livres?genre=Roman&disponible=true`
+
+- **GET /:id**  
+  Récupère les **détails d’un livre** par son identifiant.
+
+### Création / modification
+
+- **POST /**  
+  Crée un **nouveau livre** (données en JSON dans le corps de la requête).
+
+- **PUT /:id**  
+  Met à jour un livre existant (id en param, données en JSON dans le body).
+
+### Suppression
+
+- **DELETE /:id**  
+  Supprime un livre par son identifiant.
+
+### Recherche dédiée
+
+- **GET /recherche?q=...**  
+  Recherche des livres par **titre ou auteur** (query `q` obligatoire).  
+  Filtres optionnels :  
+  - `genre` (chaîne)  
+  - `disponible` (boolean, `true`/`false`)  
+  Exemple :  
+  `GET /api/v1/livres/recherche?q=heros&genre=Fantasy&disponible=true`
+
 
 
 ## 👨‍💻 Auteur
-Yoann Le Goff - Développeur Fullstack en formation CDA AFPA Brest
-[LinkedIn](https://www.linkedin.com/in/yoann-le-goff-0129a0283/) | [Mon Portfolio](https://nif-dev.github.io/portfolio/)
+**Yoann Le Goff - Développeur Fullstack** en formation CDA AFPA Brest
+## [🔗 LinkedIn](https://www.linkedin.com/in/yoann-le-goff-0129a0283/) - - - [ 💻 Mon Portfolio](https://nif-dev.github.io/portfolio/)
 
 
 ## 📄 Licence

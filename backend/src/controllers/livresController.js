@@ -28,6 +28,33 @@ const getLivres = (req, res) => {
     }
 }
 
+/**  
+ * Route de recherche par auteur ou titre ( 1 champ de recherche obligatoire -> query params)
+ * GET /api/v1/livres/recherche?q=antoine
+ *
+ * @param {import ('express').Request} req - Requête Express
+ * @param {import ('express').Response} res - Résponse Express
+ */
+const queryLivres = (req, res) => {
+    try {
+        const { q } = req.query;
+        console.log("🚀 ~ queryLivres ~ recherche:", q)
+        if (!q) {
+            return res.status(400).json({ message: 'Paramètre de recherche q obligatoire' });
+        }
+        const results = livresModel.findAll({ recherche: q });
+        console.log("🚀 ~ queryLivres ~ results:", results)
+        res.status(200).json({ query: q, total: results.length, results });
+    } catch (error) {
+        console.log("🚀 ~ queryLivres ~ error:", error)
+        res.status(500).json({ 
+            message: 'Erreur lors de la récupération des livres',
+            error: error,
+        });
+    }
+}
+
+
 /**
  * Récupère un livre poar son id
  * GET /api/v1/livres/:id
@@ -61,22 +88,22 @@ const getLivreById = (req, res) => {
  */
 const createLivre = (req, res) => {
     // Récupération des données du corps de la requête
-    const { isbn, titre, auteur } = req.body;
+    // const { isbn, titre, auteur } = req.body;
 
-    // Validation des données
-    const champsManquants = [];
-    if (!isbn) champsManquants.push('isbn');
-    if (!titre) champsManquants.push('titre');
-    if (!auteur) champsManquants.push('auteur');
+    // // Validation des données
+    // const champsManquants = [];
+    // if (!isbn) champsManquants.push('isbn');
+    // if (!titre) champsManquants.push('titre');
+    // if (!auteur) champsManquants.push('auteur');
 
-    // Si des champs sont manquants, renvoyer une information
-    if (champsManquants.length > 0) {
-        res.status(400).json({ 
-            message: 'Champs obligatoires manquants',
-            champs: champsManquants 
-        });
-        return;
-    }
+    // // Si des champs sont manquants, renvoyer une information
+    // if (champsManquants.length > 0) {
+    //     res.status(400).json({ 
+    //         message: 'Champs obligatoires manquants',
+    //         champs: champsManquants 
+    //     });
+    //     return;
+    // }
 
     try {
         const nouveau = livresModel.create(req.body);
@@ -132,6 +159,7 @@ const deleteLivre = (req, res) => {
 
 export {
     getLivres,
+    queryLivres,
     getLivreById,
     createLivre,
     updateLivre,
