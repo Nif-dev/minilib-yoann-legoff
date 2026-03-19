@@ -8,33 +8,35 @@ const router = express.Router();
 import * as controller from '../controllers/livresController.js';
 
 import validateLivre from '../middleware/validateLivre.js';
+import asyncWrapper from '../middleware/asyncWrapper.js';
 
 //* Endpoints
 
 // Récupérer tous les livres
 // GET /api/v1/livres
-router.get('/', controller.getLivres);
+router.get('/', asyncWrapper(controller.getLivres));
 
 // Route de recherche (OPTIONNELS: filtres -> query params)
 // GET /api/v1/livres/recherche?q=clean
-router.get('/recherche', controller.queryLivres);
+router.get('/recherche', asyncWrapper(controller.queryLivres));
 
 // Détails d'un livre (id en param)
 // GET /api/v1/livres/:id
-router.get('/:id', controller.getLivreById);
+router.get('/:id', asyncWrapper(controller.getLivreById));
 
 // Création d'un nouveau livre (données JSON -> body request)
 // POST /api/v1/livres
-router.post('/', validateLivre, controller.createLivre);
+router.post('/', validateLivre, asyncWrapper(controller.createLivre));
 
 // Mise à jour d'un livre existant (id en param, données JSON -> body request)
 // PUT /api/v1/livres/:id
+//TODO revoir validateLivre spécifiquement pour cette reoute ?
 //? ici validateLivre oblige de renvoyer tout les champs du livre a la place d'une simple modif
 // router.put('/:id', validateLivre, controller.updateLivre);  
-router.put('/:id', controller.updateLivre);
+router.put('/:id', asyncWrapper(controller.updateLivre));
 
 // Suppression d'un livre (id en param)
 // DELETE /api/v1/livres/:id
-router.delete('/:id', controller.deleteLivre);
+router.delete('/:id', asyncWrapper(controller.deleteLivre));
 
 export default router;

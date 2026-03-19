@@ -1,4 +1,5 @@
 //% backend/src/models/livresData.js
+//! OUTDATED
 //? Model de Livre, fonctions de manipulation des livres
 
 //! Données de test en mémoire pour les livres
@@ -158,11 +159,12 @@ const remove = id => {
     return livres.length < avant; // true si un élément a été supprimé
 };
 
+//! OUTDATED - archivage par isolation
 // Export de toutes les fonctions -pattern CommonJS
-export {
-    findAll,
-    findById,
-    create,
-    update,
-    remove
-}
+// export {
+//     findAll,
+//     findById,
+//     create,
+//     update,
+//     remove
+// }

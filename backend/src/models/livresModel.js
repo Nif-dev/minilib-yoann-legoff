@@ -1,0 +1,140 @@
+//% backend/src/models/livresData.js
+//? Model de Livre, fonctions de manipulation des livres
+
+/**
+ * Accès aux données de livres via PostgreSQL
+ * Toutes les fonctions sont async - elles retournent des promesses 
+ * 
+ * @module livresModel
+ */
+import pool from "../config/database.js";
+
+/**
+ * Création d'un livre
+ *
+ * @async
+ * @param {Object} data - livre { isbn, titre, auteur, annee, genre }
+ * @returns {Promise<Object>} - Livre créé avec son id
+ */
+export const create = async (livre) => {
+    
+    console.log("🚀 ~ create ~ livre:", livre)
+    const result = await pool.query(
+        'INSERT INTO livres (isbn, titre, auteur, genre, annee) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [livre.isbn, livre.titre, livre.auteur, livre.genre, livre.annee]
+    );
+    // RETURNING * renvoie la ligne insérée, donc le livre créé avec son id ( SERIAL )
+    return result.rows[0];
+};
+
+/**
+ * Retourne tous les livres avec filtrage optionnel
+ *
+ * @async
+ * @param {Object} [filtres = {}] - Critères de filtrage
+ * @param {string} [filtres.genre] - Filtrer par genre
+ * @param {boolean} [filtres.disponible] - Filtrer par disponibilité
+ * @param {string} [filtres.recherche] - Recherche par titre ou auteur
+ * @returns {Promise<Array>} - Tableau de livres  
+ */
+export const findAll = async (filtres ={}) => {
+    const conditions = [];
+    const valeurs = [];
+    let idx = 1;
+
+    if (filtres.genre !== undefined) {
+        conditions.push(`genre = $${idx}`);
+        valeurs.push(filtres.genre);
+    }
+
+    if (filtres.disponible !== undefined) {
+        conditions.push(`disponible = $${idx}`);
+        valeurs.push(filtres.disponible == 'true');
+    }
+
+    if (filtres.recherche !== undefined) {
+        conditions.push(`titre ILIKE $${idx} OR auteur ILIKE $${idx}`);
+        valeurs.push(`%${filtres.recherche}%`);
+    }
+
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')} ` : '';
+
+    const result = await pool.query(
+        `SELECT * FROM livres ${where} ORDER BY titre`,
+        valeurs
+    )
+
+    return result.rows;
+};
+
+/**
+ * Trouve un livre par son id
+ *
+ * @async
+ * @param {number} id - Id du livre recherché
+ * @returns {Promise<Object | null>} - Livre trouvé ou null si non trouvé
+ */
+export const findById = async (id) => {
+    const result = await pool.query(
+        'SELECT * FROM livres WHERE id = $1', 
+        [id]
+    );
+    return result.rows[0] || null;
+};
+
+/**
+ * Modifie un livre existant par son id
+ *
+ * @async
+ * @param {number} id - id du livre à modifier
+ * @param {Object} data - champs à modifier
+ * @returns {Promise<Object>} - Livre modifié
+ */
+export const update = async (id, data) => {
+    //Construction de la requête - SET dynamique
+    const champs = Object.keys(data);
+    const valeurs = Object.values(data);
+    if (champs.length === 0) return findById(id);
+
+    const setClause = champs.map((champ, index) => `${champ} = $${index + 1}`).join(', ');
+    const result = await pool.query(
+        `UPDATE livres SET ${setClause} WHERE id = $${champs.length + 1} RETURNING *`,
+        [...valeurs, id]
+    );
+    // $$ pour indiquer que c'est une valeur dynamique - $1, $2, etc
+    // SPREAD : on garde l'existant, on écrase avec les modifs
+    return result.rows[0] || null;
+};
+
+/**
+ * Supprime un livre par son id
+ *
+ * @async
+ * @param {number} id - id du livre à supprimer
+ * @returns {Promise<boolean>} - true si le livre est supprimé, sinon false (non trouvé)
+ */
+export const remove = async (id) => {
+    const result = await findById(id);
+    if (!result) return false;
+    await pool.query(
+        'DELETE FROM livres WHERE id = $1 RETURNING id',
+        [id]
+    );
+    return true;
+};
+
+/**
+ * Trouve un livre par son isbn
+ * Objectif éviter les doublons
+ * 
+ * @async
+ * @param {string} isbn - isbn du livre à rechercher
+ * @returns {Promise<Object | null>} - Livre trouvé ou null si non trouvé
+*/
+export const findByISBN = async (isbn) => {
+    const result = await pool.query(
+        'SELECT * FROM livres WHERE isbn = $1', 
+        [isbn]
+    );
+    return result.rows[0] || null;
+};
