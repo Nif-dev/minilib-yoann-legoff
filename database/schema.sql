@@ -15,7 +15,7 @@ CREATE TABLE livres (
     auteur              VARCHAR(255)        NOT NULL,
     annee               INTEGER             CHECK (annee > 0 AND annee <= EXTRACT(YEAR FROM NOW())),
     genre               VARCHAR(100),
-    disponible          BOOLEAN             NOT NULL DEFAULT TRUE,
+    disponible          BOOLEAN             NOT NULL DEFAULT TRUE
 );
 
 -- Table adherents
@@ -26,7 +26,7 @@ CREATE TABLE adherents (
     prenom              VARCHAR(100)        NOT NULL,
     email               VARCHAR(255)        UNIQUE NOT NULL,
     actif               BOOLEAN             NOT NULL DEFAULT TRUE,
-    created_at          TIMESTAMP           DEFAULT CURRENT_TIMESTAMP,
+    created_at          TIMESTAMP           DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Table emprunts
@@ -38,11 +38,11 @@ CREATE TABLE emprunts (
     date_retour_prevue  DATE                NOT NULL,
     date_retour_effective DATE,             -- NULL = pas encore rendu
 
-    CONSTRAINT chk_dates CHECK (date_retour_prevue >= date_emprunt),
+    CONSTRAINT chk_dates CHECK (date_retour_prevue >= date_emprunt)
 );
 
 -- Index pour accélérer les requêtes fréquentes
 CREATE INDEX idx_livre_id           ON livres (titre);
 CREATE INDEX idx_adherent_id        ON livres (auteur);
-CREATE INDEX idx_adhérents_email    ON adherents (email);
+CREATE INDEX idx_adherents_email    ON adherents (email);
 CREATE INDEX idx_emprunts_actifs    ON emprunts (adherent_id) WHERE date_retour_effective IS NULL;
