@@ -63,6 +63,20 @@ Centralise la gestion des **livres**, **adhérents** et **emprunts** avec suivi 
 
 └── README.md
 
+## ⚙️ Installation
+Depuis le terminal  
+
+1. **Cloner le dépôt**
+   ```
+   git clone https://github.com/Nif-dev/minilib-yoann-legoff.git
+   cd minilib
+    ```
+2. **Backend (Node.js/Express)** 
+    ``` 
+    cd backend
+    npm install
+    npm run dev
+    ```
 
 ## 📚 Routes API – Livres
 
