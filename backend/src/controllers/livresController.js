@@ -61,22 +61,22 @@ const getLivreById = (req, res) => {
  */
 const createLivre = (req, res) => {
     // Récupération des données du corps de la requête
-    const { isbn, titre, auteur } = req.body;
+    // const { isbn, titre, auteur } = req.body;
 
-    // Validation des données
-    const champsManquants = [];
-    if (!isbn) champsManquants.push('isbn');
-    if (!titre) champsManquants.push('titre');
-    if (!auteur) champsManquants.push('auteur');
+    // // Validation des données
+    // const champsManquants = [];
+    // if (!isbn) champsManquants.push('isbn');
+    // if (!titre) champsManquants.push('titre');
+    // if (!auteur) champsManquants.push('auteur');
 
-    // Si des champs sont manquants, renvoyer une information
-    if (champsManquants.length > 0) {
-        res.status(400).json({ 
-            message: 'Champs obligatoires manquants',
-            champs: champsManquants 
-        });
-        return;
-    }
+    // // Si des champs sont manquants, renvoyer une information
+    // if (champsManquants.length > 0) {
+    //     res.status(400).json({ 
+    //         message: 'Champs obligatoires manquants',
+    //         champs: champsManquants 
+    //     });
+    //     return;
+    // }
 
     try {
         const nouveau = livresModel.create(req.body);
