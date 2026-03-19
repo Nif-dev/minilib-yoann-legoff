@@ -32,8 +32,8 @@ CREATE TABLE adherents (
 -- Table emprunts
 CREATE TABLE emprunts (
     id                  SERIAL PRIMARY KEY,
-    livre_id            INTEGER             NOT NULL REFERENCES livres(id),
-    adherent_id         INTEGER             NOT NULL REFERENCES adherents(id),
+    livre_id            INTEGER             NOT NULL REFERENCES livres(id) ON DELETE SET NULL,      -- NULL = si livre supprimé, mais on garde une trace
+    adherent_id         INTEGER             NOT NULL REFERENCES adherents(id) ON DELETE SET NULL,   -- NULL = si adherent supprimé
     date_emprunt        DATE                NOT NULL DEFAULT CURRENT_DATE,
     date_retour_prevue  DATE                NOT NULL,
     date_retour_effective DATE,             -- NULL = pas encore rendu
