@@ -115,7 +115,34 @@ Depuis le terminal
   Exemple :  
   `GET /api/v1/livres/recherche?q=heros&genre=Fantasy&disponible=true`
 
+## 👥 Routes API – Adhérents
 
+**Toutes les routes de l’API sont préfixées par `/api/v1/adherents`**.
+
+### Catalogue principal
+
+- **GET /**  
+  Récupère **tous les adhérents actifs**  
+
+
+- **GET /:id**  
+  Récupère les **détails d’un adhérent** par son identifiant.
+
+### Création / modification
+
+- **POST /**  
+  Crée un **nouvel adhérent** (données en JSON dans le corps de la requête).
+
+- **PUT /:id**  
+  Met à jour un adhérent existant (id en param, données en JSON dans le body).
+
+### Suppression*
+
+- **DELETE /:id**  
+  Rend inactif un adhérent par son identifiant.
+  **pas de suppression sur cette route*
+
+***
 
 ## 👨‍💻 Auteur
 **Yoann Le Goff - Développeur Fullstack** en formation CDA AFPA Brest
