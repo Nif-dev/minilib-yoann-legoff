@@ -25,6 +25,22 @@ const genererNumeroAdherent = async () => {
     return `ADH-${String(count).padStart(3, '0')}`;
 };
 
+/**
+* Crée un nouvel adhérent avec numéro automatique.
+* @async
+* @param {Object} data - { nom, prenom, email }
+* @returns {Promise<Object>} Adhérent créé
+*/
+export const create = async ({ nom, prenom, email }) => {
+const numero = await genererNumeroAdherent();
+const result = await pool.query(
+`INSERT INTO adherents (numero_adherent, nom, prenom, email)
+VALUES ($1, $2, $3, $4) RETURNING *`,
+[numero, nom, prenom, email]
+);
+return result.rows[0];
+};
+
 /** 
 * Retourne tous les adhérents actifs de la base de données
 * @async 
@@ -32,7 +48,7 @@ const genererNumeroAdherent = async () => {
 */
 export const findAll = async () => {
     const result = await pool.query(
-        'SELECT * FROM adherents WHERE actif = true ORDER BY nom, prenom'
+        'SELECT * FROM adherents WHERE actif = true ORDER BY numero_adherent'
     );
     return result.rows;
 };
@@ -52,19 +68,27 @@ export const findById = async (id) => {
 };
 
 /**
-* Crée un nouvel adhérent avec numéro automatique.
+* Modifie un adhérent existant par son id 
+*
 * @async
-* @param {Object} data - { nom, prenom, email }
-* @returns {Promise<Object>} Adhérent créé
+* @param {number} id - id de l'adhérent à modifier
+* @param {Object} data - champs à modifier
+* @returns {Promise<Object>} - Adhérent modifié
 */
-export const create = async ({ nom, prenom, email }) => {
-const numero = await genererNumeroAdherent();
-const result = await pool.query(
-`INSERT INTO adherents (numero_adherent, nom, prenom, email)
-VALUES ($1, $2, $3, $4) RETURNING *`,
-[numero, nom, prenom, email]
-);
-return result.rows[0];
+export const update = async (id, data) => {
+    // Construction de la requête - SET dynamique
+    const champs = Object.keys(data);
+    const valeurs = Object.values(data);
+    if (champs.length === 0) return findById(id);
+
+    const setClause = champs.map((champ, index) => `${champ} = $${index + 1}`).join(', ');
+    const result = await pool.query(
+        `UPDATE adherents SET ${setClause} WHERE id = $${champs.length + 1} RETURNING *`,
+        [...valeurs, id]
+    );
+    // $$ pour indiquer que c'est une valeur dynamique - $1, $2, etc
+    // SPREAD : on garde l'existant, on écrase avec les modifs
+    return result.rows[0] || null;
 };
 
 /**
