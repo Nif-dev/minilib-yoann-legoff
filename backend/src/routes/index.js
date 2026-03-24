@@ -7,6 +7,7 @@ import express from 'express';
 import healthRouter from './healthRouter.js';
 import livresRouter from './livresRoutes.js';
 import adherentsRouter from './adherentsRoutes.js';
+import empruntsRouter from './empruntsRoutes.js';
 
 /**
  * Router - pour définir et organiser les routes de l'application.
@@ -23,5 +24,8 @@ const router = express.Router();
 
     // dirige les appels vers la route associé adherentsRouter
     router.use('/adherents',adherentsRouter);
+
+    // dirige les appels vers la route associé empruntsRouter
+    router.use('/emprunts',empruntsRouter);
 
 export default router;
