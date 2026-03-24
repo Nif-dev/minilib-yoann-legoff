@@ -35,6 +35,9 @@ import apiRouter from './routes/index.js';
 
 app.use('/api/v1', apiRouter);
 
+// Import de la documentation
+import apiDocRouter from './routes/apiDocRouter.js';
+app.use('/api', apiDocRouter);
 
 // ----------- Lancement du serveur -----------------
 app.listen(PORT, () => {
