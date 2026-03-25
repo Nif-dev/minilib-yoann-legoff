@@ -4,7 +4,7 @@
 
 //! Import des types et fonctions du model
 /** @import { Request, Response, NextFunction } from 'express'; */
-/** @import { ApiResponse, ApiResponseError, Adherent }  from '../types/index.js'; */
+/** @import { ApiResponse, ApiResponseError, Adherent, CreateAdherentDTO }  from '../types/index.js'; */
 import * as adherentsModel from '../models/adherentsModel.js';
 
 /** 
@@ -20,8 +20,8 @@ export const getAdherents = async (req, res) => {
         const adherents = await adherentsModel.findAll();
         res.status(200).json({ 
             success: true,
-            data: adherents,
             total: adherents.length,
+            data: adherents,
         });
     
 
@@ -90,10 +90,18 @@ export const createAdherent = async (req, res) => {
             error: 'Champs manquants',
             champs: champsManquants,
         });
+        return;
     }
-
+    
+    /** @type {CreateAdherentDTO} */
+    const nouveauData = {
+        nom: req.body.nom,
+        prenom: req.body.prenom,
+        email: req.body.email,
+    };
+    //TODO: Vérifier doublons email
     // appel de la fonction du model
-        const nouveau = await adherentsModel.create(req.body);
+        const nouveau = await adherentsModel.create(nouveauData);
         res.status(201).json({
             success: true,
             data: nouveau
