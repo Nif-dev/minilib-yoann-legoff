@@ -168,7 +168,7 @@ export const updateLivre = async (req, res) => {
     }
         // appel de la fonction du model
         const misAJour = await livresModel.update(Number(id), req.body);
-        if (misAJour === null) {
+        if (misAJour == null) {
             res.status(404).json({ 
                 error: 'Livre non modifié',
                 message: `Livre non rencontré avec id : ${id} , mise à jour impossible`
