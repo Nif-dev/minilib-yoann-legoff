@@ -9,6 +9,8 @@
  */
 import pool from "../config/database.js";
 
+/** @import { Emprunt, CreateEmpruntDto, EmpruntAvecDetails } from '../types/index.js' */
+
 /**
 * Accès aux emprunts en retard
 *  
