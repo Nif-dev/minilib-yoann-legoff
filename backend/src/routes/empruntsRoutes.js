@@ -15,4 +15,13 @@ import asyncWrapper from '../middleware/asyncWrapper.js';
 // GET /api/v1/emprunts/retards
 router.get('/retards', asyncWrapper(controller.getRetards));
 
+// Récupérer tous les emprunts
+// GET /api/v1/emprunts
+router.get('/', asyncWrapper(controller.getEmprunts));
+
+// Création d'un nouvel emprunt (données JSON -> body request)
+// POST /api/v1/emprunts
+router.post('/', asyncWrapper(controller.createEmprunt));
+
 export default router;
+

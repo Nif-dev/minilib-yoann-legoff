@@ -31,9 +31,9 @@ en_retard:      boolean; // calculé : date_retour_prevue < aujourd'hui
  * Données de création d'un nouvel emprunt
  * Pas d'id (serial)
  *
- * @interface CreateEmpruntDto
+ * @interface CreateEmpruntDTO
  */
-export interface CreateEmpruntDto {
+export interface CreateEmpruntDTO {
 livre_id: number;
 adherent_id: number;
 }
