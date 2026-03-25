@@ -8,6 +8,8 @@ const router = express.Router();
 import * as controller from '../controllers/livresController.js';
 
 import validateLivre from '../middleware/validateLivre.js';
+
+import validateIdParam from '../middleware/validateIdParam.js';
 import asyncWrapper from '../middleware/asyncWrapper.js';
 
 /** @import { Request, Response, NextFunction } from 'express'; */
@@ -25,7 +27,7 @@ router.get('/recherche', asyncWrapper(controller.queryLivres));
 
 // Détails d'un livre (id en param)
 // GET /api/v1/livres/:id
-router.get('/:id', asyncWrapper(controller.getLivreById));
+router.get('/:id',validateIdParam, asyncWrapper(controller.getLivreById));
 
 // Création d'un nouveau livre (données JSON -> body request)
 // POST /api/v1/livres
@@ -33,13 +35,10 @@ router.post('/', validateLivre, asyncWrapper(controller.createLivre));
 
 // Mise à jour d'un livre existant (id en param, données JSON -> body request)
 // PUT /api/v1/livres/:id
-//TODO revoir validateLivre spécifiquement pour cette route ?
-//? ici validateLivre oblige de renvoyer tout les champs du livre a la place d'une simple modif
-// router.put('/:id', validateLivre, controller.updateLivre);  
-router.put('/:id', asyncWrapper(controller.updateLivre));
+router.put('/:id',validateIdParam, asyncWrapper(controller.updateLivre));
 
 // Suppression d'un livre (id en param)
 // DELETE /api/v1/livres/:id
-router.delete('/:id', asyncWrapper(controller.deleteLivre));
+router.delete('/:id',validateIdParam, asyncWrapper(controller.deleteLivre));
 
 export default router;

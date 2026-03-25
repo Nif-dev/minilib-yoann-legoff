@@ -8,6 +8,8 @@ const router = express.Router();
 import * as controller from '../controllers/adherentsController.js';
 
 // import validateAdherent from '../middleware/validateAdherent.js';
+
+import validateIdParam from '../middleware/validateIdParam.js';
 import asyncWrapper from '../middleware/asyncWrapper.js';
 
 //* Endpoints
@@ -18,7 +20,7 @@ router.get('/', asyncWrapper(controller.getAdherents));
 
 // Détails d'un adhérent (id en param)
 // GET /api/v1/adherents/:id
-router.get('/:id', asyncWrapper(controller.getAdherentById));
+router.get('/:id',validateIdParam, asyncWrapper(controller.getAdherentById));
 
 // Création d'un nouvel adhérent (données JSON -> body request)
 // POST /api/v1/adherents
@@ -26,10 +28,10 @@ router.post('/', asyncWrapper(controller.createAdherent));
 
 // Mise à jour d'un adhérent existant
 // PUT /api/v1/adherents/:id
-router.put('/:id', asyncWrapper(controller.updateAdherent));
+router.put('/:id',validateIdParam, asyncWrapper(controller.updateAdherent));
 
 // Suppression d'un adhérent
 // DELETE /api/v1/adherents/:id
-router.delete('/:id', asyncWrapper(controller.deleteAdherent));
+router.delete('/:id',validateIdParam, asyncWrapper(controller.deleteAdherent));
 
 export default router;
