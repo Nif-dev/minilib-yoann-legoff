@@ -2,57 +2,75 @@
 //? Controller associé à la route livresRouter
 // logique métier entre les routes et les données
 
+//! Import des types et fonctions du model
+/** @import { Request, Response, NextFunction } from 'express'; */
+/** @import { ApiResponse, ApiResponseError, Livre, FiltresRechercheLivres }  from '../types/index.js'; */
 import * as livresModel from '../models/livresModel.js';
 
 /**
  * Récupère tous les livres avec filtres optionnels via query params
  * GET /api/v1/livres?genre=informatique&disponible=true&recherche=clean
  *
- * @param {import ('express').Request} req - Requête Express
- * @param {import ('express').Response} res - Résponse Express
+ * @param { Request } req - Requête Express
+ * @param { Response <ApiResponse <Livre[]> | ApiResponseError> } res - Résponse Express
  */
 export const getLivres = async (req, res) => {
     // req.query = { genre: 'informatique', disponible: true } depuis l'url ( ?genre=...&disponible=true )
-    const { genre, disponible, recherche } = req.query;
-    
-    try {
-        // appel de la fonction du model avec les filtres
-        const livres = await livresModel.findAll({ genre, disponible, recherche });
-        res.status(200).json(livres);
-    
-    } catch (error) {
-        res.status(500).json({ 
-            message: 'Erreur lors de la récupération des livres',
-            error: error,
-        });
-    }
+
+    /** @type {FiltresRechercheLivres} filtres */
+    const filtres = req.query || {};
+    // appel de la fonction du model avec les filtres optionnels
+
+        const livres = await livresModel.findAll(filtres);
+        res.status(200).json({
+            success: true,
+            data: livres,
+            total: livres.length,
+            });
+
 }
 
 /**  
  * Route de recherche par auteur ou titre ( 1 champ de recherche obligatoire -> query params)
  * GET /api/v1/livres/recherche?q=antoine
  *
- * @param {import ('express').Request} req - Requête Express
- * @param {import ('express').Response} res - Résponse Express
+ * @param { Request } req - Requête Express
+ * @param { Response <ApiResponse <Livre[]> | ApiResponseError> } res - Résponse Express
  */
 export const queryLivres = async (req, res) => {
     // req.query = { q: 'antoine' } avec url ( /recherche?q=antoine )
     const { q } = req.query;
-    // validation temporaire de la requête
-    if (!q) {
-        return res.status(400).json({ message: 'Paramètre de recherche "q" obligatoire' });
-    }
-    
-    try {
-        const results = await livresModel.findAll({ recherche: q });
-        res.status(200).json({ query: q, total: results.length, results });
-    
-    } catch (error) {
-        res.status(500).json({ 
-            message: 'Erreur lors de la récupération des livres',
-            error: error,
+    //* validation temporaire de la requête ( q est obligatoire , de type string et de longueur > 3 )
+    if (!q || q === '' || typeof q !== 'string') {
+        return res.status(400).json({ 
+            error: 'Champs manquants',
+            champs: ['query param /recherche?q= ...'],
         });
     }
+    if (q.length < 3) {
+        return res.status(400).json({ 
+            error: 'Champs trop court > 3 caractères',
+            champs: ['query param /recherche?q= ...'],
+        });
+    }
+    // appel de la fonction du model
+        /** @type {string} recherche */
+        const recherche = q.toString();
+        const results = await livresModel.findAll({ recherche: recherche });
+        if (results.length === 0) { // aucun livre trouvé - résultat bon mais vide
+            res.status(200).json({ 
+                success: false,
+                data: [],
+                message: `Aucun livre pour :  ${recherche} `,
+            });
+        }
+        res.status(200).json({ 
+            success: true,
+            data: results,
+            total: results.length,
+        });
+
+    
 }
 
 
@@ -60,30 +78,38 @@ export const queryLivres = async (req, res) => {
  * Récupère un livre poar son id
  * GET /api/v1/livres/:id
  *
- * @param {import ('express').Request} req - Requête Express
- * @param {import ('express').Response} res - Résponse Express
+ * @param { Request } req - Requête Express
+ * @param { Response <ApiResponse <Livre> | ApiResponseError> } res - Résponse Express
  */
 export const getLivreById = async (req, res) => {
     // validation temporaire de l'id de la requête
     const { id } = req.params;
-    if (!id) {
-        return res.status(400).json({ message: 'Paramètre "id" obligatoire' });
-    }
-
-    try {
-        const livre = await livresModel.findById(id);
-        if (livre) {
-            res.status(200).json(livre);
-        } else {
-            res.status(404).json({ message: 'Livre non trouvé' });
-        }
-    
-    } catch (error) {
-        res.status(500).json({ 
-            message: 'Erreur lors de la récupération du livre',
-            error: error,
+    if (!id) { // id est obligatoire
+        res.status(400).json({ 
+            error: 'Champs manquants',
+            champs: ['id'],
         });
     }
+    if (Number.isNaN(Number(id))) { // id doit avoir un format numérique
+        res.status(400).json({ 
+            error: 'Champs id non numérique',
+            champs: ['id'],
+        });
+    }
+    // appel de la fonction du model
+        const livre = await livresModel.findById(Number(id));
+        if (livre) {
+            res.status(200).json({ 
+                success: true,
+                data: livre
+            });
+        } else {
+            res.status(404).json({ 
+                error: 'Livre non trouvé',
+                message: `Livre non rencontré avec id : ${id}`
+            });
+        }
+    
 }   
 
 /**
@@ -91,86 +117,108 @@ export const getLivreById = async (req, res) => {
  * POST /api/v1/livres
  * Body JSON attendu : { isbn, titre, auteur, annee, genre }
  *
- * @param {import ('express').Request} req - Requête Express
- * @param {import ('express').Response} res - Résponse Express
+ * @param { Request } req - Requête Express
+ * @param { Response <ApiResponse <Livre> | ApiResponseError> } res - Résponse Express
  */
 export const createLivre = async (req, res) => {
     //* Corps de la requête validé via middleware sur livresRouter
 
     //* Vérification isbn doublons
+    /** @type { Livre | null } livre */
     const livre = await livresModel.findByISBN(req.body.isbn);
-    if (livre) {
-        return res.status(400).json({ message: 'ISBN doublon' });
-    }
-    
-    try {
-        const nouveau = await livresModel.create(req.body);
-        res.status(201).json(nouveau);
-    
-    } catch (error) {
-        res.status(500).json({ 
-            message: 'Erreur lors de la création du livre',
-            error: error,
+    if (livre) {    // doublon d'isbn 
+        return res.status(400).json({ 
+            error: 'ISBN doublon',
+            message: `ISBN ${req.body.isbn} doublon, livre deja existant id : ${livre.id}` ,
         });
     }
+    // appel de la fonction du model
+    const nouveau = await livresModel.create(req.body);
+    res.status(201).json({
+        success: true,
+        data: nouveau
+    });
+    
+
 }
 
 /** 
  * Mise à jour d'un livre existant
  * PUT /api/v1/livres/:id
  *
- * @param {import ('express').Request} req - Requête Express
- * @param {import ('express').Response} res - Résponse Express
+ * @param { Request } req - Requête Express
+ * @param { Response <ApiResponse <Livre> | ApiResponseError> } res - Réponse Express
  */
 
 export const updateLivre = async (req, res) => {
     //* Corps de la requête validé via middleware sur livresRouter
-
-    try {
-        
-        const misAJour = await livresModel.update(req.params.id, req.body);
-        if (misAJour === null) {
-            res.status(404).json({ message: `Livre non trouvé avec id : ${req.params.id}`  });
-        } else {
-            res.status(200).json(misAJour);
-        }
-    
-    } catch (error) {
-        res.status(500).json({ 
-            message: 'Erreur lors de la mise à jour du livre',
-            error: error,
+    // validation temporaire de l'id de la requête
+    const { id } = req.params;
+    if (!id) { // id est obligatoire
+        res.status(400).json({ 
+            error: 'Champs manquants',
+            champs: ['id'],
         });
     }
+    if (Number.isNaN(Number(id))) { // id doit avoir un format numérique
+        res.status(400).json({ 
+            error: 'Champs id non numérique',
+            champs: ['id'],
+        });
+    }
+        // appel de la fonction du model
+        const misAJour = await livresModel.update(Number(id), req.body);
+        if (misAJour === null) {
+            res.status(404).json({ 
+                error: 'Livre non modifié',
+                message: `Livre non rencontré avec id : ${id} , mise à jour impossible`
+            });
+        } else {
+            res.status(200).json({
+                success: true,
+                data: misAJour
+            });
+        }
+
 }
 
 /** 
  * Suppression d'un livre
  * DELETE /api/v1/livres/:id
  *
- * @param {import ('express').Request} req - Requête Express
- * @param {import ('express').Response} res - Résponse Express
+ * @param { Request } req - Requête Express
+ * @param { Response <ApiResponse <null> | ApiResponseError> } res - Réponse Express
  */
 export const deleteLivre = async (req, res) => {
-        // validation temporaire de l'id de la requête
+    // validation temporaire de l'id de la requête
     const { id } = req.params;
-    if (!id) {
-        return res.status(400).json({ message: 'Paramètre "id" obligatoire' });
-    }
-
-    try {
-        const livre = await livresModel.findById(id);
-        if (livre) {
-            livresModel.remove(req.params.id);
-            res.status(204).json(); 
-            //* JSON vide sinon bruno qui attend un retour va boucler... meme avec 204 (no content) - inattendu
-        } else {
-            res.status(404).json({ message: `Livre non trouvé avec id : ${id}` });
-        }
-    
-    } catch (error) {
-        res.status(500).json({ 
-            message: 'Erreur lors de la suppression du livre',
-            error: error,
+    if (!id) { // id est obligatoire
+        res.status(400).json({ 
+            error: 'Champs manquants',
+            champs: ['id'],
         });
     }
+    if (Number.isNaN(Number(id))) { // id doit avoir un format numérique
+        res.status(400).json({ 
+            error: 'Champs id non numérique',
+            champs: ['id'],
+        });
+    }
+
+        const livre = await livresModel.findById(Number(id));
+        if (livre) {
+            await livresModel.remove(Number(id));
+            //res.status(204).json(); //* JSON vide sinon bruno qui attend un retour va boucler... meme avec 204 (no content) - inattendu
+            res.status(200).json({
+                success: true,
+                data: null,
+                message: `Livre supprimé avec id : ${id}`
+            });
+        } else {
+            res.status(404).json({ 
+                error: 'Livre non supprimé',
+                message: `Livre non rencontré avec id : ${id}, suppression impossible`
+            });
+        }
+    
 };

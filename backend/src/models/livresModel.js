@@ -10,13 +10,13 @@
  */
 import pool from "../config/database.js";
 
-/** @import { Livre, CreateLivreDto, FiltresRechercheLivres, UpdateLivreDTO } from '../types/index.js' */
+/** @import { Livre, CreateLivreDTO, FiltresRechercheLivres, UpdateLivreDTO } from '../types/index.js' */
 
 /**
  * Création d'un livre
  *
  * @async
- * @param {CreateLivreDto} newLivre - livre { isbn, titre, auteur, annee, genre }
+ * @param {CreateLivreDTO} newLivre - livre { isbn, titre, auteur, annee, genre }
  * @returns {Promise<Livre>} - Livre créé avec son id
  */
 export const create = async (newLivre) => {
@@ -48,7 +48,7 @@ export const findAll = async (filtres ={}) => {
 
     if (filtres.disponible !== undefined) {
         conditions.push(`disponible = $${idx}`);
-        valeurs.push(filtres.disponible == 'true');
+        valeurs.push(filtres.disponible === true ? 'true' : 'false');
     }
 
     if (filtres.recherche !== undefined) {
@@ -86,8 +86,8 @@ export const findById = async (id) => {
  *
  * @async
  * @param {number} id - id du livre à modifier
- * @param {UpdateLivreDto} majLivre - champs à modifier
- * @returns {Promise<Livre>} - Livre modifié
+ * @param {UpdateLivreDTO} majLivre - champs à modifier
+ * @returns {Promise<Livre | null>} - Livre modifié - null si non trouvé ou pas de champs à modifier / TEMP
  */
 export const update = async (id, majLivre) => {
     //Construction de la requête - SET dynamique
@@ -128,7 +128,7 @@ export const remove = async (id) => {
  * 
  * @async
  * @param {string} isbn - isbn du livre à rechercher
- * @returns {Promise<Object | null>} - Livre trouvé ou null si non trouvé
+ * @returns {Promise<Livre | null>} - Livre trouvé ou null si non trouvé
 */
 export const findByISBN = async (isbn) => {
     const result = await pool.query(

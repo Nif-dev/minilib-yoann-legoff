@@ -10,6 +10,9 @@ import * as controller from '../controllers/livresController.js';
 import validateLivre from '../middleware/validateLivre.js';
 import asyncWrapper from '../middleware/asyncWrapper.js';
 
+/** @import { Request, Response, NextFunction } from 'express'; */
+/** @import { ApiResponse, ApiResponseError, Livre } from '../types/index.js'; */
+
 //* Endpoints
 
 // Récupérer tous les livres
@@ -30,7 +33,7 @@ router.post('/', validateLivre, asyncWrapper(controller.createLivre));
 
 // Mise à jour d'un livre existant (id en param, données JSON -> body request)
 // PUT /api/v1/livres/:id
-//TODO revoir validateLivre spécifiquement pour cette reoute ?
+//TODO revoir validateLivre spécifiquement pour cette route ?
 //? ici validateLivre oblige de renvoyer tout les champs du livre a la place d'une simple modif
 // router.put('/:id', validateLivre, controller.updateLivre);  
 router.put('/:id', asyncWrapper(controller.updateLivre));
