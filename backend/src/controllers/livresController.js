@@ -80,7 +80,7 @@ export const queryLivres = async (req, res) => {
 
 
 /**
- * Récupère un livre poar son id
+ * Récupère un livre par son id
  * GET /api/v1/livres/:id
  *
  * @param { Request } req - Requête Express
