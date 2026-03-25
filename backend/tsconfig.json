@@ -9,9 +9,11 @@
 "strict": true,
 "esModuleInterop": true,
 "skipLibCheck": true,
-"noEmit": true
+"noEmit": true,
 // noEmit: true = vérifie les types sans générer de fichiers
 // On garde Node 24 natif pour exécuter -- pas de compilation réelle
+"checkJs": true,
+"allowJs": true,
 },
 "include": ["src/**/*"]
 }
