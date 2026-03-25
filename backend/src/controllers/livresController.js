@@ -5,6 +5,7 @@
 //! Import des types et fonctions du model
 /** @import { Request, Response, NextFunction } from 'express'; */
 /** @import { ApiResponse, ApiResponseError, Livre, FiltresRechercheLivres }  from '../types/index.js'; */
+import e from 'express';
 import * as livresModel from '../models/livresModel.js';
 
 /**
@@ -42,16 +43,18 @@ export const queryLivres = async (req, res) => {
     const { q } = req.query;
     //* validation temporaire de la requête ( q est obligatoire , de type string et de longueur > 3 )
     if (!q || q === '' || typeof q !== 'string') {
-        return res.status(400).json({ 
+        res.status(400).json({ 
             error: 'Champs manquants',
             champs: ['query param /recherche?q= ...'],
         });
+        return;
     }
-    if (q.length < 3) {
-        return res.status(400).json({ 
+    if (q && q.length < 3) {
+        res.status(400).json({ 
             error: 'Champs trop court > 3 caractères',
             champs: ['query param /recherche?q= ...'],
         });
+        return;
     }
     // appel de la fonction du model
         /** @type {string} recherche */
@@ -63,12 +66,14 @@ export const queryLivres = async (req, res) => {
                 data: [],
                 message: `Aucun livre pour :  ${recherche} `,
             });
+            
+        } else {
+            res.status(200).json({ 
+                success: true,
+                data: results,
+                total: results.length,
+            });
         }
-        res.status(200).json({ 
-            success: true,
-            data: results,
-            total: results.length,
-        });
 
     
 }
