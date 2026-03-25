@@ -28,3 +28,15 @@ export interface CreateAdherentDTO {
     prenom :        string;
     email :         string;
 }
+
+/** 
+ * Données de modification d'un adherent existant
+ * Tous les champs sont optionnels
+ *
+ * @interface UpdateAdherentDTO
+*/
+export interface UpdateAdherentDTO {
+    nom?:           string;
+    prenom?:        string;
+    email?:         string;
+}

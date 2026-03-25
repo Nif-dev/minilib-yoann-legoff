@@ -9,6 +9,8 @@
 */
 import pool from '../config/database.js';
 
+/** @import { Adherent, CreateAdherentDTO, UpdateAdherentDTO } from '../types/index.js'*/
+
 /**
 * Génère un numéro adhérent unique au format ADH-XXX.
 * @async
@@ -28,23 +30,23 @@ const genererNumeroAdherent = async () => {
 /**
 * Crée un nouvel adhérent avec numéro automatique.
 * @async
-* @param {Object} data - { nom, prenom, email }
-* @returns {Promise<Object>} Adhérent créé
+* @param {CreateAdherentDTO} data - { nom, prenom, email }
+* @returns {Promise<Adherent>} Adhérent créé
 */
-export const create = async ({ nom, prenom, email }) => {
-const numero = await genererNumeroAdherent();
-const result = await pool.query(
-`INSERT INTO adherents (numero_adherent, nom, prenom, email)
-VALUES ($1, $2, $3, $4) RETURNING *`,
-[numero, nom, prenom, email]
-);
-return result.rows[0];
+export const create = async (data) => {
+    const numero = await genererNumeroAdherent();
+    const result = await pool.query(
+        `INSERT INTO adherents (numero_adherent, nom, prenom, email)
+        VALUES ($1, $2, $3, $4) RETURNING *`,
+        [numero, data.nom, data.prenom, data.email]
+    );
+    return result.rows[0];
 };
 
 /** 
 * Retourne tous les adhérents actifs de la base de données
 * @async 
-* @returns {Promise<Array>} Tous les adhérents actifs
+* @returns {Promise<Adherent[]>} Tous les adhérents actifs
 */
 export const findAll = async () => {
     const result = await pool.query(
@@ -57,7 +59,7 @@ export const findAll = async () => {
 * Trouve un adhérent par son id
 * @async
 * @param {number} id - id de l'adhérent recherché
-* @returns {Promise<Object|null>} - Adhérent trouvé ou null si non trouvé
+* @returns {Promise<Adherent|null>} - Adhérent trouvé ou null si non trouvé
 */
 export const findById = async (id) => {
     const result = await pool.query(
@@ -72,8 +74,8 @@ export const findById = async (id) => {
 *
 * @async
 * @param {number} id - id de l'adhérent à modifier
-* @param {Object} data - champs à modifier
-* @returns {Promise<Object>} - Adhérent modifié
+* @param {UpdateAdherentDTO} data - champs à modifier
+* @returns {Promise<Adherent>} - Adhérent modifié
 */
 export const update = async (id, data) => {
     // Construction de la requête - SET dynamique
@@ -95,7 +97,7 @@ export const update = async (id, data) => {
 * Désactive un adhérent (soft delete — on ne supprime jamais en BDD).
 * @async
 * @param {number} id
-* @returns {Promise<Object|null>} Adhérent mis à jour
+* @returns {Promise<Adherent|null>} Adhérent rendu inactif ou null si non trouvé
 */
 export const desactiver = async (id) => {
     const result = await pool.query(
