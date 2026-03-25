@@ -37,3 +37,11 @@ export interface CreateEmpruntDto {
 livre_id: number;
 adherent_id: number;
 }
+
+//? type littéral - uniquement ces valeurs précises
+/**
+ * Statut d'un emprunt - en cours, rendu, en retard
+ *
+ * @type StatutEmprunt
+ */
+export type StatutEmprunt = 'en_cours' | 'rendu' | 'en_retard';
