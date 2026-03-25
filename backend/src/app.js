@@ -21,11 +21,21 @@ app.use((req, res, next) => {
     next();
 });
 
-// Middleware de gestion des erreurs serveur - 500
-app.use((err, req, res, next) => {
-    console.error('Erreur serveur:',err.message);
+/**
+ * Middleware de gestion des erreurs serveur - 500
+ * 
+ * @param {Error} err - Erreur serveur
+ * @param {import('express').Request} req - Requête Express
+ * @param {import('express').Response} res - Résponse Express
+ * @param {import('express').NextFunction} next - Fonction de rappel pour passer au middleware suivant
+ * @type {import('express').ErrorRequestHandler}
+ */
+const errorHandler = (err, req, res, next) => {
+    console.error('Erreur serveur:', err.message);
     res.status(500).json({ error: 'Erreur interne du serveur' });
-});
+    return next();
+}
+app.use(errorHandler);
 
 
 // ----------- Routes -----------------
