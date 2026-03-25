@@ -1,5 +1,6 @@
 //% backend/src/models/adherentsModel.js
 //? Model de Adhérent, fonctions de manipulation des adhérents
+//? Annotations TypeScript via JSDoc - compatible Node.js sans compilation 
 
 /**
 * Accès aux données adhérents via PostgreSQL.
@@ -14,7 +15,7 @@ import pool from '../config/database.js';
 /**
 * Génère un numéro adhérent unique au format ADH-XXX.
 * @async
-* @returns {Promise<string>} Numéro adhérent (ADH-XXX)
+* @returns {Promise <string> } Numéro adhérent (ADH-XXX)
 */
 const genererNumeroAdherent = async () => {
     // Récupère le nombre d'adhérents
@@ -31,7 +32,7 @@ const genererNumeroAdherent = async () => {
 * Crée un nouvel adhérent avec numéro automatique.
 * @async
 * @param {CreateAdherentDTO} data - { nom, prenom, email }
-* @returns {Promise<Adherent>} Adhérent créé
+* @returns {Promise <Adherent> } - Adhérent créé avec son id
 */
 export const create = async (data) => {
     const numero = await genererNumeroAdherent();
@@ -75,7 +76,7 @@ export const findById = async (id) => {
 * @async
 * @param {number} id - id de l'adhérent à modifier
 * @param {UpdateAdherentDTO} data - champs à modifier
-* @returns {Promise<Adherent>} - Adhérent modifié
+* @returns {Promise<Adherent | null>} - Adhérent modifié
 */
 export const update = async (id, data) => {
     // Construction de la requête - SET dynamique

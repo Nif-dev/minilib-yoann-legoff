@@ -2,53 +2,67 @@
 //? Controller associé à la route adherentsRouter
 // logique métier entre les routes et les données
 
+//! Import des types et fonctions du model
+/** @import { Request, Response, NextFunction } from 'express'; */
+/** @import { ApiResponse, ApiResponseError, Adherent }  from '../types/index.js'; */
 import * as adherentsModel from '../models/adherentsModel.js';
 
 /** 
 * Retourne tous les adhérents actifs de la base de données
 * GET /api/v1/adherents
 * 
-* @param {import ('express').Request} req - Requête Express 
-* @param {import ('express').Response} res - Résponse Express
+* @param { Request } req - Requête Express 
+* @param { Response <ApiResponse <Adherent[]> | ApiResponseError>} res - Résponse Express
 */
 export const getAdherents = async (req, res) => {
+    // appel de la fonction du model
 
-    try {
         const adherents = await adherentsModel.findAll();
-        res.status(200).json({ total: adherents.length, adherents});
-    
-    } catch (err) {
-        res.status(500).json({ 
-            message: 'Erreur lors de la récupération des adhérents', 
-            error: err 
+        res.status(200).json({ 
+            success: true,
+            data: adherents,
+            total: adherents.length,
         });
-    }
+    
+
 };
 
 /** 
 * Retourne un adhérent par son id
 * GET /api/v1/adherents/:id
 *
-* @param {import ('express').Request} req - Requête Express
-* @param {import ('express').Response} res - Résponse Express
+* @param { Request } req - Requête Express 
+* @param { Response <ApiResponse <Adherent | null> | ApiResponseError>} res - Résponse Express
 */
 export const getAdherentById = async (req, res) => {
+    // validation temporaire de l'id de la requête
     const { id } = req.params;
-
-    if (!id) {
-        return res.status(400).json({ message: 'Paramètre "id" obligatoire' });
+    if (!id) { // id est obligatoire
+        res.status(400).json({ 
+            error: 'Champs manquants',
+            champs: ['id'],
+        });
     }
+    if (Number.isNaN(Number(id))) { // id doit avoir un format numérique
+        res.status(400).json({ 
+            error: 'Champs id non numérique',
+            champs: ['id'],
+        });
+    }
+    // appel de la fonction du model
 
-    try {
-        const adherents = await adherentsModel.findById(id);
-        res.status(200).json(adherents);
+        const adherents = await adherentsModel.findById(Number(id));
+        if (!adherents) {
+            res.status(404).json({ 
+                error: 'Adhérent non trouvé',
+                message: `Adhérent non rencontré avec id : ${id}`
+            });
+        }
+        res.status(200).json({
+            success: true,
+            data: adherents,
+        });
     
-    } catch (err) {
-        res.status(500).json({
-            message: 'Erreur lors de la récupération de l\'adhérent',
-            error: err
-        })
-    }
 };
 
 /** 
@@ -56,32 +70,37 @@ export const getAdherentById = async (req, res) => {
 * POST /api/v1/adherents
 * Body JSON attendu : { nom, prenom, email }
 *
-* @param {import ('express').Request} req - Requête Express
-* @param {import ('express').Response} res - Résponse Express
+* @param { Request } req - Requête Express 
+* @param { Response <ApiResponse <Adherent> | ApiResponseError>} res - Résponse Express
 */
 export const createAdherent = async (req, res) => {
     //todo Corps de la requête validé via middleware sur adherentsRouter
     // Vérification params de la requêtes temp
+    const champsManquants = [];
     if (!req.body.nom) {
-        return res.status(400).json({ message: 'Paramètre "nom" obligatoire' });
+        champsManquants.push('nom');
     }
     if (!req.body.prenom) {
-        return res.status(400).json({ message: 'Paramètre "prenom" obligatoire' });
+        champsManquants.push('prenom');
     }
     if (!req.body.email) {
-        return res.status(400).json({ message: 'Paramètre "email" obligatoire' });
+        champsManquants.push('email');
+    }
+    if (champsManquants.length > 0) {
+        res.status(400).json({ 
+            error: 'Champs manquants',
+            champs: champsManquants,
+        });
     }
 
-    try {
-        const adherents = await adherentsModel.create(req.body);
-        res.status(201).json(adherents);
+    // appel de la fonction du model
+        const nouveau = await adherentsModel.create(req.body);
+        res.status(201).json({
+            success: true,
+            data: nouveau
+        });
     
-    } catch (err) {
-        res.status(500).json({
-            message: 'Erreur lors de la création de l\'adhérent',
-            error: err
-        })
-    }
+
 };
 
 /**
@@ -89,80 +108,80 @@ export const createAdherent = async (req, res) => {
 * PUT /api/v1/adherents/:id
 * Body JSON attendu : { nom, prenom, email }
 *
-* @param {import ('express').Request} req - Requête Express
-* @param {import ('express').Response} res - Résponse Express
+* @param { Request } req - Requête Express 
+* @param { Response <ApiResponse <Adherent> | ApiResponseError>} res - Résponse Express
 */
 export const updateAdherent = async (req, res) => {
-        
-    console.log("🚀 ~ updateAdherent ~ updateAdherent: Lancement")
 
-    //todo Corps de la requête validé via middleware sur adherentsRouter
-    // Vérification params de la requêtes temp
-    // if (!req.body.nom) {
-    //     return res.status(400).json({ message: 'Paramètre "nom" obligatoire' });
-    // }
-    // if (!req.body.prenom) {
-    //     return res.status(400).json({ message: 'Paramètre "prenom" obligatoire' });
-    // }
-    // if (!req.body.email) {
-    //     return res.status(400).json({ message: 'Paramètre "email" obligatoire' });
-    // }
-
+        // validation temporaire de l'id de la requête
     const { id } = req.params;
-    //todo Corps de la requête validé via middleware sur adherentsRouter
-    // Vérification params de la requêtes temp
-    if (!id) {
-        console.log("🚀 ~ updateAdherent ~ id:", id)
-        return res.status(400).json({ message: 'Paramètre "id" obligatoire' });
+    if (!id) { // id est obligatoire
+        res.status(400).json({ 
+            error: 'Champs manquants',
+            champs: ['id'],
+        });
     }
-
-    try {
-        const misAJour = await adherentsModel.update(id, req.body);
+    if (Number.isNaN(Number(id))) { // id doit avoir un format numérique
+        res.status(400).json({ 
+            error: 'Champs id non numérique',
+            champs: ['id'],
+        });
+    }
+        // appel de la fonction du model
+        const misAJour = await adherentsModel.update(Number(id), req.body);
         if (misAJour === null) {
-            res.status(404).json({ 
-                message: `Adhérent non rencontré avec id : ${id}`  
+            res.status(404).json({
+                error: 'Adhérent non rencontré',
+                message: `Adhérent non rencontré avec id : ${id}, mise à jour impossible`
+            });
+        } else {
+            res.status(200).json({
+                success: true,
+                data: misAJour
             });
         }
-        res.status(200).json(misAJour);
     
-    } catch (err) {
-        res.status(500).json({
-            message: 'Erreur lors de la mise à jour de l\'adhérent',
-            error: err
-        })
-    }
 };
 
 
 /**
-* Suppression d'un adhérent
+* Suppression** d'un adhérent
 * DELETE /api/v1/adherents/:id
 *
-* @param {import ('express').Request} req - Requête Express
-* @param {import ('express').Response} res - Résponse Express
+* @param { Request } req - Requête Express 
+* @param { Response <ApiResponse <null> | ApiResponseError>} res - Résponse Express
 */
 export const deleteAdherent = async (req, res) => {
+    // validation temporaire de l'id de la requête
     const { id } = req.params;
-    //todo Corps de la requête validé via middleware sur adherentsRouter
-    // Vérification params de la requêtes temp
-    if (!id) {
-        return res.status(400).json({ message: 'Paramètre "id" obligatoire' });
-    }
-
-    try {
-        const adherent = await adherentsModel.findById(id);
-        if (adherent) {
-            adherentsModel.remove(req.params.id);
-            res.status(204).json(); 
-            //* JSON vide sinon bruno qui attend un retour va boucler... meme avec 204 (no content) - inattendu
-        } else {
-            res.status(404).json({ message: `Adhérent non rencontré avec id : ${id}` });
-        }
-    
-    } catch (error) {
-        res.status(500).json({ 
-            message: 'Erreur lors de la suppression de l\'adhérent',
-            error: error,
+    if (!id) { // id est obligatoire
+        res.status(400).json({ 
+            error: 'Champs manquants',
+            champs: ['id'],
         });
     }
+    if (Number.isNaN(Number(id))) { // id doit avoir un format numérique
+        res.status(400).json({ 
+            error: 'Champs id non numérique',
+            champs: ['id'],
+        });
+    }
+
+        const adherent = await adherentsModel.findById(Number(id));
+        if (adherent) {
+            adherentsModel.desactiver(Number(id));
+            res.status(200).json(
+                {
+                    success: true,
+                    data: null,
+                    message: `Adhérent désactivé avec id : ${id}`
+                }
+            ); 
+        } else {
+            res.status(404).json({
+                error: 'Adhérent non rencontré',
+                message: `Adhérent non rencontré avec id : ${id}, désactivation impossible`
+            });
+        }
+
 };
