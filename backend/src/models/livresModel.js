@@ -1,5 +1,6 @@
 //% backend/src/models/livresData.js
 //? Model de Livre, fonctions de manipulation des livres
+//? Annotations TypeScript via JSDoc - compatible Node.js sans compilation 
 
 /**
  * Accès aux données de livres via PostgreSQL
@@ -9,19 +10,20 @@
  */
 import pool from "../config/database.js";
 
+/** @import { Livre, CreateLivreDto, FiltresRechercheLivres, UpdateLivreDTO } from '../types/index.js' */
+
 /**
  * Création d'un livre
  *
  * @async
- * @param {Object} data - livre { isbn, titre, auteur, annee, genre }
- * @returns {Promise<Object>} - Livre créé avec son id
+ * @param {CreateLivreDto} newLivre - livre { isbn, titre, auteur, annee, genre }
+ * @returns {Promise<Livre>} - Livre créé avec son id
  */
-export const create = async (livre) => {
+export const create = async (newLivre) => {
     
-    console.log("🚀 ~ create ~ livre:", livre)
     const result = await pool.query(
         'INSERT INTO livres (isbn, titre, auteur, genre, annee) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-        [livre.isbn, livre.titre, livre.auteur, livre.genre, livre.annee]
+        [newLivre.isbn, newLivre.titre, newLivre.auteur, newLivre.genre, newLivre.annee]
     );
     // RETURNING * renvoie la ligne insérée, donc le livre créé avec son id ( SERIAL )
     return result.rows[0];
@@ -31,11 +33,8 @@ export const create = async (livre) => {
  * Retourne tous les livres avec filtrage optionnel
  *
  * @async
- * @param {Object} [filtres = {}] - Critères de filtrage
- * @param {string} [filtres.genre] - Filtrer par genre
- * @param {boolean} [filtres.disponible] - Filtrer par disponibilité
- * @param {string} [filtres.recherche] - Recherche par titre ou auteur
- * @returns {Promise<Array>} - Tableau de livres  
+ * @param {FiltresRechercheLivres} [filtres = {}] - Critères de filtrage
+ * @returns {Promise<Livre[]>} - Tableau de livres  
  */
 export const findAll = async (filtres ={}) => {
     const conditions = [];
@@ -72,7 +71,7 @@ export const findAll = async (filtres ={}) => {
  *
  * @async
  * @param {number} id - Id du livre recherché
- * @returns {Promise<Object | null>} - Livre trouvé ou null si non trouvé
+ * @returns {Promise<Livre | null>} - Livre trouvé ou null si non trouvé
  */
 export const findById = async (id) => {
     const result = await pool.query(
@@ -87,13 +86,13 @@ export const findById = async (id) => {
  *
  * @async
  * @param {number} id - id du livre à modifier
- * @param {Object} data - champs à modifier
- * @returns {Promise<Object>} - Livre modifié
+ * @param {UpdateLivreDto} majLivre - champs à modifier
+ * @returns {Promise<Livre>} - Livre modifié
  */
-export const update = async (id, data) => {
+export const update = async (id, majLivre) => {
     //Construction de la requête - SET dynamique
-    const champs = Object.keys(data);
-    const valeurs = Object.values(data);
+    const champs = Object.keys(majLivre);
+    const valeurs = Object.values(majLivre);
     if (champs.length === 0) return findById(id);
 
     const setClause = champs.map((champ, index) => `${champ} = $${index + 1}`).join(', ');
