@@ -74,7 +74,6 @@ export const getAdherentById = async (req, res) => {
 * @param { Response <ApiResponse <Adherent> | ApiResponseError>} res - Résponse Express
 */
 export const createAdherent = async (req, res) => {
-    //todo Corps de la requête validé via middleware sur adherentsRouter
     // Vérification params de la requêtes temp
     const champsManquants = [];
     if (!req.body.nom) {
