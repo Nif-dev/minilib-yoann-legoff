@@ -5,7 +5,6 @@
 //! Import des types et fonctions du model
 /** @import { Request, Response, NextFunction } from 'express'; */
 /** @import { ApiResponse, ApiResponseError, Livre, FiltresRechercheLivres }  from '../types/index.js'; */
-import e from 'express';
 import * as livresModel from '../models/livresModel.js';
 
 /**
@@ -87,22 +86,14 @@ export const queryLivres = async (req, res) => {
  * @param { Response <ApiResponse <Livre> | ApiResponseError> } res - Résponse Express
  */
 export const getLivreById = async (req, res) => {
-    // validation temporaire de l'id de la requête
+    // Récupérer l'id de la requête, validation par middleware sur route
     const { id } = req.params;
-    if (!id) { // id est obligatoire
-        res.status(400).json({ 
-            error: 'Champs manquants',
-            champs: ['id'],
-        });
-    }
-    if (Number.isNaN(Number(id))) { // id doit avoir un format numérique
-        res.status(400).json({ 
-            error: 'Champs id non numérique',
-            champs: ['id'],
-        });
-    }
+
+    // id doit avoir un format numérique pour la requête
+    const idNumber = Number(id);
+
     // appel de la fonction du model
-        const livre = await livresModel.findById(Number(id));
+        const livre = await livresModel.findById(idNumber);
         if (livre) {
             res.status(200).json({ 
                 success: true,
@@ -157,22 +148,14 @@ export const createLivre = async (req, res) => {
 
 export const updateLivre = async (req, res) => {
     //* Corps de la requête validé via middleware sur livresRouter
-    // validation temporaire de l'id de la requête
+        // Récupérer l'id de la requête, validation par middleware sur route
     const { id } = req.params;
-    if (!id) { // id est obligatoire
-        res.status(400).json({ 
-            error: 'Champs manquants',
-            champs: ['id'],
-        });
-    }
-    if (Number.isNaN(Number(id))) { // id doit avoir un format numérique
-        res.status(400).json({ 
-            error: 'Champs id non numérique',
-            champs: ['id'],
-        });
-    }
+
+    // id doit avoir un format numérique pour la requête
+    const idNumber = Number(id);
+    
         // appel de la fonction du model
-        const misAJour = await livresModel.update(Number(id), req.body);
+        const misAJour = await livresModel.update(idNumber, req.body);
         if (misAJour == null) {
             res.status(404).json({ 
                 error: 'Livre non modifié',
@@ -195,24 +178,16 @@ export const updateLivre = async (req, res) => {
  * @param { Response <ApiResponse <null> | ApiResponseError> } res - Réponse Express
  */
 export const deleteLivre = async (req, res) => {
-    // validation temporaire de l'id de la requête
+        // Récupérer l'id de la requête, validation par middleware sur route
     const { id } = req.params;
-    if (!id) { // id est obligatoire
-        res.status(400).json({ 
-            error: 'Champs manquants',
-            champs: ['id'],
-        });
-    }
-    if (Number.isNaN(Number(id))) { // id doit avoir un format numérique
-        res.status(400).json({ 
-            error: 'Champs id non numérique',
-            champs: ['id'],
-        });
-    }
 
-        const livre = await livresModel.findById(Number(id));
+    // id doit avoir un format numérique pour la requête
+    const idNumber = Number(id);
+    
+
+        const livre = await livresModel.findById(idNumber);
         if (livre) {
-            await livresModel.remove(Number(id));
+            await livresModel.remove(idNumber);
             //res.status(204).json(); //* JSON vide sinon bruno qui attend un retour va boucler... meme avec 204 (no content) - inattendu
             res.status(200).json({
                 success: true,
