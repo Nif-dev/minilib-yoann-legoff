@@ -7,6 +7,8 @@ const router = express.Router();
 
 import * as controller from '../controllers/adherentsController.js';
 
+import validateAdherent from '../middleware/validateAdherent.js';
+
 import validateIdParam from '../middleware/validateIdParam.js';
 import asyncWrapper from '../middleware/asyncWrapper.js';
 
@@ -22,7 +24,7 @@ router.get('/:id',validateIdParam, asyncWrapper(controller.getAdherentById));
 
 // Création d'un nouvel adhérent (données JSON -> body request)
 // POST /api/v1/adherents
-router.post('/', asyncWrapper(controller.createAdherent));
+router.post('/', validateAdherent, asyncWrapper(controller.createAdherent));
 
 // Mise à jour d'un adhérent existant
 // PUT /api/v1/adherents/:id
