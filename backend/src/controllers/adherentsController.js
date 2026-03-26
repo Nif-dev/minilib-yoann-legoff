@@ -90,7 +90,17 @@ export const createAdherent = async (req, res) => {
         prenom: req.body.prenom,
         email: req.body.email,
     };
-    //TODO: Vérifier doublons email
+
+    // Vérification doublons email
+    const doublonEmail = await adherentsModel.findByEmail(nouveauData.email);
+    if (doublonEmail) {
+        res.status(409).json({
+            error: 'Email déjà utilisé',
+            message: `Doublon email : ${nouveauData.email}`,
+        });
+        return;
+    }
+
     // appel de la fonction du model
         const nouveau = await adherentsModel.create(nouveauData);
         res.status(201).json({
