@@ -1,4 +1,4 @@
-//% backend/src/middleware/validateLivre.js
+//% backend/src/middleware/validateAdherent.js
 //? Middleware de validation des données de livres
 
 /**
@@ -9,14 +9,20 @@
  * @param {import ('express').Response} res - Résponse Express
  * @param {import ('express').NextFunction} next - Fonction de rappel pour passer au middleware suivant
  */
-const validateLivre = (req, res, next) => {
-    const { isbn, titre, auteur } = req.body;
+const validateAdherent = (req, res, next) => {
+    const { nom, prenom, email } = req.body;
     const erreurs = [];
-    if (!isbn || isbn.trim() === '') erreurs.push('Le champ ISBN est obligatoire');
-    // Validation de l'ISBN - 13 chiffres obligatoirement
-    if (isbn && isbn.length !== 13) erreurs.push('Le champ ISBN doit avoir 13 chiffres');
-    if (!titre || titre.trim() === '') erreurs.push('Le champ titre est obligatoire');
-    if (!auteur || auteur.trim() === '') erreurs.push('Le champ auteur est obligatoire');
+
+    if (!nom || nom.trim() === '') erreurs.push('Le champ nom est obligatoire');
+    if (nom && nom.length > 50) erreurs.push('Le champ nom ne doit pas avoir plus de 50 caractères');
+    if ( nom && nom.length < 2) erreurs.push('Le champ nom doit avoir au moins 2 caractères');
+
+    if (!prenom || prenom.trim() === '') erreurs.push('Le champ prénom est obligatoire');
+    if (prenom && prenom.length > 50) erreurs.push('Le champ prénom ne doit pas avoir plus de 50 caractères');
+    if ( prenom && prenom.length < 2) erreurs.push('Le champ prénom doit avoir au moins 2 caractères');
+
+    if (!email || email.trim() === '') erreurs.push('Le champ email est obligatoire');
+    // TODO regex email
 
     if (erreurs.length > 0) {
         res.status(400).json({ erreurs });
@@ -25,4 +31,4 @@ const validateLivre = (req, res, next) => {
     }
 };
 
-export default validateLivre;
+export default validateAdherent;
