@@ -7,8 +7,6 @@ const router = express.Router();
 
 import * as controller from '../controllers/adherentsController.js';
 
-// import validateAdherent from '../middleware/validateAdherent.js';
-
 import validateIdParam from '../middleware/validateIdParam.js';
 import asyncWrapper from '../middleware/asyncWrapper.js';
 

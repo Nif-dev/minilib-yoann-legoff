@@ -35,33 +35,24 @@ export const getAdherents = async (req, res) => {
 * @param { Response <ApiResponse <Adherent | null> | ApiResponseError>} res - Résponse Express
 */
 export const getAdherentById = async (req, res) => {
-    // validation temporaire de l'id de la requête
+    // Récupérer l'id de la requête, validation par middleware sur route
     const { id } = req.params;
-    if (!id) { // id est obligatoire
-        res.status(400).json({ 
-            error: 'Champs manquants',
-            champs: ['id'],
-        });
-    }
-    if (Number.isNaN(Number(id))) { // id doit avoir un format numérique
-        res.status(400).json({ 
-            error: 'Champs id non numérique',
-            champs: ['id'],
-        });
-    }
-    // appel de la fonction du model
 
-        const adherents = await adherentsModel.findById(Number(id));
-        if (!adherents) {
-            res.status(404).json({ 
-                error: 'Adhérent non trouvé',
-                message: `Adhérent non rencontré avec id : ${id}`
-            });
-        }
-        res.status(200).json({
-            success: true,
-            data: adherents,
+    // id doit avoir un format numérique pour la requête
+    const idNumber = Number(id);
+    
+    // appel de la fonction du model
+    const adherents = await adherentsModel.findById(idNumber);
+    if (!adherents) {
+        res.status(404).json({ 
+            error: 'Adhérent non trouvé',
+            message: `Adhérent non rencontré avec id : ${id}`
         });
+    }
+    res.status(200).json({
+        success: true,
+        data: adherents,
+    });
     
 };
 
@@ -119,23 +110,13 @@ export const createAdherent = async (req, res) => {
 * @param { Response <ApiResponse <Adherent> | ApiResponseError>} res - Résponse Express
 */
 export const updateAdherent = async (req, res) => {
-
-        // validation temporaire de l'id de la requête
+    // Récupérer l'id de la requête, validation par middleware sur route
     const { id } = req.params;
-    if (!id) { // id est obligatoire
-        res.status(400).json({ 
-            error: 'Champs manquants',
-            champs: ['id'],
-        });
-    }
-    if (Number.isNaN(Number(id))) { // id doit avoir un format numérique
-        res.status(400).json({ 
-            error: 'Champs id non numérique',
-            champs: ['id'],
-        });
-    }
+
+    // id doit avoir un format numérique pour la requête
+    const idNumber = Number(id);
         // appel de la fonction du model
-        const misAJour = await adherentsModel.update(Number(id), req.body);
+        const misAJour = await adherentsModel.update(idNumber, req.body);
         if (misAJour === null) {
             res.status(404).json({
                 error: 'Adhérent non rencontré',
@@ -159,24 +140,16 @@ export const updateAdherent = async (req, res) => {
 * @param { Response <ApiResponse <null> | ApiResponseError>} res - Résponse Express
 */
 export const deleteAdherent = async (req, res) => {
-    // validation temporaire de l'id de la requête
+    console.log("DELETE test");
+// Récupérer l'id de la requête, validation par middleware sur route
     const { id } = req.params;
-    if (!id) { // id est obligatoire
-        res.status(400).json({ 
-            error: 'Champs manquants',
-            champs: ['id'],
-        });
-    }
-    if (Number.isNaN(Number(id))) { // id doit avoir un format numérique
-        res.status(400).json({ 
-            error: 'Champs id non numérique',
-            champs: ['id'],
-        });
-    }
 
-        const adherent = await adherentsModel.findById(Number(id));
+    // id doit avoir un format numérique pour la requête
+    const idNumber = Number(id);
+        // appel de la fonction du model
+        const adherent = await adherentsModel.findById(idNumber);
         if (adherent) {
-            adherentsModel.desactiver(Number(id));
+            adherentsModel.desactiver(idNumber);
             res.status(200).json(
                 {
                     success: true,
