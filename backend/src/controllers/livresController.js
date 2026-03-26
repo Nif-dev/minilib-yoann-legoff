@@ -40,7 +40,7 @@ export const getLivres = async (req, res) => {
 export const queryLivres = async (req, res) => {
     // req.query = { q: 'antoine' } avec url ( /recherche?q=antoine )
     const { q } = req.query;
-    //* validation temporaire de la requête ( q est obligatoire , de type string et de longueur > 3 )
+    //* validation supplementaire de la requête , deja traité par middleware mais {q: string} dans le scope
     if (!q || q === '' || typeof q !== 'string') {
         res.status(400).json({ 
             error: 'Champs manquants',
@@ -48,13 +48,7 @@ export const queryLivres = async (req, res) => {
         });
         return;
     }
-    if (q && q.length < 3) {
-        res.status(400).json({ 
-            error: 'Champs trop court > 3 caractères',
-            champs: ['query param /recherche?q= ...'],
-        });
-        return;
-    }
+
     // appel de la fonction du model
         /** @type {string} recherche */
         const recherche = q.toString();
