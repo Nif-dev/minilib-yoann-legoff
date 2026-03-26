@@ -71,6 +71,20 @@ export const findById = async (id) => {
 };
 
 /**
+ * Trouve un adhérent par son email
+ * @async
+ * @param {string} email - email de l'adhérent recherché
+ * @returns {Promise<Adherent|null>} - Adhérent trouvé ou null si non trouvé
+ */
+export const findByEmail = async (email) => {
+    const result = await pool.query(
+        'SELECT * FROM adherents WHERE email = $1',
+        [email]
+    );
+    return result.rows[0] || null;
+};
+
+/**
 * Modifie un adhérent existant par son id 
 *
 * @async
