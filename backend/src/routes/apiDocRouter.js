@@ -9,7 +9,6 @@ import { readFileSync } from 'node:fs';
 const router = express.Router();
 // CHEMIN ABSOLU pour test
 const openapiPath = '/home/nif-dev/dev/www/minilib-yoann-legoff/backend/openapi.yaml';
-console.log('🔍 Test chemin :', openapiPath);
 
 /** @type {any} */
 const openapiSpec = yaml.load(readFileSync(openapiPath, 'utf8'));
