@@ -2,8 +2,15 @@
 //? Centralisation des types de l'application
 // Usage : `import { Livre, Adherent, CreateEmpruntDto } from '../types/index.ts';`
 
-export * from './api.js';
+// type documentation api Swagger
+export * from './api.ts';
 
-export * from './livre.js';
-export * from './adherent.js';
-export * from './emprunt.js';
+// types de données internes de l'application
+export * from './livre.ts';
+export * from './adherent.ts';
+export * from './emprunt.ts';
+
+// types de données PostgreSQL spécifiques
+export * from './livre.pg.ts';
+export * from './adherent.pg.ts';
+export * from './emprunt.pg.ts';
