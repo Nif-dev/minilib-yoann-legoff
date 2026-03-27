@@ -137,3 +137,19 @@ export const findByISBN = async (isbn) => {
     );
     return result.rows[0] || null;
 };
+
+/**
+ * Trouve un livre disponible par son id
+ * 
+ * @async 
+ * @param {number} id - id du livre dont on vérifie la disponibilité
+ * @returns {Promise<boolean>} - true si disponible, sinon false
+ */
+export const findDispoById = async (id) => {
+    const result = await pool.query(
+        'SELECT disponible FROM livres WHERE id = $1 AND disponible = true', 
+        [id]
+    );
+    return (result.rows.length !== 0); // true si livre disponible
+    
+};

@@ -7,6 +7,8 @@
 /** @import { ApiResponse, ApiResponseError, EmpruntAvecDetails }  from '../types/index.js'; */
 import * as empruntsModel from '../models/empruntsModel.js';
 
+import { findDispoById } from '../models/livresModel.js';
+
 /**
 * Retourne tous les emprunts en retard
 * GET /api/v1/emprunts/retards
@@ -52,8 +54,24 @@ export const getEmprunts = async (req, res) => {
 */
 export const createEmprunt = async (req, res) => {
 
+    const idLivre =req.body.livreId = Number(req.body.livreId);
+    // vérification de la disponibilité du livre
+    const livreDispo = await findDispoById(idLivre);
+    if (!livreDispo) {
+        res.status(400).json({ 
+            error: 'Livre indisponible',
+            message: 'Livre indisponible'
+        });
+        return;
+    }
     // appel de la fonction du model
         const nouveau = await empruntsModel.create(req.body);
+        if (!nouveau) {
+            res.status(400).json({ 
+                error: 'Emprunt non ajouté',
+                message: 'Emprunt non ajouté'
+            });
+        } 
         res.status(201).json({
             success: true,
             data: nouveau
