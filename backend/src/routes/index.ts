@@ -4,9 +4,9 @@
 import express from 'express';
 
 // Import des routes spécifiques de l'api
-import healthRouter from './healthRouter.js';
+import healthRouter from './healthRouter.ts';
 import livresRouter from './livresRoutes.js';
-import adherentsRouter from './adherentsRoutes.js';
+import adherentsRouter from './adherentsRoutes.ts';
 import empruntsRouter from './empruntsRoutes.js';
 
 /**
