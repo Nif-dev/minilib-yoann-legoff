@@ -98,10 +98,13 @@ export const createAdherent = async (
         prenom: req.body.prenom,
         email: req.body.email,
     };
+    const emailCheck: Pick<CreateAdherentDTO, 'email'> = {
+        email: req.body.email,
+    };
 
     try{
         // Vérification doublons email
-        const doublonEmail: Adherent | null = await adherentsModel.findByEmail(nouveauData.email);
+        const doublonEmail: Adherent | null = await adherentsModel.findByEmail(emailCheck);
         if (doublonEmail) {
             res.status(409).json({
                 error: 'Email déjà utilisé',
