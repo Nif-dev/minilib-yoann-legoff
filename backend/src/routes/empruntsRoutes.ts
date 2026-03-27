@@ -7,7 +7,7 @@ const router = express.Router();
 
 import * as controller from '../controllers/empruntsController.js';
 
-import asyncWrapper from '../middleware/asyncWrapper.js';
+import asyncWrapper from '../middleware/asyncWrapper.ts';
 
 //* Endpoints
 

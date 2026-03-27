@@ -11,7 +11,7 @@ import validateLivre from '../middleware/validateLivre.js';
 import validateRecherche from '../middleware/validateRecherche.js';
 
 import validateIdParam from '../middleware/validateIdParam.js';
-import asyncWrapper from '../middleware/asyncWrapper.js';
+import asyncWrapper from '../middleware/asyncWrapper.ts';
 
 /** @import { Request, Response, NextFunction } from 'express'; */
 /** @import { ApiResponse, ApiResponseError, Livre } from '../types/index.js'; */
