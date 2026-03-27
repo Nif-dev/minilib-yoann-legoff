@@ -1,24 +1,24 @@
 //% backend/src/middleware/validateIdParam.js
 //? Middleware de validation d'ID dans req.params.id
 
-/** @import { Request, Response, NextFunction } from 'express'; */
-/** @import { ApiResponse } from '../types/index.js'; */
+import { Request, Response, NextFunction } from 'express';
+import { ApiResponseError } from '../types/index.js';
 
 /**
  * Middleware de validation d'ID dans req.params.id
  * Vérifie : existence + entier positif
  * 
  * @param { Request } req - Requête Express
- * @param { Response } res - Résponse Express
+ * @param { Response <ApiResponseError> } res - Résponse Express
  * @param { NextFunction } next - Prochain middleware
  */
-const validateIdParam = (req, res, next) => {
+const validateIdParam = (req: Request, res: Response <ApiResponseError>, next: NextFunction) => {
     const { id } = req.params;
 
     // 1) ID obligatoire
     if (!id) {
         res.status(400).json({
-            success: false,
+            error: 'Paramètre "id" manquant',
             message: 'Paramètre "id" obligatoire'
         });
         return;
@@ -28,8 +28,8 @@ const validateIdParam = (req, res, next) => {
     const parsedId = Number(id);
     if (!Number.isInteger(parsedId) || parsedId <= 0) {
         res.status(400).json({
-            success: false,
-            message: 'Paramètre "id" invalide (entier positif requis)'
+            error: 'Paramètre "id" invalide',
+            message: 'Paramètre "id" doit être un entier positif non nul'
         });
         return;
     }

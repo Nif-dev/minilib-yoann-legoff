@@ -1,15 +1,18 @@
 //% backend/src/middleware/validateAdherent.js
 //? Middleware de validation des données de livres
 
+import { Request, Response, NextFunction } from 'express';
+import { ApiResponseError } from '../types/api.ts';
+
 /**
  * Middleware Express qui valide le body d'une requête de création ou mise à jour de livre. (POST/PUT)
  * S'utilise comme suit : router.post('/livres', validateLivre, controller.createLivre);
  * 
- * @param {import ('express').Request} req - Requête Express
- * @param {import ('express').Response} res - Résponse Express
- * @param {import ('express').NextFunction} next - Fonction de rappel pour passer au middleware suivant
+ * @param { Request } req - Requête Express
+ * @param { Response <ApiResponseError> } res - Résponse Express
+ * @param { NextFunction } next - Fonction de rappel pour passer au middleware suivant
  */
-const validateAdherent = (req, res, next) => {
+const validateAdherent = (req: Request, res: Response <ApiResponseError>, next: NextFunction) => {
     const { nom, prenom, email } = req.body;
     const erreurs = [];
 
@@ -25,7 +28,10 @@ const validateAdherent = (req, res, next) => {
     // TODO regex email
 
     if (erreurs.length > 0) {
-        res.status(400).json({ erreurs });
+        res.status(400).json({ 
+            error: "Format invalide",
+            champs: erreurs 
+        });
     } else {
         next(); // Passe au middleware suivant
     }
