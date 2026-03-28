@@ -9,7 +9,7 @@
 * @module adherentsModel
 */
 import { QueryResult } from 'pg';
-import pool from '../config/database.js';
+import pool from '../config/database.ts';
 
 import { Adherent, CreateAdherentDTO, UpdateAdherentDTO } from '../types/index.js'
 

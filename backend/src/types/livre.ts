@@ -63,6 +63,6 @@ export interface UpdateLivreDTO {
 */
 export interface FiltresRechercheLivres {
     genre?:         string;
-    disponible?:    boolean;
+    disponible?:    string | boolean;
     recherche?:     string;
 }
