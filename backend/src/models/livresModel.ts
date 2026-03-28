@@ -170,3 +170,24 @@ Promise <Livre | null> => {
         throw new Error(`Recherche du livre ${isbn} échouée : ${error}`);
     }
 };
+
+/**
+ * Trouve si un livre est disponible par son id
+ * 
+ * @async
+ * @param {number} id - id du livre à rechercher
+ * @returns {Promise<boolean>} - true si le livre est disponible, sinon false
+*/
+export const findDispoById = async (id: number)
+: Promise <boolean> => {
+    try{
+        const result: QueryResult = await pool.query(
+            'SELECT * FROM livres WHERE id = $1 AND dispo = true', 
+            [id]
+        );
+        return (result.rowCount === 1) ;
+        //? 1 ligne trouvée = true
+    } catch (error) {
+        throw new Error(`Recherche du livre ${id} échouée : ${error}`);
+    }
+};
