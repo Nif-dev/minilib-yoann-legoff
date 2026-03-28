@@ -1,17 +1,33 @@
-//% backend/src/routes/index.js
+//% backend/src/routes/apiDocRouter.js
 //? Point d'entrée de la documentation Swagger OpenAPI
 
-import express from 'express';
-import swaggerUi from 'swagger-ui-express';
-import yaml from 'js-yaml';
+// src/routes/apiDocRouter.js
 import { readFileSync } from 'node:fs';
+import yaml from 'js-yaml';
+import swaggerUi from 'swagger-ui-express';
+import express from 'express';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const router = express.Router();
-// CHEMIN ABSOLU pour test
-const openapiPath = '/home/nif-dev/dev/www/minilib-yoann-legoff/backend/openapi.yaml';
 
-/** @type {any} */
-const openapiSpec = yaml.load(readFileSync(openapiPath, 'utf8'));
+try {
+    const openapiPath = path.join(__dirname, '../../openapi.yaml');
+    const yamlContent = readFileSync(openapiPath, 'utf8');
+    const openapiSpec = yaml.load(yamlContent);
+    /** @ts-ignore tslint pb surcharge */
+    router.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
+    
+} catch (error) {
+    /** @type {Error} error */
+    console.error('Swagger init failed:', error);
+    // Fallback
+    router.get('/docs', (req, res) => {
+        res.status(500).json({ error: 'Swagger non disponible' });
+    });
+}
 
-router.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
 export default router;
