@@ -1,4 +1,4 @@
-//% backend/src/config/database.js
+//% backend/src/config/database.ts
 //? Configuration de la base de données
 
 /**

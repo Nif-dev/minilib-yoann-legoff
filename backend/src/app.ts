@@ -46,8 +46,8 @@ const errorHandler: ErrorRequestHandler = (err:Error, req:Request, res:Response,
 
 
 // ----------- Routes -----------------
-//* Import du Router - routes/index.js, regroupant les routes de l'api par domains
-import apiRouter from './routes/index.js';
+//* Import du Router - routes/index.ts, regroupant les routes de l'api par domains
+import apiRouter from './routes/index.ts';
 
 app.use('/api/v1', apiRouter);
 

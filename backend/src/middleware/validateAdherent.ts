@@ -1,4 +1,4 @@
-//% backend/src/middleware/validateAdherent.js
+//% backend/src/middleware/validateAdherent.ts
 //? Middleware de validation des données de livres
 
 import { Request, Response, NextFunction } from 'express';

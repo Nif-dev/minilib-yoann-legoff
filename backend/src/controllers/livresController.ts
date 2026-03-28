@@ -1,4 +1,4 @@
-//% backend/src/controllers/livresController.js
+//% backend/src/controllers/livresController.ts
 //? Controller associé à la route livresRouter
 // logique métier entre les routes et les données
 
@@ -7,7 +7,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ApiResponse, ApiResponseError, Livre, FiltresRechercheLivres, CreateLivreDTO, UpdateLivreDTO }  from '../types/index.ts';
 
 // Import des fonctions du model
-import * as livresModel from '../models/livresModel.js';
+import * as livresModel from '../models/livresModel.ts';
 
 /**
  * Récupère tous les livres avec filtres optionnels via query params

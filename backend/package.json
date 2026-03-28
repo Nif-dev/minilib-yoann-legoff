@@ -1,11 +1,11 @@
 {
   "name": "minilib-backend",
   "version": "1.0.0",
-  "description": "API REST Minilib - Node.js / Express",
+  "description": "API REST Minilib - Node.ts / Express",
   "author": "Nif-dev",
   "type": "module",
   "private": true,
-  "main": "src/app.js",
+  "main": "src/app.ts",
   "scripts": {
     "start": "tsx --env-files=.env src/app.ts",
     "start:prod": "tsx --env-files=.env.dev dist/app.ts",

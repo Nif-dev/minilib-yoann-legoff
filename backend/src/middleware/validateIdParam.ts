@@ -1,8 +1,8 @@
-//% backend/src/middleware/validateIdParam.js
+//% backend/src/middleware/validateIdParam.ts
 //? Middleware de validation d'ID dans req.params.id
 
 import { Request, Response, NextFunction } from 'express';
-import { ApiResponseError } from '../types/index.js';
+import { ApiResponseError } from '../types/index.ts';
 
 /**
  * Middleware de validation d'ID dans req.params.id

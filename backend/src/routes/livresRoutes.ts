@@ -1,20 +1,17 @@
-//% backend/src/routes/livresRouter.js
+//% backend/src/routes/livresRouter.ts
 //? Router Express pour les livres
 // Toutes les routes sont préfixées par /api/v1/livres
 
 import express from 'express';
 const router = express.Router();
 
-import * as controller from '../controllers/livresController.js';
+import * as controller from '../controllers/livresController.ts';
 
-import validateLivre from '../middleware/validateLivre.js';
-import validateRecherche from '../middleware/validateRecherche.js';
+import validateLivre from '../middleware/validateLivre.ts';
+import validateRecherche from '../middleware/validateRecherche.ts';
 
-import validateIdParam from '../middleware/validateIdParam.js';
+import validateIdParam from '../middleware/validateIdParam.ts';
 import asyncWrapper from '../middleware/asyncWrapper.ts';
-
-/** @import { Request, Response, NextFunction } from 'express'; */
-/** @import { ApiResponse, ApiResponseError, Livre } from '../types/index.js'; */
 
 //* Endpoints
 

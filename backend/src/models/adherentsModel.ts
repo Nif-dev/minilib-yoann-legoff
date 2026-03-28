@@ -1,4 +1,4 @@
-//% backend/src/models/adherentsModel.js
+//% backend/src/models/adherentsModel.ts
 //? Model de Adhérent, fonctions de manipulation des adhérents
 //? Annotations TypeScript via JSDoc - compatible Node.js sans compilation 
 
@@ -11,7 +11,7 @@
 import { QueryResult } from 'pg';
 import pool from '../config/database.ts';
 
-import { Adherent, CreateAdherentDTO, UpdateAdherentDTO } from '../types/index.js'
+import { Adherent, CreateAdherentDTO, UpdateAdherentDTO } from '../types/index.ts'
 
 /**
 * Génère un numéro adhérent unique au format ADH-XXX.

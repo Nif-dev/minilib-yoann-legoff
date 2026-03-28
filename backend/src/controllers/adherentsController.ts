@@ -1,4 +1,4 @@
-//% backend/src/controllers/adherentsController.js
+//% backend/src/controllers/adherentsController.ts
 //? Controller associé à la route adherentsRouter
 // logique métier entre les routes et les données
 

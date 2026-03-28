@@ -1,4 +1,4 @@
-//% backend/src/routes/adherentsRoutes.js
+//% backend/src/routes/adherentsRoutes.ts
 //? Route Express pour les adhérents
 // Toutes les routes sont préfixées par /api/v1/adherents
 
@@ -7,9 +7,9 @@ const router = express.Router();
 
 import * as controller from '../controllers/adherentsController.ts';
 
-import validateAdherent from '../middleware/validateAdherent.js';
+import validateAdherent from '../middleware/validateAdherent.ts';
 
-import validateIdParam from '../middleware/validateIdParam.js';
+import validateIdParam from '../middleware/validateIdParam.ts';
 import asyncWrapper from '../middleware/asyncWrapper.ts';
 
 //* Endpoints

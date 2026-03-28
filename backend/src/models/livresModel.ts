@@ -1,4 +1,4 @@
-//% backend/src/models/livresData.js
+//% backend/src/models/livresData.ts
 //? Model de Livre, fonctions de manipulation des livres
 //? Annotations TypeScript via JSDoc - compatible Node.js sans compilation 
 

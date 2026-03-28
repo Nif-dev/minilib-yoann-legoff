@@ -1,9 +1,9 @@
-//% backend/src/routes/healthRouter.js
+//% backend/src/routes/healthRoute.ts
 //? Route de health check du serveur
 
 // Import des types 
 import { Request, Response, NextFunction } from 'express';
-import { ApiResponse } from '../types/index.js';
+import { ApiResponse } from '../types/index.ts';
 
 /**
  * Route de health check du serveur

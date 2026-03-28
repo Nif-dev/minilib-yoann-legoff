@@ -1,8 +1,8 @@
-//% backend/src/middleware/validateLivre.js
+//% backend/src/middleware/validateLivre.ts
 //? Middleware de validation des données de livres
 
 import { Request, Response, NextFunction } from 'express';
-import { ApiResponseError } from '../types/index.js';
+import { ApiResponseError } from '../types/index.ts';
 
 /**
  * Middleware Express qui valide le body d'une requête de création ou mise à jour de livre. (POST/PUT)

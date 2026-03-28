@@ -1,7 +1,6 @@
 //% backend/src/routes/apiDocRouter.js
 //? Point d'entrée de la documentation Swagger OpenAPI
 
-// src/routes/apiDocRouter.js
 import { readFileSync } from 'node:fs';
 import yaml from 'js-yaml';
 import swaggerUi from 'swagger-ui-express';

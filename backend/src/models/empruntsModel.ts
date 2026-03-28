@@ -1,4 +1,4 @@
-//% backend/src/models/empruntsModel.js
+//% backend/src/models/empruntsModel.ts
 //? Model de Emprunt, fonctions de manipulation des emprunts
 
 /**

@@ -1,11 +1,11 @@
-//% backend/src/models/empruntsModel.js
+//% backend/src/models/empruntsModel.ts
 //? Route Express pour les emprunts
 // Toutes les routes sont préfixées par /api/v1/emprunts
 
 import express from 'express';
 const router = express.Router();
 
-import * as controller from '../controllers/empruntsController.js';
+import * as controller from '../controllers/empruntsController.ts';
 
 import asyncWrapper from '../middleware/asyncWrapper.ts';
 

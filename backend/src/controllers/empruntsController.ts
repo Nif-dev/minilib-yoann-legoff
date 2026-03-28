@@ -1,4 +1,4 @@
-//% backend/src/routes/adherentsRoutes.js
+//% backend/src/routes/adherentsRoutes.ts
 //? Route de gestion des adhérents
 // logique métier entre les routes et les données
 

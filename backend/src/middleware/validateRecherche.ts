@@ -1,8 +1,8 @@
-//% backend/src/middleware/validateRecherche.js
+//% backend/src/middleware/validateRecherche.ts
 //? Middleware de validation d'une recherche de livre
 
 import { Request, Response, NextFunction } from 'express';
-import { ApiResponseError } from '../types/index.js';
+import { ApiResponseError } from '../types/index.ts';
 
 /**
  * Middleware Express qui valide le body d'une requête de recherche de livre. (POST/PUT)
