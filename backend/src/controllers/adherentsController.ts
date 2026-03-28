@@ -4,10 +4,10 @@
 
 // Import des types et fonctions du model
 import { Request, Response, NextFunction } from 'express';
-import { ApiResponse, ApiResponseError, Adherent, CreateAdherentDTO, UpdateAdherentDTO }  from '../types/index.js';
+import { ApiResponse, ApiResponseError, Adherent, CreateAdherentDTO, UpdateAdherentDTO }  from '../types/index.ts';
 
 // Import des fonctions du model
-import * as adherentsModel from '../models/adherentsModel.js';
+import * as adherentsModel from '../models/adherentsModel.ts';
 
 /** 
 * Retourne tous les adhérents actifs de la base de données
