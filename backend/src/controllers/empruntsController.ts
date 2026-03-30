@@ -4,7 +4,7 @@
 
 // Import des types et fonctions du model
 import { Request, Response, NextFunction } from 'express';
-import { ApiResponse, ApiResponseError, Emprunt, EmpruntAvecDetails }  from '../types/index.ts';
+import { ApiResponse, ApiResponseError, CreateEmpruntDTO, Emprunt, EmpruntAvecDetails,  }  from '../types/index.ts';
 
 // Import des fonctions des models
 import * as empruntsModel from '../models/empruntsModel.ts';
@@ -69,18 +69,19 @@ export const getEmprunts = async (
 * Ajoute un nouvel emprunt
 * POST /api/v1/emprunts
 *
-* @param { Request } req - Requête Express 
+* @param { Request <CreateEmpruntDTO> } req - Requête Express 
 * @param { Response <ApiResponse <Emprunt> | ApiResponseError> } res - Résponse Express
 */
 export const createEmprunt = async (
-    req: Request, 
+    req: Request <CreateEmpruntDTO>, 
     res: Response <ApiResponse <Emprunt> | ApiResponseError>, 
     next: NextFunction
 ) => {
 
     try{
-
-        const idLivre =req.body.livreId = Number(req.body.livreId);
+        const requeteEmprunt: CreateEmpruntDTO = req.body;
+        
+        const idLivre =req.body.livre_id = Number(req.body.livre_id);
         // vérification de la disponibilité du livre
         const livreDispo = await findDispoById(idLivre);
         if (!livreDispo) {
@@ -90,8 +91,28 @@ export const createEmprunt = async (
             });
             return;
         }
+
+        const idAdherent = req.body.adherent_id = Number(req.body.adherent_id);
+        // vérification de l'adherent / nombre d'emprunts
+        const empruntsDeAdherent = await empruntsModel.countEmpruntByAdherent(idAdherent);
+
+        if (!empruntsDeAdherent) {
+            res.status(400).json({ 
+                error: 'Adherent non trouvé',
+                message: 'Adherent non trouvé'
+            });
+            return;
+        }
+        if (empruntsDeAdherent >= 3) {
+            res.status(400).json({ 
+                error: `Trop d'emprunts de l'adherent`,
+                message: `L'adherent ${idAdherent} a ${empruntsDeAdherent} emprunts en cours`
+            });
+            return;
+        }
+
         // appel de la fonction du model
-        const nouveau = await empruntsModel.create(req.body);
+        const nouveau = await empruntsModel.create(requeteEmprunt);
         if (!nouveau) {
             res.status(400).json({ 
                 error: 'Emprunt non ajouté',
@@ -107,3 +128,67 @@ export const createEmprunt = async (
         next(error as Error); // Envoi de l'erreur au middleware suivant
     }
 };
+
+
+export const retourLivre = async (
+    req: Request <{id: string}>, 
+    res: Response <ApiResponse <Emprunt> | ApiResponseError>, 
+    next: NextFunction
+) => {
+
+    // Récupérer l'id de la requête, validation par middleware sur route
+    const { id } = req.params;
+
+    // id doit avoir un format numérique pour la requête
+    const idNumber = Number(id);
+
+    try{
+        // appel de la fonction du model
+        const retour = await empruntsModel.returnEmprunt(idNumber);
+        if (retour === null) {
+            res.status(400).json({ 
+                error: 'Retour impossible',
+                message: `Retour impossible de l'emprunt ${idNumber}, emprunt non trouvé`
+            });
+            return;
+        }
+        res.status(200).json({
+            success: true,
+            data: retour
+        });
+    } catch (error) {
+        next(error as Error); // Envoi de l'erreur au middleware suivant
+    }
+}
+
+export const getEmpruntById = async (
+    req: Request <{id: string}>, 
+    res: Response <ApiResponse <EmpruntAvecDetails> | ApiResponseError>, 
+    next: NextFunction
+) => {
+
+    // Récupérer l'id de la requête, validation par middleware sur route
+    const { id } = req.params;
+
+    // id doit avoir un format numérique pour la requête
+    const idNumber = Number(id);
+
+    try{
+        // appel de la fonction du model
+        const emprunt = await empruntsModel.findById(idNumber);
+        if (emprunt === null) {
+            res.status(400).json({ 
+                error: 'Emprunt non rencontré',
+                message: `Emprunt non rencontré avec id : ${id}`
+            });
+            return;
+        }
+        if (emprunt.date_retour_effective)
+        res.status(200).json({
+            success: true,
+            data: emprunt
+        });
+    } catch (error) {
+        next(error as Error); // Envoi de l'erreur au middleware suivant
+    }
+}
