@@ -3,10 +3,11 @@
 Application web complète de gestion de bibliothèque municipale, développée en full-stack en amont de ma formation Développeur Fullstack (CDA) AFPA Brest.
 
 [![React](https://img.shields.io/badge/React-18-blue)](https://react.dev)
-[![Node.js](https://img.shields.io/badge/Node.js-20-green)](https://nodejs.org)
-[![Express](https://img.shields.io/badge/Express-4.18-orange)](https://expressjs.com)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-purple)](https://postgresql.org)
+[![Node.js](https://img.shields.io/badge/Node.js-24-green)](https://nodejs.org)
+[![Express](https://img.shields.io/badge/Express-5.2-orange)](https://expressjs.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18.3-purple)](https://postgresql.org)
 [![Docker](https://img.shields.io/badge/Docker-Compose-blue)](https://docs.docker.com/compose)
+
 
 ## 🎯 Contexte métier
 
@@ -16,133 +17,70 @@ Centralise la gestion des **livres**, **adhérents** et **emprunts** avec suivi 
 **Fonctionnalités principales :**
 - Catalogue livres (CRUD + recherche/filtres)
 - Gestion adhérents (CRUD + historique emprunts)
-- Emprunts/retours avec règles métier (max 3livres/adhérent,sur 14 jours)
+- Emprunts/retours avec règles métier (max 3 livres/adhérent,sur 14 jours)
 - Indicateur visuel des retards
 - Interface responsive React
 
 ## 🏗️ Architecture technique
 
-3-tiers MVC | Front React | API REST | DB PostGreSQL | Docker
+```
+3-tiers MVC | Front React 18 | API REST Express | PostgreSQL 15 | Docker
+         ↓
+[React UI] → [Node/Express] → [PostgreSQL + Triggers métier]
+```
 
 
 ## 📁 Structure du projet
 
 **minilib**/
-
+│ 
 ├── **frontend**/ # React 18
-
-│ ├── **src**/
-
-│ │ ├── **components**/ # BookCard, MemberCard, Modal...
-
-│ │ ├── **pages**/ # Books, Members, Loans...
-
-│ │ └── **services**/ # api.js, bookService.js
-
+│ 
 ├── **backend**/ # Node.js / Express
-
-│ ├── **src**/
-
-│ │ ├── **controllers**/ # bookController.js
-
-│ │ ├── **routes**/ # bookRoutes.js
-
-│ │ ├── **models**/ # book.js
-
-│ │ └── **middleware**/
-
+│ 
 ├── **database**/ # PostgreSQL
-
-│ ├── schema.sql
-
-│ └── seed.sql
-
+│ 
 ├── docker-compose.yml
-
+│ 
 ├── .env.example
-
+│ 
 └── README.md
 
-## ⚙️ Installation
-Depuis le terminal  
+
+## ⚙️ Installation manuel
+Depuis le terminal
 
 1. **Cloner le dépôt**
-   ```
-   git clone https://github.com/Nif-dev/minilib-yoann-legoff.git
-   cd minilib
     ```
-2. **Backend (Node.js/Express)** 
+    git clone https://github.com/Nif-dev/minilib-yoann-legoff.git
+    cd minilib
+    ```
+
+2. **Database (PostgreSQL 18)**
+    ```
+    psql -U minilib_user -d minilib -f database/schema.sql
+    psql -U minilib_user -d minilib -f database/constraints.sql
+    ```
+
+
+3. **Backend (Node.js/Express)** 
     ``` 
     cd backend
     npm install
     npm run dev
     ```
 
-## 📚 Routes API – Livres
+## 📚 API REST - Aperçu
 
-**Toutes les routes de l’API Livres sont préfixées par `/api/v1/livres`**.  
+**Préfixe** : `/api/v1`
 
-### Catalogue principal
+| Domaine | GET | POST | PUT | DELETE |
+|---------|-----|------|-----|--------|
+| **Livres** | `/livres`<br>`/recherche?q=...` | `/livres` | `/livres/:id` | `/livres/:id` |
+| **Adhérents** | `/adherents`<br>`/adherents/:id` | `/adherents` | `/adherents/:id` | `/adherents/:id` (inactif) |
+| **Emprunts** | `/emprunts/adherent/:id` | `/emprunts` | `/emprunts/:id/retour` | - |
 
-- **GET /**  
-  Récupère **tous les livres**, avec filtres optionnels via query params (`genre`, `disponible`, etc.).  
-  Exemple :  
-  `GET /api/v1/livres?genre=Roman&disponible=true`
-
-- **GET /:id**  
-  Récupère les **détails d’un livre** par son identifiant.
-
-### Création / modification
-
-- **POST /**  
-  Crée un **nouveau livre** (données en JSON dans le corps de la requête).
-
-- **PUT /:id**  
-  Met à jour un livre existant (id en param, données en JSON dans le body).
-
-### Suppression
-
-- **DELETE /:id**  
-  Supprime un livre par son identifiant.
-
-### Recherche dédiée
-
-- **GET /recherche?q=...**  
-  Recherche des livres par **titre ou auteur** (query `q` obligatoire).  
-  Filtres optionnels :  
-  - `genre` (chaîne)  
-  - `disponible` (boolean, `true`/`false`)  
-  Exemple :  
-  `GET /api/v1/livres/recherche?q=heros&genre=Fantasy&disponible=true`
-
-## 👥 Routes API – Adhérents
-
-**Toutes les routes de l’API sont préfixées par `/api/v1/adherents`**.
-
-### Catalogue principal
-
-- **GET /**  
-  Récupère **tous les adhérents actifs**  
-
-
-- **GET /:id**  
-  Récupère les **détails d’un adhérent** par son identifiant.
-
-### Création / modification
-
-- **POST /**  
-  Crée un **nouvel adhérent** (données en JSON dans le corps de la requête).
-
-- **PUT /:id**  
-  Met à jour un adhérent existant (id en param, données en JSON dans le body).
-
-### Suppression*
-
-- **DELETE /:id**  
-  Rend inactif un adhérent par son identifiant.
-  **pas de suppression sur cette route*
-
-***
+**Validation** : Schémas DTO et validations côté serveur + **triggers DB** (double garde-fou)
 
 ## 👨‍💻 Auteur
 **Yoann Le Goff - Développeur Fullstack** en formation CDA AFPA Brest
