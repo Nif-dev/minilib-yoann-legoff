@@ -182,7 +182,7 @@ export const findDispoById = async (id: number)
 : Promise <boolean> => {
     try{
         const result: QueryResult = await pool.query(
-            'SELECT * FROM livres WHERE id = $1 AND dispo = true', 
+            'SELECT * FROM livres WHERE id = $1 AND disponible = true', 
             [id]
         );
         return (result.rowCount === 1) ;
