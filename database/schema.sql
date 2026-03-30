@@ -35,7 +35,7 @@ CREATE TABLE emprunts (
     livre_id            INTEGER             NOT NULL REFERENCES livres(id) ON DELETE SET NULL,      -- NULL = si livre supprimé, mais on garde une trace
     adherent_id         INTEGER             NOT NULL REFERENCES adherents(id) ON DELETE SET NULL,   -- NULL = si adherent supprimé
     date_emprunt        DATE                NOT NULL DEFAULT CURRENT_DATE,
-    date_retour_prevue  DATE                NOT NULL,
+    date_retour_prevue  DATE                NOT NULL DEFAULT CURRENT_DATE + 14,
     date_retour_effective DATE,             -- NULL = pas encore rendu
 
     CONSTRAINT chk_dates CHECK (date_retour_prevue >= date_emprunt)
