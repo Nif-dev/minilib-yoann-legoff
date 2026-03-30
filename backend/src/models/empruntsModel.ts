@@ -76,7 +76,13 @@ export const findAll = async ()
     }
 };
 
-
+/**
+* Accès au nombre d'emprunts d'un adhérent
+* 
+* @async
+* @param {number} adherentId - L'id de l'adherent
+* @returns {Promise<number>} - Le nombre d'emprunts
+*/
 export const countEmpruntByAdherent = async (adherentId: number)
 : Promise <number> => {
     try{
@@ -94,8 +100,8 @@ export const countEmpruntByAdherent = async (adherentId: number)
 /**
  * Création d'un nouvel emprunt
  * 
- * @param {CreateEmpruntDTO} newEmprunt 
- * @returns 
+ * @param {CreateEmpruntDTO} newEmprunt - Données de création d'un nouvel emprunt
+ * @returns {Promise<Emprunt>} - L'emprunt crée
  */
 export const create = async (newEmprunt: CreateEmpruntDTO)
 : Promise <Emprunt> => {
@@ -125,6 +131,13 @@ export const create = async (newEmprunt: CreateEmpruntDTO)
     }
 };
 
+/**
+* Accès à un emprunt par son id
+*
+* @async
+* @param {number} id - L'id de l'emprunt
+* @returns {Promise<EmpruntAvecDetails | null>} - L'emprunt ou null si non rencontré
+*/
 export const findById = async (id: number)
 : Promise <EmpruntAvecDetails | null> => {
     try{
@@ -158,7 +171,13 @@ export const findById = async (id: number)
     }
 };
 
-
+/**
+* Retourne un emprunt
+*
+* @async
+* @param {number} id - L'id de l'emprunt
+* @returns {Promise<Emprunt | null>} - L'emprunt ou null si non rencontré
+ */
 export const returnEmprunt = async (id: number)
 : Promise <Emprunt | null> => {
     try{
