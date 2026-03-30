@@ -75,7 +75,7 @@ RETURNS TRIGGER AS $$
 $$
 LANGUAGE plpgsql;
 
--- Trigger BEFORE INSERT : vérifie + rend indisponible
+-- un livre devient indisponible si emprunté
 DROP TRIGGER IF EXISTS trigger_livre_indisponible_emprunt ON emprunts;
 CREATE TRIGGER trg_livre_indisponible_emprunt
     BEFORE INSERT ON emprunts
