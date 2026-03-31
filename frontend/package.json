@@ -1,13 +1,16 @@
 {
-  "name": "frontend",
-  "private": true,
-  "version": "0.0.0",
+  "name": "minilib-frontend",
+  "version": "0.0.1",
+  "author": "Nif-dev",
   "type": "module",
+  "private": true,
   "scripts": {
-    "dev": "vite",
+    "start": "vite",
+    "dev": "vite --mode dev",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "check": "tsc --noEmit && eslint .",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified...YET !\" && exit 1"
   },
   "dependencies": {
     "react": "^19.2.4",
