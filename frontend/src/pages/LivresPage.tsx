@@ -2,7 +2,7 @@
 //? Page de gestion des livres
 
 import { useState, useEffect } from 'react';
-import { getLivres } from '../services/api/livres';
+import { getLivres } from '../services/api/livreService';
 import type { Livre } from '../types/index';
 import ListeLivres from '../components/ListeLivres';
 

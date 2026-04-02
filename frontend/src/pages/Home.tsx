@@ -4,7 +4,7 @@
 import { Link } from "react-router-dom";
 import { ApiTestButton } from "../components/ApiTestButton";
 
-import { getLivres } from "../services/api/livres";
+import { getLivres } from "../services/api/livreService";
 
 const Home = () => (
     <section className="section">
