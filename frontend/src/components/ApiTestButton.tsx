@@ -1,8 +1,10 @@
-// src/components/ApiTestButton.tsx
+//% frontend/src/components/ApiTestButton.tsx
+//? Bouton de test de l'API
+
 import { useState, useCallback } from 'react';
 
 interface ApiTestButtonProps<T> {
-  serviceFn: () => Promise<T>;  // Ton service (getAdherents, etc.)
+  serviceFn: () => Promise<T>;  // Le service API appelé (getAdherents, etc.)
   label?: string;
   successMsg?: string;
   className?: string;
@@ -23,15 +25,15 @@ export const ApiTestButton = <T,>({
     
     try {
       console.log(`🚀 Test ${label}...`);
-      const data: T = await serviceFn();  // Exécute service passé !
+      const data: T = await serviceFn();
       
-      console.table(data);  // Tableau console
-      console.log(`✅ ${successMsg} →`, data);
+      console.table(data);
+      console.log(`${successMsg} →`, data);
       
       alert(`${successMsg} (${(data as []).length || 1} items)`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Erreur inconnue';
-      console.error(`❌ ${label}:`, msg);
+      console.error(`Erreur ${label}:`, msg);
       setError(msg);
     } finally {
       setLoading(false);

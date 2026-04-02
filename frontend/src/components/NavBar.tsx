@@ -1,12 +1,12 @@
 //% frontend/src/components/NavBar.tsx
 //? Barre de navigation
 
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
 const NavBar = () => {
     const [isActive, setIsActive] = useState(false);
-    const navigate = useNavigate();
+
 
     return (
         <nav className="navbar is-fixed-top" role="navigation" aria-label="main navigation">
@@ -23,16 +23,13 @@ const NavBar = () => {
 
             <div className={`navbar-menu ${isActive ? 'is-active' : ''}`}>
                 <div className="navbar-start">
-                    <a href='/' className="navbar-item" >
+                    <Link to="/" className="navbar-item" >
                         <img src="/favicon.ico" alt="favicon renard Nif"/>
-                    </a>
+                    </Link>
                 </div>
                 <div className="navbar-item is-flex is-justify-content-center">
-                    <button
-                        className="button"
-                        onClick={() => navigate('/app')}>
-                        Navigation - 404 - pour le moment
-                    </button>
+                    <Link to="/livres" className="button navbar-item">Livres</Link>
+                    <Link to="/404" className="button navbar-item">404 temp</Link> 
                 </div>
                 <div className="navbar-end">
                     <div className="navbar-item">
