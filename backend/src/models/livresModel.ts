@@ -48,7 +48,7 @@ export const findAll = async (filtres: FiltresRechercheLivres)
     let idx = 1;
 
     if (filtres.genre !== undefined) {
-        conditions.push(`genre = $${idx}`);
+        conditions.push(`genre ILIKE $${idx}`);
         valeurs.push(filtres.genre);
         idx++;
     }
@@ -61,12 +61,13 @@ export const findAll = async (filtres: FiltresRechercheLivres)
     }
 
     if (filtres.recherche !== undefined) {
-        conditions.push(`titre ILIKE $${idx} OR auteur ILIKE $${idx}`);
+        conditions.push(`(titre ILIKE $${idx} OR auteur ILIKE $${idx})`);
         valeurs.push(`%${filtres.recherche}%`);
         idx++;
     }
 
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')} ` : '';
+    console.log("🚀 ~ findAll ~ where:", where)
     // Envoi de la requête SQL dynamiquement
     try{
         const result: QueryResult = await pool.query(
