@@ -20,8 +20,11 @@ export default function LivreCard({ livre, onSupprimer }: LivreCardProps) {
             <div className="card-content">
                 <p className="title is-4 mb-2">{livre.titre}</p>
                 <p className="subtitle is-6">
-                    {livre.auteur} — {livre.annee}
+                    {livre.auteur} — {livre.annee ? livre.annee : ""}
                 </p>
+                {livre.genre &&
+                    (<p className="subtitle is-6">{livre.genre}</p>)
+                }
                 <DisponibiliteBadge disponibilite={livre.disponible} />
             </div>
             

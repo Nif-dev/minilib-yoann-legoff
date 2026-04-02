@@ -11,8 +11,7 @@ interface ListeLivresProps {
 export default function ListeLivres({ livres }: ListeLivresProps) {
 
     if (!livres?.length) {
-        console.log(livres)
-        return <p>Aucun livre dans le catalogue</p>;
+        return <p>Aucun livre pour cette recherche</p>;
     }
 
     return (

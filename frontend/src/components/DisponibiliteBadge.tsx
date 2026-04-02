@@ -11,7 +11,7 @@ export default function DisponibiliteBadge( disponibilite: DisponibiliteBadgePro
 
     return (
         <span style={disponibilite.disponibilite?{color: "green"}: {color:"red"}}>
-            {disponibilite.disponibilite ? 'Disponible' : 'Indisponible'}
+            {disponibilite.disponibilite ? 'Disponible' : 'Emprunté'}
         </span>
     );
 }
