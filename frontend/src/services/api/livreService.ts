@@ -5,7 +5,10 @@ import type { ApiResponse, Livre, CreateLivreDTO, FiltresRechercheLivres } from 
 import { apiRequest } from './api';
 
 //? Usage dans un composant :
+//* exemple :
 // const reponse = await getLivres({ genre: "roman", disponible: true });
+//* la réponse est de type ApiResponse<T>, ici T = Livre[], 
+//* ce qui permet d'accéder à tout les éléments de la réponse de l'API
 // const livres = reponse.data;
 // const totalLivres = reponse.total;
 
@@ -14,11 +17,11 @@ import { apiRequest } from './api';
  * @param { FiltresRechercheLivres } filtres - genre, disponible, recherche
  */
 export async function getLivres(filtres: FiltresRechercheLivres = {}): Promise<ApiResponse<Livre[]>> {
-    // Construire les query params depuis les filtres non-undefined
+    // Construire les query params depuis les filtres 'non-undefined'
     const params = new URLSearchParams();
-    if (filtres.genre) params.append("genre", filtres.genre);
-    if (filtres.recherche) params.append("recherche", filtres.recherche);
-    if (filtres.disponible !== undefined)
+    if (filtres.genre)      params.append("genre", filtres.genre);
+    if (filtres.recherche)  params.append("recherche", filtres.recherche);
+    if (filtres.disponible  !== undefined)
     params.append("disponible", String(filtres.disponible));
 
     const query = params.toString() ? `?${params.toString()}` : "";
