@@ -2,15 +2,9 @@
 //? Page de gestion des livres
 
 import { useState, useEffect } from 'react';
-import type { Livre } from '../types/api/index';
+import { getLivres } from '../services/api/livres';
+import type { Livre } from '../types/index';
 import ListeLivres from '../components/ListeLivres';
-
-interface tempApiResponse<T> {
-    data: T;
-    message?: string;
-    success: boolean;
-    total?: number;
-}
 
 export default function LivresPage() {
 
@@ -23,12 +17,9 @@ export default function LivresPage() {
             // async directement dans useEffect : on déclare une fonction async
             try {
                 setChargement(true);
-                const response = await fetch("http://localhost:5000/api/v1/livres");
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP : ${response.status}`);
-                }
-                const data: tempApiResponse<Livre[]> = await response.json();
-                    setLivres(data.data);
+                const response = await getLivres();
+                const data: Livre[] = response.data;
+                setLivres(data);
             
             } catch (err) {
                 setErreur(err instanceof Error ? err.message : "Erreur inconnue");
