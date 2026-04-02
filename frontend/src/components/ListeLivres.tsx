@@ -1,7 +1,7 @@
 //% frontend/src/components/ListeLivres.tsx
 //? Composant de liste de livres
 
-import type { Livre } from "../types/api/index";
+import type { Livre } from "../types/index";
 import LivreCard from "./LivreCard";
 
 interface ListeLivresProps {

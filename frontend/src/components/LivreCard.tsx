@@ -2,7 +2,7 @@
 //? Carte de présentation d'un livre
 
 // On réutilise l'interface Livre du backend — cohérence garantie
-import type { Livre } from "../types/api/index";
+import type { Livre } from "../types/index";
 
 import DisponibiliteBadge from "./DisponibiliteBadge";
 
