@@ -1,9 +1,10 @@
 //% frontend/src/pages/Home.tsx
 //? Page d'accueil de l'application MiniLib
 
+import { Link } from "react-router-dom";
 import { ApiTestButton } from "../components/ApiTestButton";
 
-import { getAdherents } from "../services/api/adherents";
+import { getLivres } from "../services/api/livres";
 
 const Home = () => (
     <section className="section">
@@ -12,10 +13,21 @@ const Home = () => (
 
 {/* Bouton pour tester l'API - spécifier le service et le message de succès */}
         <ApiTestButton 
-            serviceFn={getAdherents}
-            successMsg="API Adhérents OK !" 
-            label="Test adhérents"/>
+            serviceFn={getLivres}
+            successMsg="API Livres OK !" 
+            label="Test getLivres">
+        </ ApiTestButton>
+        
+        <br />
+        
+        <Link 
+            to="/livres" 
+            className="button is-primary mt-6">
+            Gestion des livres
+        </Link> 
+
     </section>
+
 );
 
 export default Home;
