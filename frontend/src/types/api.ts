@@ -3,7 +3,7 @@
 
 /**
  * Wrapper / Interface pour toutes les réponses en sorties de l'API
- * (success, data, message, error)
+ * (success, data, message, total, error, champs)
 *
 * @interface ApiResponse
 * @template T - Type de donnée attendu

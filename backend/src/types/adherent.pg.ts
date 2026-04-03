@@ -1,6 +1,9 @@
 //% backend/src/types/adherent.pg.ts
 //? Typage des données PostgreSQL pour la table adherents
 
+//! Test de type pour la sortie directe de la bdd, avant transformation en DTO ( plutot que données brutes ? )
+//! NON IMPLEMENTÉ
+
 // Interface basique de la table sur PostgreSQL
 // sert de base pour les autres interfaces plus légères/spécialisées
 //* usage sur les requêtes ( repository / model )
