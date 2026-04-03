@@ -41,33 +41,32 @@ export const create = async (newLivre: CreateLivreDTO)
  * @param {FiltresRechercheLivres} filtres - Critères de filtrage
  * @returns {Promise<Livre[]> } - Tableau de livres  
  */
-export const findAll = async (filtres: FiltresRechercheLivres)
+export const findAll = async (filtres?: FiltresRechercheLivres)
 : Promise<Livre[]> => {
     const conditions: string[] = [];
     const valeurs: any[] = [];
     let idx = 1;
 
-    if (filtres.genre !== undefined) {
+    if (filtres?.genre !== undefined) {
         conditions.push(`genre ILIKE $${idx}`);
         valeurs.push(filtres.genre);
         idx++;
     }
 
-    if (filtres.disponible !== undefined) {
+    if (filtres?.disponible !== undefined) {
         const dispo = filtres.disponible === 'true' || filtres.disponible === true;
         conditions.push(`disponible = $${idx}`);
         valeurs.push(dispo);
         idx++;
     }
 
-    if (filtres.recherche !== undefined) {
+    if (filtres?.recherche !== undefined) {
         conditions.push(`(titre ILIKE $${idx} OR auteur ILIKE $${idx})`);
         valeurs.push(`%${filtres.recherche}%`);
         idx++;
     }
 
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')} ` : '';
-    console.log("🚀 ~ findAll ~ where:", where)
     // Envoi de la requête SQL dynamiquement
     try{
         const result: QueryResult = await pool.query(

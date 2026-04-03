@@ -8,7 +8,7 @@ const router = express.Router();
 import * as controller from '../controllers/livresController.ts';
 
 import validateLivre from '../middleware/validateLivre.ts';
-import validateRecherche from '../middleware/validateRecherche.ts';
+// import validateRecherche from '../middleware/validateRecherche.ts';
 
 import validateIdParam from '../middleware/validateIdParam.ts';
 import asyncWrapper from '../middleware/asyncWrapper.ts';
@@ -21,7 +21,7 @@ router.get('/', asyncWrapper(controller.getLivres));
 
 // Route de recherche (OPTIONNELS: filtres -> query params)
 // GET /api/v1/livres/recherche?q=clean
-router.get('/recherche', validateRecherche, asyncWrapper(controller.queryLivres));
+router.get('/recherche', asyncWrapper(controller.queryLivres));
 
 // Détails d'un livre (id en param)
 // GET /api/v1/livres/:id

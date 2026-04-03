@@ -2,24 +2,26 @@
 //? Middleware de validation d'ID dans req.params.id
 
 import { Request, Response, NextFunction } from 'express';
-import { ApiResponseError } from '../types/index.ts';
+import { ApiResponse } from '../types/index.ts';
+import { ERRORS } from '../constants/errors.ts';
 
 /**
  * Middleware de validation d'ID dans req.params.id
  * Vérifie : existence + entier positif
  * 
  * @param { Request } req - Requête Express
- * @param { Response <ApiResponseError> } res - Résponse Express
+ * @param { Response <ApiResponse<>> } res - Réponse Express
  * @param { NextFunction } next - Prochain middleware
  */
-const validateIdParam = (req: Request, res: Response <ApiResponseError>, next: NextFunction) => {
+const validateIdParam = (req: Request, res: Response <ApiResponse<null>>, next: NextFunction) => {
     const { id } = req.params;
 
     // 1) ID obligatoire
     if (!id) {
         res.status(400).json({
-            error: 'Paramètre "id" manquant',
-            message: 'Paramètre "id" obligatoire'
+            success: false,
+            error: ERRORS.REQUIRED_FIELD('id').error,
+            message: ERRORS.REQUIRED_FIELD('id').message
         });
         return;
     }
@@ -28,8 +30,10 @@ const validateIdParam = (req: Request, res: Response <ApiResponseError>, next: N
     const parsedId = Number(id);
     if (!Number.isInteger(parsedId) || parsedId <= 0) {
         res.status(400).json({
-            error: 'Paramètre "id" invalide',
-            message: 'Paramètre "id" doit être un entier positif non nul'
+            success: false,
+            error: ERRORS.INVALID_FIELD('id').error,
+            message: ERRORS.INVALID_FIELD('id').message,
+            champs: ['Paramètre "id" doit être un entier positif non nul']
         });
         return;
     }

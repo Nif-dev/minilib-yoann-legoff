@@ -4,36 +4,52 @@
 
 // Import des types api et model
 import { Request, Response, NextFunction } from 'express';
-import { ApiResponse, ApiResponseError, Livre, FiltresRechercheLivres, CreateLivreDTO, UpdateLivreDTO }  from '../types/index.ts';
+import { ApiResponse, Livre, FiltresRechercheLivres, CreateLivreDTO, UpdateLivreDTO }  from '../types/index.ts';
+import { ERRORS } from '../constants/errors.ts';
 
 // Import des fonctions du model
 import * as livresModel from '../models/livresModel.ts';
 
 /**
- * Récupère tous les livres avec filtres optionnels via query params
- * GET /api/v1/livres?genre=informatique&disponible=true&recherche=clean
+ * Récupère tous les livres 
+ * GET /api/v1/livres
  *
- * @param { Request <FiltresRechercheLivres> } req - Requête Express - filtres optionnels
- * @param { Response <ApiResponse <Livre[]> | <ApiResponseError> > } res - Réponse Express
+ * @param { Request } req - Requête Express - filtres optionnels
+ * @param { Response <ApiResponse <Livre[]>> } res - Réponse Express
  * @param { NextFunction } next - Fonction de rappel / middleware gestion des erreurs globales
  */
 export const getLivres = async (
-    req: Request <FiltresRechercheLivres>,
-    res: Response <ApiResponse<Livre[] | ApiResponseError>>,
+    req: Request,
+    res: Response <ApiResponse <Livre[]>>,
     next: NextFunction
 ) => {
     
     try{
-        // req.query = { genre: 'informatique', disponible: true } depuis l'url ( ?genre=...&disponible=true )
-        const filtres: FiltresRechercheLivres = req.query || {};
-        
-        // appel de la fonction du model avec les filtres optionnels
-        const livres = await livresModel.findAll(filtres);
+        // appel de la fonction du model 
+        const livres: Livre[] = await livresModel.findAll();
+
+        if (!livres){
+            res.status(404).json({ 
+                success: false,
+                error: ERRORS.RESOURCES_NOT_FOUND('livres').error,
+                message: ERRORS.RESOURCES_NOT_FOUND('livres').message,
+            });
+            return;
+        }
+        if (livres.length === 0) {
+            res.status(200).json({ 
+                success: true,
+                total: livres.length,        // 0
+                message: 'Pas de livres trouvés',
+                data: livres,                // []
+            });
+            return;
+        }
         res.status(200).json({
             success: true,
             total: livres.length,
             data: livres,
-            });
+        });
     
     } catch (error) {
         next(error as Error); // Envoi de l'erreur au middleware suivant
@@ -44,45 +60,46 @@ export const getLivres = async (
  * Route de recherche par auteur ou titre ( 1 champ de recherche obligatoire -> query params)
  * GET /api/v1/livres/recherche?q=antoine
  *
- * @param { Request <Pick<FiltresRechercheLivres, 'recherche'>> } req - Requête Express - champ de recherche obligatoire
- * @param { Response <ApiResponse <Livre[]> | ApiResponseError> } res - Réponse Express 
+ * @param { Request <FiltresRechercheLivres> } req - Requête Express - champ de recherche obligatoire
+ * @param { Response <ApiResponse <Livre[]>> } res - Réponse Express 
  * @param { NextFunction } next - Fonction de rappel / middleware gestion des erreurs globales
  */
 export const queryLivres = async (
-    req: Request <Pick<FiltresRechercheLivres, 'recherche'>>, 
-    res: Response <ApiResponse<Livre[]> | ApiResponseError>,
+    req: Request <FiltresRechercheLivres>, 
+    res: Response <ApiResponse <Livre[]>>,
     next: NextFunction
 ) => {
 
     try{
+        
+        const filtres: FiltresRechercheLivres = req.query;
+        // appel de la fonction du model
+        
+        const results = await livresModel.findAll(filtres);
 
-        // req.query = { q: 'antoine' } avec url ( /recherche?q=antoine )
-        const { q } = req.query;
-        //* validation supplementaire de la requête , deja traité par middleware mais {q: string} dans le scope
-        if (!q || q === '' || typeof q !== 'string') {
-            res.status(400).json({ 
-                error: 'Champ(s) manquant(s)',
-                champs: ['Recherche obligatoire : q=...'],
+        if (!results) {
+            res.status(404).json({ 
+                success: false,
+                error: ERRORS.RESOURCES_NOT_FOUND('livres').error,
+                message: ERRORS.RESOURCES_NOT_FOUND('livres').message,
             });
             return;
         }
-        
-        // appel de la fonction du model
-        
-        const recherche = q.toLowerCase();
-        const results = await livresModel.findAll({ recherche: recherche });
+
         if (results.length === 0) { // aucun livre trouvé - résultat bon mais vide
             res.status(200).json({ 
-                success: false,
-                data: [],
-                message: `Aucun livre pour :  ${recherche} `,
+                success: true,
+                total: results.length,
+                message: `Aucun livre pour avec ces filtres.`,
+                champs: Object.keys(filtres),       // champs de recherche pk pas ?
+                data: results,
             });
             
         } else {
             res.status(200).json({ 
                 success: true,
-                data: results,
                 total: results.length,
+                data: results,
             });
         }
     
@@ -99,11 +116,11 @@ export const queryLivres = async (
  * GET /api/v1/livres/:id
  *
  * @param { Request <{ id: string }> } req - Requête Express
- * @param { Response <ApiResponse <Livre> | ApiResponseError> } res - Résponse Express
+ * @param { Response <ApiResponse <Livre>> } res - Réponse Express
  */
 export const getLivreById = async (
     req: Request <{ id: string }>, 
-    res: Response <ApiResponse<Livre> | ApiResponseError>, 
+    res: Response <ApiResponse<Livre>>, 
     next: NextFunction
 ) => {
 
@@ -116,17 +133,18 @@ export const getLivreById = async (
 
     // appel de la fonction du model
         const livre = await livresModel.findById(idNumber);
-        if (livre) {
-            res.status(200).json({ 
-                success: true,
-                data: livre
-            });
-        } else {
+        if (!livre) {
             res.status(404).json({ 
-                error: 'Livre non trouvé',
-                message: `Livre non rencontré avec id : ${id}`
+                success: false,
+                error: ERRORS.RESOURCE_NOT_FOUND_ID('livre', id).error,
+                message: ERRORS.RESOURCE_NOT_FOUND_ID('livre', id).message
             });
+            return;
         }
+        res.status(200).json({ 
+            success: true,
+            data: livre,
+        });
     
     } catch (error) {
         next(error as Error); // Envoi de l'erreur au middleware suivant
@@ -139,12 +157,12 @@ export const getLivreById = async (
  * Body JSON attendu : CreateLivreDTO { isbn, titre, auteur, annee, genre }
  *
  * @param { Request <CreateLivreDTO> } req - Requête Express
- * @param { Response <ApiResponse <Livre> | ApiResponseError> } res - Résponse Express
+ * @param { Response <ApiResponse <Livre>> } res - Réponse Express
  * @param { NextFunction } next - Fonction de rappel / middleware gestion des erreurs globales
  */
 export const createLivre = async (
     req: Request <CreateLivreDTO>, 
-    res: Response <ApiResponse<Livre> | ApiResponseError>,
+    res: Response <ApiResponse<Livre>>,
     next: NextFunction
 ) => {
     
@@ -152,9 +170,10 @@ export const createLivre = async (
         //* Vérification isbn doublons
         const livre: Livre | null = await livresModel.findByISBN(req.body.isbn);
         if (livre) {    // doublon d'isbn 
-            res.status(400).json({ 
-                error: 'ISBN doublon',
-                message: `ISBN ${req.body.isbn} doublon, livre déjà existant id : ${livre.id}` ,
+            res.status(409).json({ 
+                success: false,
+                error: ERRORS.DUPLICATE('livre').error,
+                message: ERRORS.DUPLICATE('livre').message + ` - ISBN ${req.body.isbn} en doublon` ,
             });
             return;
         }
@@ -169,9 +188,20 @@ export const createLivre = async (
         }
         // appel de la fonction du model
         const nouveau = await livresModel.create(createData);
+
+        if (!nouveau) {
+            res.status(500).json({ 
+                success: false,
+                error: ERRORS.RESOURCE_NOT_CREATED('livre').error,
+                message: ERRORS.RESOURCE_NOT_CREATED('livre').message,
+            });
+            return;
+        }
+
         res.status(201).json({
             success: true,
-            data: nouveau
+            message: 'Livre créé.',
+            data: nouveau,
         });
     
     } catch (error) {
@@ -185,13 +215,13 @@ export const createLivre = async (
  * PUT /api/v1/livres/:id
  *
  * @param { Request <{ id: string }, UpdateLivreDTO> } req - Requête Express
- * @param { Response <ApiResponse <Livre> | ApiResponseError> } res - Réponse Express
+ * @param { Response <ApiResponse <Livre>> } res - Réponse Express
  * @param { NextFunction } next - Fonction de rappel / middleware gestion des erreurs globales
  */
 
 export const updateLivre = async (
     req: Request <{ id: string }, UpdateLivreDTO>, 
-    res: Response <ApiResponse <Livre> | ApiResponseError>,
+    res: Response <ApiResponse <Livre>>,
     next: NextFunction
 ) => {
 
@@ -208,8 +238,9 @@ export const updateLivre = async (
         const misAJour = await livresModel.update(idNumber, misAJourData);
         if (misAJour == null) {
         res.status(404).json({ 
-                error: 'Livre non modifié',
-                message: `Livre non rencontré avec id : ${id} , mise à jour impossible`
+                success: false,
+                error: ERRORS.RESOURCE_NOT_FOUND_ID('livre', id).error,
+                message: ERRORS.RESOURCE_NOT_FOUND_ID('livre', id).message + ` - mise à jour impossible`
             });
         } else {
             res.status(200).json({
@@ -228,12 +259,12 @@ export const updateLivre = async (
  * DELETE /api/v1/livres/:id
  *
  * @param { Request <{ id: string }> } req - Requête Express
- * @param { Response <ApiResponse <null> | ApiResponseError> } res - Réponse Express
+ * @param { Response <ApiResponse <null>> } res - Réponse Express
  * @param { NextFunction } next - Fonction de rappel / middleware gestion des erreurs globales
  */
 export const deleteLivre = async (
     req: Request <{ id: string }>, 
-    res: Response <ApiResponse <null> | ApiResponseError>,
+    res: Response <ApiResponse <null>>,
     next: NextFunction
 ) => {
 
@@ -248,18 +279,27 @@ export const deleteLivre = async (
         // appel de la fonction du model
         const livre = await livresModel.findById(idNumber);
         if (livre) {
-            await livresModel.remove(idNumber);
+            const deleted =await livresModel.remove(idNumber);
+
+            if (!deleted) {
+                res.status(500).json({ 
+                    success: false,
+                    error: ERRORS.RESOURCE_NOT_DELETED('livre').error,
+                    message: ERRORS.RESOURCE_NOT_DELETED('livre').message
+                });
+                return;
+            }
             // res.status(204).json(); 
-            //* JSON vide sinon bruno qui attend un retour va boucler... meme avec 204 (no content) - choix 200 > 204
+            //* - choix 200 > 204 
             res.status(200).json({
                 success: true,
-                data: null,
                 message: `Livre supprimé avec id : ${id}`
             });
         } else {
             res.status(404).json({ 
-                error: 'Livre non supprimé',
-                message: `Livre non rencontré avec id : ${id}, suppression impossible`
+                success: false,
+                error: ERRORS.RESOURCE_NOT_FOUND_ID('livre', idNumber).error,
+                message: ERRORS.RESOURCE_NOT_FOUND_ID('livre', idNumber).message + ` - suppression impossible`
             });
         }
     
