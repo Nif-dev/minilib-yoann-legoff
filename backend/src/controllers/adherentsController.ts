@@ -4,7 +4,8 @@
 
 // Import des types et fonctions du model
 import { Request, Response, NextFunction } from 'express';
-import { ApiResponse, ApiResponseError, Adherent, CreateAdherentDTO, UpdateAdherentDTO }  from '../types/index.ts';
+import { ApiResponse, Adherent, CreateAdherentDTO, UpdateAdherentDTO }  from '../types/index.ts';
+import { ERRORS } from '../constants/errors.ts';
 
 // Import des fonctions du model
 import * as adherentsModel from '../models/adherentsModel.ts';
@@ -14,24 +15,41 @@ import * as adherentsModel from '../models/adherentsModel.ts';
 * GET /api/v1/adherents
 * 
 * @param { Request } req - Requête Express 
-* @param { Response <ApiResponse <Adherent[]> | ApiResponseError>} res - Résponse Express
+* @param { Response <ApiResponse <Adherent[]>>} res - Réponse Express
 * @param { NextFunction } next - Fonction de rappel / middleware gestion des erreurs globales
 */
 export const getAdherents = async (
     req: Request, 
-    res: Response <ApiResponse <Adherent[]> | ApiResponseError>, 
+    res: Response <ApiResponse <Adherent[]>>, 
     next: NextFunction
 ) => {
     
     try{
         // appel de la fonction du model
         const adherents: Adherent[] = await adherentsModel.findAll();
+
+        if (!adherents) {
+            res.status(404).json({ 
+                success: false,
+                error: ERRORS.RESOURCES_NOT_FOUND('adhérent').error,
+                message: ERRORS.RESOURCES_NOT_FOUND('adhérent').message
+            }); 
+            return;
+        }
+        if (adherents.length === 0) {
+            res.status(200).json({ 
+                success: true,
+                total: adherents.length,    // 0
+                message: 'Aucun adhérent actif',
+                data: adherents,            // []
+            }); 
+            return;
+        }
         res.status(200).json({ 
             success: true,
             total: adherents.length,
             data: adherents,
         });
-    
     } catch (error) {
         next(error as Error); // Envoi de l'erreur au middleware suivant
     }
@@ -42,12 +60,12 @@ export const getAdherents = async (
 * GET /api/v1/adherents/:id
 *
 * @param { Request< { id: string } > } req - Requête Express 
-* @param { Response <ApiResponse <Adherent | null> | ApiResponseError>} res - Réponse Express
+* @param { Response <ApiResponse <Adherent | null>>} res - Réponse Express
 * @param { NextFunction } next - Fonction de rappel / middleware gestion des erreurs globales
 */
 export const getAdherentById = async (
     req: Request< { id: string } >, 
-    res: Response <ApiResponse <Adherent | null> | ApiResponseError>,
+    res: Response <ApiResponse <Adherent | null>>,
     next: NextFunction
 ) => {
     
@@ -62,8 +80,9 @@ export const getAdherentById = async (
         const adherents = await adherentsModel.findById(idNumber);
         if (!adherents) {
             res.status(404).json({ 
-                error: 'Adhérent non trouvé',
-                message: `Adhérent non rencontré avec id : ${id}`
+                success: false,
+                error: ERRORS.RESOURCE_NOT_FOUND_ID('adhérent', id).error,
+                message: ERRORS.RESOURCE_NOT_FOUND_ID('adhérent', id).message
             });
             return;
         }
@@ -83,12 +102,12 @@ export const getAdherentById = async (
 * Body JSON attendu : { nom, prenom, email }
 *
 * @param { Request <CreateAdherentDTO> } req - Requête Express 
-* @param { Response <ApiResponse <Adherent> | ApiResponseError>} res - Réponse Express
+* @param { Response <ApiResponse <Adherent>>} res - Réponse Express
 * @param { NextFunction } next - Fonction de rappel / middleware gestion des erreurs globales
 */
 export const createAdherent = async (
     req: Request <CreateAdherentDTO>, 
-    res: Response <ApiResponse <Adherent> | ApiResponseError>,
+    res: Response <ApiResponse <Adherent>>,
     next: NextFunction
 ) => {
 
@@ -107,20 +126,29 @@ export const createAdherent = async (
         const doublonEmail: Adherent | null = await adherentsModel.findByEmail(emailCheck);
         if (doublonEmail) {
             res.status(409).json({
-                error: 'Email déjà utilisé',
-                message: `Doublon email : ${nouveauData.email}`,
+                success: false,
+                error: ERRORS.DUPLICATE('email').error,
+                message: ERRORS.DUPLICATE('email').message,
             });
             return;
         }
         // appel de la fonction du model
         const nouveau: Adherent = await adherentsModel.create(nouveauData);
+
+        if (!nouveau) {
+            res.status(500).json({ 
+                success: false,
+                error: ERRORS.RESOURCE_NOT_CREATED('adhérent').error,
+                message: ERRORS.RESOURCE_NOT_CREATED('adhérent').message
+            });
+            return;
+        }
         res.status(201).json({
             success: true,
             data: nouveau
         });
     
     } catch (error) {
-        console.log('[CTRL] Erreur lors de la création d\'un adhérent', error);
         return next(error as Error); // Envoi de l'erreur au middleware suivant
     }
 };
@@ -131,12 +159,12 @@ export const createAdherent = async (
 * Body JSON attendu : { nom, prenom, email }
 *
 * @param { Request < { id: string }, UpdateAdherentDTO> } req - Requête Express 
-* @param { Response <ApiResponse <Adherent> | ApiResponseError>} res - Réponse Express
+* @param { Response <ApiResponse <Adherent>>} res - Réponse Express
 * @param { NextFunction } next - Fonction de rappel / middleware gestion des erreurs globales
 */
 export const updateAdherent = async (
     req: Request < { id: string }, UpdateAdherentDTO >, 
-    res: Response,
+    res: Response<ApiResponse<Adherent>>,
     next: NextFunction
 ) => {
 
@@ -145,7 +173,7 @@ export const updateAdherent = async (
 
     // id doit avoir un format numérique pour la requête
     const idNumber = Number(id);
-    
+
     // Récupérer les données de la requête
     const misAJourData: UpdateAdherentDTO = {
         nom: req.body.nom,
@@ -158,8 +186,9 @@ export const updateAdherent = async (
         const misAJour: Adherent | null = await adherentsModel.update(idNumber, misAJourData);
         if (misAJour === null) {
             res.status(404).json({
-                error: 'Adhérent non rencontré',
-                message: `Adhérent non rencontré avec id : ${id}, mise à jour impossible`
+                success: false,
+                error: ERRORS.RESOURCE_NOT_FOUND_ID('adhérent', idNumber).error,
+                message: ERRORS.RESOURCE_NOT_FOUND_ID('adhérent', idNumber).message + ` , mise à jour impossible`
             });
         } else {
             res.status(200).json({
@@ -180,11 +209,11 @@ export const updateAdherent = async (
 * DELETE /api/v1/adherents/:id
 *
 * @param { Request } req - Requête Express 
-* @param { Response <ApiResponse <null> | ApiResponseError>} res - Résponse Express
+* @param { Response <ApiResponse <null>>} res - Réponse Express
 */
 export const deleteAdherent = async (
     req: Request, 
-    res: Response, 
+    res: Response<ApiResponse<null>>, 
     next: NextFunction
 ) => {
 
@@ -199,9 +228,11 @@ export const deleteAdherent = async (
             const supprime: Adherent | null = await adherentsModel.desactiver(idNumber);
             if (supprime === null) {
                 res.status(404).json({
-                    error: 'Adhérent non rencontré',
-                    message: `Adhérent non rencontré avec id : ${id}, désactivation impossible`
+                    success: false,
+                    error: ERRORS.RESOURCE_NOT_FOUND_ID('adhérent', idNumber).error,
+                    message: ERRORS.RESOURCE_NOT_FOUND_ID('adhérent', idNumber).message + ' , désactivation impossible'
                 });
+                return;
             }
             res.status(200).json({
                 success: true,
