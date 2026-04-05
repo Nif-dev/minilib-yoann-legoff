@@ -27,6 +27,25 @@ export async function getLivres(filtres: FiltresRechercheLivres = {}): Promise<A
     const query = params.toString() ? `?${params.toString()}` : "";
     return apiRequest<Livre[]>(`/livres${query}`);
 }
+
+//TODO identifier selon cas d'usage la diff FRONT et BACK entre ces 2 approches
+/**
+ * Récupère les livres par une recherche, filtres
+ * @param { FiltresRechercheLivres } filtres - genre, disponible, recherche
+ */
+export async function queryLivres(filtres: FiltresRechercheLivres = {}): Promise<ApiResponse<Livre[]>> {
+// Construire les query params depuis les filtres 'non-undefined'
+    const params = new URLSearchParams();
+    if (filtres.genre)      params.append("genre", filtres.genre);
+    if (filtres.recherche)  params.append("recherche", filtres.recherche);
+    if (filtres.disponible  !== undefined)
+    params.append("disponible", String(filtres.disponible));
+
+    const query = params.toString() ? `?${params.toString()}` : "";
+    return apiRequest<Livre[]>(`/livres/recherche${query}`);
+}
+
+
 /**
  * Récupère un livre par son id.
  */
