@@ -70,6 +70,14 @@ Depuis le terminal
     npm run dev
     ```
 
+
+3. **Frontend (React.ts)** 
+    ``` 
+    cd frontend
+    npm install
+    npm run dev
+    ```
+
 ## 📚 API REST - Aperçu
 
 **Préfixe** : `/api/v1`
