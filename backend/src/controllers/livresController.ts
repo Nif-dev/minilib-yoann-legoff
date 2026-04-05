@@ -14,7 +14,7 @@ import * as livresModel from '../models/livresModel.ts';
  * Récupère tous les livres 
  * GET /api/v1/livres
  *
- * @param { Request } req - Requête Express - filtres optionnels
+ * @param { Request <FiltresRechercheLivres> } req - Requête Express - filtres optionnels
  * @param { Response <ApiResponse <Livre[]>> } res - Réponse Express
  * @param { NextFunction } next - Fonction de rappel / middleware gestion des erreurs globales
  */
@@ -23,7 +23,12 @@ export const getLivres = async (
     res: Response <ApiResponse <Livre[]>>,
     next: NextFunction
 ) => {
-    
+
+    // Si la requête contient des query params <FiltresRechercheLivres> renvoie la méthode appropriée
+    if (req.query) {
+        return queryLivres(req, res, next);
+    }
+
     try{
         // appel de la fonction du model 
         const livres: Livre[] = await livresModel.findAll();
