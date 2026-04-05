@@ -2,10 +2,11 @@
 //? Page de gestion des livres
 
 import { useState, useEffect } from 'react';
-import { getLivres } from '../services/api/livreService';
+import { getLivres, queryLivres } from '../services/api/livreService';
 import type { FiltresRechercheLivres, Livre } from '../types/index';
 import ListeLivres from '../components/ListeLivres';
 import SkeletonLivres from '../components/SkeletonLivres';
+import ModalRechercheLivres from '../components/ModalRechercheLivres';
 
 export default function LivresPage() {
 
@@ -21,6 +22,13 @@ export default function LivresPage() {
     const [recherche, setRecherche] = useState<string>('');
     const [genre, setGenre] = useState<string>('');
     const [disponible, setDisponible] = useState<string | undefined>(undefined); // undefined pour tout ou 'true' ou 'false'
+    
+    // Affichage filtrée des livres ( avant de faire une requête API )
+    const livresAffiches = livres.filter((livre) =>
+        (!recherche || livre.titre.toLowerCase().includes(recherche.toLowerCase())) &&
+        (!genre || livre.genre.toLowerCase().includes(genre.toLowerCase())) &&
+        (disponible === undefined || String(livre.disponible) === disponible)
+    );
 
     // Reset des filtres
     const resetFiltres = () => {
@@ -43,7 +51,7 @@ export default function LivresPage() {
         try {
             setIsModalOpen(false);
             setChargement(true);
-            const response = await getLivres(filtres);
+            const response = await queryLivres(filtres);
             const data: Livre[] = response.data;
             setLivres(data);
         } catch (err) {
@@ -122,95 +130,20 @@ export default function LivresPage() {
                 </div>
                 
                 {/* Modal filtres */}
-                <div className={`modal ${isModalOpen ? 'is-active' : ''}`}>
-                    <div className="modal-background" onClick={() => setIsModalOpen(false)}></div>
-                    <div className="modal-card">
-                        <header className="modal-card-head">
-                            <p className="modal-card-title">Filtres avancés</p>
-                            <button 
-                                className="button is-rounded is-small mr-6" 
-                                onClick={() => resetFiltres()}
-                                aria-label="clear"
-                            > Reset</button>
-                            <button 
-                                className="delete" 
-                                onClick={() => setIsModalOpen(false)}
-                                aria-label="close"
-                            ></button>
-                        </header>
-                        <section className="modal-card-body">
-                            {/* Champ de recherche titre ou auteur */}
-                            <div className="field">
-                                <label className="label">Recherche</label>
-                                <div className="control">
-                                    <input 
-                                        className="input is-rounded" 
-                                        type="text" 
-                                        placeholder="Titre ou auteur..."
-                                        value={recherche}
-                                        onChange={(e) => setRecherche(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            {/* Champ de recherche par genre littéraire */}
-                            <div className="field">
-                                <label className="label">Genre</label>
-                                <div className="control">
-                                    <input 
-                                        className="input is-rounded" 
-                                        type="text" 
-                                        placeholder="Genre littéraire..."
-                                        value={genre}
-                                        onChange={(e) => setGenre(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="field">
-                                <label className="label">Disponibilité</label>
-                                <div className="control">
-                                    <label className="radio mr-6">
-                                        <input 
-                                            type="radio" 
-                                            name="dispo" 
-                                            checked={disponible === ''}
-                                            onChange={() => setDisponible('')}
-                                        />
-                                        Tous
-                                    </label>
-                                    <label className="radio mr-6">
-                                        <input 
-                                            type="radio" 
-                                            name="dispo" 
-                                            checked={disponible === 'true'}
-                                            onChange={() => setDisponible('true')}
-                                        />
-                                        Disponible
-                                    </label>
-                                    <label className="radio mr-6">
-                                        <input 
-                                            type="radio" 
-                                            name="dispo" 
-                                            checked={disponible === 'false'}
-                                            onChange={() => setDisponible('false')}
-                                        />
-                                        Indisponible
-                                    </label>
-                                </div>
-                            </div>
-                        </section>
-                        <footer className="modal-card-foot">
-                            <button className="button is-success" onClick={rechercherLivres}>
-                                Rechercher
-                            </button>
-                            <button className="button" onClick={() => setIsModalOpen(false)}>
-                                Annuler
-                            </button>
-                        </footer>
-                    </div>
-                </div>
+                <ModalRechercheLivres
+                    isOpen={isModalOpen}
+                    recherche={recherche}
+                    genre={genre}
+                    disponible={disponible}
+                    onClose={() => setIsModalOpen(false)}
+                    onReset={resetFiltres}
+                    onSearch={rechercherLivres}
+                    onRechercheChange={setRecherche}
+                    onGenreChange={setGenre}
+                    onDisponibleChange={setDisponible}
+                />
             </div>
-            <ListeLivres livres={livres} />
+            <ListeLivres livres={livresAffiches} />
         </div>
     );
 }
