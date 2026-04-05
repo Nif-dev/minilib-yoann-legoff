@@ -24,6 +24,7 @@ export const getLivres = async (
     next: NextFunction
 ) => {
 
+    //TODO identifier selon cas d'usage la diff FRONT et BACK entre ces 2 approches
     // Si la requête contient des query params <FiltresRechercheLivres> renvoie la méthode appropriée
     if (req.query) {
         return queryLivres(req, res, next);
