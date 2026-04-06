@@ -29,6 +29,7 @@ const NavBar = () => {
                 </div>
                 <div className="navbar-item is-flex is-justify-content-center">
                     <Link to="/livres" className="button navbar-item">Livres</Link>
+                    <Link to="/adherents" className="button navbar-item">Adh&eacute;rents</Link>
                     <Link to="/404" className="button navbar-item">404 temp</Link> 
                 </div>
                 <div className="navbar-end">

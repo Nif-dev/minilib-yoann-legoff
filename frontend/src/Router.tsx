@@ -8,6 +8,7 @@ import App from './App.tsx';  // Layout root de l'application
 import Home from './pages/Home.tsx';
 import NotFound from './pages/NotFound.tsx';
 import LivresPage from './pages/LivresPage.tsx';
+import AdherentsPage from './pages/AdherentsPage.tsx';
 
 // Ajoute tes pages/services
 
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
         children: [
             { index: true, element: <Home /> },
             { path: "livres/", element: <LivresPage /> },
+            { path: "adherents/", element: <AdherentsPage /> },
             // { path: "services", element: <Services /> },  // Exemple
         ],
     },
