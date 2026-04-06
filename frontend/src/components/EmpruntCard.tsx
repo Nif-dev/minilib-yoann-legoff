@@ -7,29 +7,36 @@ import type { EmpruntAvecDetails } from "../types/index";
 // Interface des props du composant
 interface EmpruntCardProps {
     readonly emprunt: EmpruntAvecDetails;
+    readonly rendreLivre: (id: number) => void
     }
 
 // Composant avec ses props typées
-export default function EmpruntCard({ emprunt }: EmpruntCardProps) {
+export default function EmpruntCard({ emprunt, rendreLivre }: EmpruntCardProps) {
 
     const dateEmprunt = new Date(emprunt.date_emprunt);
-    console.log("🚀 ~ EmpruntCard ~ date_emprunt:", dateEmprunt)
-    console.log("🚀 ~ EmpruntCard ~ date_emprunt:", emprunt.date_emprunt)
     const dateRetourPrevu = new Date(emprunt.date_retour_prevue);
     const dateRetourEffective = emprunt.date_retour_effective ? new Date(emprunt.date_retour_effective) : null;
 
     
     return (
-        <div className="card">
-            <div className="card-content">
-                <p className="title is-4 mb-2">
+        <div className="card m-4">
+            <header className="card-header">
+                <p className="card-header-title">
                     {emprunt.titre_livre}
                 </p>
+                {!dateRetourEffective && (    
+                    <button className="button is-success is-light m-1" 
+                    onClick={() => rendreLivre(emprunt.id)}> 
+                    Retour du livre
+                </button>
+                )}
+            </header>
+            <div className="card-content">
                 <p className="subtitle is-6">
-                    {emprunt.nom_adherent}
+                    Emprunté par : {emprunt.nom_adherent}
                 </p>
                 <p className="subtitle is-6"> 
-                    Emprunté depuis le : {dateEmprunt.toLocaleDateString()}
+                    Depuis le : {dateEmprunt.toLocaleDateString()}
                 </p>
                 <p className="subtitle is-6"> 
                     Retour prevu le : {dateRetourPrevu.toLocaleDateString()}
