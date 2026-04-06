@@ -10,7 +10,7 @@ interface DisponibiliteBadgeProps {
 export default function DisponibiliteBadge( disponibilite: DisponibiliteBadgeProps ) {
 
     return (
-        <span style={disponibilite.disponibilite?{color: "green"}: {color:"red"}}>
+        <span className = {`tag is-${disponibilite.disponibilite ? 'success' : 'danger'}`}  >
             {disponibilite.disponibilite ? 'Disponible' : 'Emprunté'}
         </span>
     );
