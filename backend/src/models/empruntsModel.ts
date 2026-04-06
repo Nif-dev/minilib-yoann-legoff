@@ -60,7 +60,9 @@ export const findAll = async ()
                 emprunts.id, 
                 livres.titre                                AS titre_livre, 
                 adherents.nom || ' ' || adherents.prenom    AS nom_adherent,
+                emprunts.date_emprunt,
                 emprunts.date_retour_prevue,
+                emprunts.date_retour_effective,
                 CURRENT_DATE > emprunts.date_retour_prevue  AS en_retard
             FROM emprunts
             JOIN livres         
