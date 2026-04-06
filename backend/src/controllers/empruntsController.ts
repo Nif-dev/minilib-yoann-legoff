@@ -4,7 +4,8 @@
 
 // Import des types et fonctions du model
 import { Request, Response, NextFunction } from 'express';
-import { ApiResponse, ApiResponseError, CreateEmpruntDTO, Emprunt, EmpruntAvecDetails,  }  from '../types/index.ts';
+import { ApiResponse, CreateEmpruntDTO, Emprunt, EmpruntAvecDetails,  }  from '../types/index.ts';
+import { ERRORS } from '../constants/errors.ts';
 
 // Import des fonctions des models
 import * as empruntsModel from '../models/empruntsModel.ts';
@@ -16,12 +17,12 @@ import { findDispoById } from '../models/livresModel.ts';
 * GET /api/v1/emprunts/retards
 *
 * @param { Request } req - Requête Express 
-* @param { Response <ApiResponse <EmpruntAvecDetails[]> | ApiResponseError> }res - Réponse Express
+* @param { Response <ApiResponse <EmpruntAvecDetails[]>> }res - Réponse Express
 * @param { NextFunction } next - Fonction de rappel / middleware gestion des erreurs globales
 */
 export const getRetards = async (
     req: Request, 
-    res: Response <ApiResponse <EmpruntAvecDetails[]> | ApiResponseError>,
+    res: Response <ApiResponse <EmpruntAvecDetails[]>>,
     next: NextFunction
 ) => {
 
@@ -44,11 +45,11 @@ export const getRetards = async (
 * GET /api/v1/emprunts
 *
 * @param { Request } req - Requête Express 
-* @param { Response <ApiResponse <EmpruntAvecDetails[]> | ApiResponseError> } res - Résponse Express
+* @param { Response <ApiResponse <EmpruntAvecDetails[]>> } res - Résponse Express
  */
 export const getEmprunts = async (
     req: Request, 
-    res: Response <ApiResponse <EmpruntAvecDetails[]> | ApiResponseError>,
+    res: Response <ApiResponse <EmpruntAvecDetails[]>>,
     next: NextFunction
 ) => {
 
@@ -70,11 +71,11 @@ export const getEmprunts = async (
 * POST /api/v1/emprunts
 *
 * @param { Request <CreateEmpruntDTO> } req - Requête Express 
-* @param { Response <ApiResponse <Emprunt> | ApiResponseError> } res - Résponse Express
+* @param { Response <ApiResponse <Emprunt>> } res - Résponse Express
 */
 export const createEmprunt = async (
     req: Request <CreateEmpruntDTO>, 
-    res: Response <ApiResponse <Emprunt> | ApiResponseError>, 
+    res: Response <ApiResponse <Emprunt>>, 
     next: NextFunction
 ) => {
 
@@ -85,9 +86,10 @@ export const createEmprunt = async (
         // vérification de la disponibilité du livre
         const livreDispo = await findDispoById(idLivre);
         if (!livreDispo) {
-            res.status(400).json({ 
-                error: 'Livre indisponible',
-                message: 'Livre indisponible'
+            res.status(400).json({
+                success: false,
+                error: ERRORS.DUPLICATE('emprunt').error,
+                message: ERRORS.DUPLICATE('emprunt').message + ', le livre est indisponible',
             });
             return;
         }
@@ -97,16 +99,18 @@ export const createEmprunt = async (
         const empruntsDeAdherent = await empruntsModel.countEmpruntByAdherent(idAdherent);
 
         if (!empruntsDeAdherent) {
-            res.status(400).json({ 
-                error: 'Adherent non trouvé',
-                message: 'Adherent non trouvé'
+            res.status(400).json({
+                success: false,
+                error: ERRORS.RESOURCE_NOT_FOUND_ID('adherent', idAdherent).error,
+                message: ERRORS.RESOURCE_NOT_FOUND_ID('adherent', idAdherent).message + ', emprunt impossible',
             });
             return;
         }
         if (empruntsDeAdherent >= 3) {
-            res.status(400).json({ 
-                error: `Trop d'emprunts de l'adherent`,
-                message: `L'adherent ${idAdherent} a ${empruntsDeAdherent} emprunts en cours`
+            res.status(400).json({
+                success: false,
+                error: ERRORS.FORBIDDEN().error,
+                message: ERRORS.FORBIDDEN().message + ` : L'adherent ${idAdherent} a ${empruntsDeAdherent} emprunts en cours`
             });
             return;
         }
@@ -114,14 +118,16 @@ export const createEmprunt = async (
         // appel de la fonction du model
         const nouveau = await empruntsModel.create(requeteEmprunt);
         if (!nouveau) {
-            res.status(400).json({ 
-                error: 'Emprunt non ajouté',
-                message: 'Emprunt non ajouté'
+            res.status(400).json({
+                success: false,
+                error: ERRORS.RESOURCE_NOT_CREATED('emprunt').error,
+                message: ERRORS.RESOURCE_NOT_CREATED('emprunt').message
             });
         } 
         res.status(201).json({
             success: true,
-            data: nouveau
+            message: `Nouvel emprunt ajouté, l'adherent ${idAdherent} a maintenant ${empruntsDeAdherent+1} emprunts en cours`,
+            data: nouveau,
         });
         
     } catch (error) {
@@ -132,7 +138,7 @@ export const createEmprunt = async (
 
 export const retourLivre = async (
     req: Request <{id: string}>, 
-    res: Response <ApiResponse <Emprunt> | ApiResponseError>, 
+    res: Response <ApiResponse <Emprunt>>, 
     next: NextFunction
 ) => {
 
@@ -146,15 +152,17 @@ export const retourLivre = async (
         // appel de la fonction du model
         const retour = await empruntsModel.returnEmprunt(idNumber);
         if (retour === null) {
-            res.status(400).json({ 
-                error: 'Retour impossible',
-                message: `Retour impossible de l'emprunt ${idNumber}, emprunt non trouvé`
+            res.status(400).json({
+                success: false,
+                error: ERRORS.RESOURCE_NOT_UPDATED('emprunt').error,
+                message: ERRORS.RESOURCE_NOT_UPDATED('emprunt').message
             });
             return;
         }
         res.status(200).json({
             success: true,
-            data: retour
+            message: `Livre retourné`,
+            data: retour,
         });
     } catch (error) {
         next(error as Error); // Envoi de l'erreur au middleware suivant
@@ -163,7 +171,7 @@ export const retourLivre = async (
 
 export const getEmpruntById = async (
     req: Request <{id: string}>, 
-    res: Response <ApiResponse <EmpruntAvecDetails> | ApiResponseError>, 
+    res: Response <ApiResponse <EmpruntAvecDetails>>, 
     next: NextFunction
 ) => {
 
@@ -177,9 +185,10 @@ export const getEmpruntById = async (
         // appel de la fonction du model
         const emprunt = await empruntsModel.findById(idNumber);
         if (emprunt === null) {
-            res.status(400).json({ 
-                error: 'Emprunt non rencontré',
-                message: `Emprunt non rencontré avec id : ${id}`
+            res.status(400).json({
+                success: false,
+                error: ERRORS.RESOURCE_NOT_FOUND_ID('emprunt', id).error,
+                message: ERRORS.RESOURCE_NOT_FOUND_ID('emprunt', id).message
             });
             return;
         }
