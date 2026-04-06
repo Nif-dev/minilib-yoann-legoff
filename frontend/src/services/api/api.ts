@@ -11,15 +11,17 @@ import type { ApiResponse } from "../../types/api";
 
 
 // Type générique pour uniformiser les réponses d'erreurs
-export interface ApiError {
-    erreur: string;
-    champs?: string[];
-}
+// export interface ApiError {
+//     success: false;
+//     error: string;
+//     message?: string;
+//     champs?: string[];
+// }
 
 /**
 * Fonction de base pour les appels API
 * Effectue une requête HTTP vers l'API Minilib
-* Lance une erreur si la requête n'a pas abouti ( status 4xx ou 5xx )
+* Lance une erreur si la requête contient une erreur gérée par l'API
 * 
 * @param { string } endpoint - Endpoint de l'API (chemin relatif ex : '/livres' ou '/adherents/:id')
 * @param { object } options - Options de la requête HTTP ( method, corps, headers )
@@ -27,19 +29,44 @@ export interface ApiError {
 */
 export async function apiRequest <T>(endpoint: string, options?: RequestInit)
 : Promise<ApiResponse<T>> {
-    const response = await fetch(`${API_URL}${endpoint}`, {
+    try{
+
+        const response = await fetch(`${API_URL}${endpoint}`, {
             headers: {
                 'Content-Type': 'application/json', ...options?.headers
             },
             ...options } // options peut contenir method, body, etc.
-    );
+        );
 
-    if (!response.ok) {
-        const erreur: ApiError = await response.json().catch(() => ({
-            erreur: `Erreur HTTP ${response.status}`,
-        }));
-    throw new Error(erreur.erreur);
+        // Gestion de la non-réponse de l'API
+        if (!response) {
+            throw new Error(`Serveur indisponible`);
+        }
+
+        // Traitement de la réponse de l'API
+        const apiResponse = (await response.json()) as ApiResponse<T>;
+        
+        // Gestion des erreurs gérés par l'API
+        if (!apiResponse.success) {
+            const errorMsg =
+                apiResponse.message ??
+                apiResponse.error ??
+                `Erreur API : ${response.status}`;
+            throw new Error(errorMsg);
+        }
+
+        // Forward de la réponse API vers les services appelants
+        return apiResponse;
+
+
+    } catch (error) {
+        // interception des cas type "Failed to fetch" / réseau
+        if (error instanceof Error && error.message.includes("Failed to fetch")) {
+                throw new Error("Serveur indisponible. Impossible de contacter l'API.");
+        }
+        // traitement des autres erreurs
+        const msg = error instanceof Error ? error.message : "Erreur réseau inconnue.";
+        throw new Error(msg);
     }
 
-    return response.json() as Promise<ApiResponse<T>>;
 }
