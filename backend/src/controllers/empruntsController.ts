@@ -81,8 +81,28 @@ export const createEmprunt = async (
 
     try{
         const requeteEmprunt: CreateEmpruntDTO = req.body;
-        
+
+        const idAdherent = req.body.adherent_id = Number(req.body.adherent_id);
         const idLivre =req.body.livre_id = Number(req.body.livre_id);
+
+        // vérification de la validité des IDs
+        if (idAdherent <= 0 || idLivre <= 0) {
+            const champsFaux = [];
+            if (idAdherent <= 0) {
+                champsFaux.push('adherent_id');
+            }
+            if (idLivre <= 0) {
+                champsFaux.push('livre_id');
+            }
+            res.status(400).json({
+                success: false,
+                error: ERRORS.INVALID_FIELDS().error,
+                message: ERRORS.INVALID_FIELDS().message,
+                champs: champsFaux,
+            });
+            return;
+        }
+
         // vérification de la disponibilité du livre
         const livreDispo = await findDispoById(idLivre);
         if (!livreDispo) {
@@ -94,10 +114,9 @@ export const createEmprunt = async (
             return;
         }
 
-        const idAdherent = req.body.adherent_id = Number(req.body.adherent_id);
         // vérification de l'adherent / nombre d'emprunts
-        const empruntsDeAdherent = await empruntsModel.countEmpruntByAdherent(idAdherent);
-
+        let empruntsDeAdherent = await empruntsModel.countEmpruntByAdherent(idAdherent);
+        
         if (!empruntsDeAdherent) {
             res.status(400).json({
                 success: false,
@@ -110,7 +129,7 @@ export const createEmprunt = async (
             res.status(400).json({
                 success: false,
                 error: ERRORS.FORBIDDEN().error,
-                message: ERRORS.FORBIDDEN().message + ` : L'adherent ${idAdherent} a ${empruntsDeAdherent} emprunts en cours`
+                message: ERRORS.FORBIDDEN().message + ` : L'adherent ${idAdherent} a déjà ${empruntsDeAdherent} emprunts en cours`
             });
             return;
         }
@@ -124,9 +143,10 @@ export const createEmprunt = async (
                 message: ERRORS.RESOURCE_NOT_CREATED('emprunt').message
             });
         } 
+        empruntsDeAdherent++;
         res.status(201).json({
             success: true,
-            message: `Nouvel emprunt ajouté, l'adherent ${idAdherent} a maintenant ${empruntsDeAdherent+1} emprunts en cours`,
+            message: `Nouvel emprunt ajouté, l'adherent ${idAdherent} a maintenant ${empruntsDeAdherent} emprunts en cours`,
             data: nouveau,
         });
         
