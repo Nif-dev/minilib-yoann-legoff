@@ -1,7 +1,7 @@
-//% frontend/src/components/ModalRechercheLivres.tsx
+//% frontend/src/components/ModalLivresRecherche.tsx
 //? Modal de recherche de livres
 
-type ModalRechercheLivresProps = {
+type ModalLivresRechercheProps = {
     // Etats du composant, définis par le parent
     readonly isOpen: boolean;
     readonly recherche: string;
@@ -16,7 +16,7 @@ type ModalRechercheLivresProps = {
     readonly onDisponibleChange: (value: string | undefined) => void;
 };
 
-export default function ModalRechercheLivres({
+export default function ModalLivresRecherche({
     isOpen,
     recherche,
     genre,
@@ -27,7 +27,7 @@ export default function ModalRechercheLivres({
     onRechercheChange,
     onGenreChange,
     onDisponibleChange,
-    }: ModalRechercheLivresProps) {
+    }: ModalLivresRechercheProps) {
     return (
         <div className={`modal ${isOpen ? 'is-active' : ''}`}>
         <div className="modal-background" onClick={onClose}></div>
@@ -110,12 +110,15 @@ export default function ModalRechercheLivres({
                 </div>
             </section>
 
-            <footer className="modal-card-foot">
-                <button className="button is-success" onClick={onSearch}>
-                    Rechercher
-                </button>
+            <footer className="modal-card-foot is-flex is-justify-content-space-between">
                 <button className="button" onClick={onClose}>
                     Annuler
+                </button>
+                <button className="button is-warning is-light" onClick={onSearch}>
+                    Rechercher
+                </button>
+                <button className="button is-primary" onClick={onClose}>
+                    Appliquer les filtres
                 </button>
             </footer>
         </div>
