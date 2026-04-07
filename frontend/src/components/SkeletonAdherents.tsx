@@ -1,4 +1,4 @@
-//% frontend/src/components/SkeletonLivres.tsx
+//% frontend/src/components/SkeletonAdherents.tsx
 //? Skeleton loader identique à AdherentCard
 
 export default function SkeletonAdherents() {
@@ -6,7 +6,7 @@ export default function SkeletonAdherents() {
         <div className="columns is-multiline">
             {/* 6 adherents shimmer */}
             {new Array(6).fill(0).map((_, i) => (
-                <div key={i+1} className="column is-full">
+                <div key={i+1} className="column is-half">
                     <div className="card">
                         <div className="card-content">
                             {/* Titre shimmer */}
