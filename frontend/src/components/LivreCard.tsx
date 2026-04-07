@@ -16,7 +16,7 @@ interface LivreCardProps {
 export default function LivreCard({ livre, onSupprimer }: LivreCardProps) {
 
     return (
-        <div className="card">
+        <div className="card m-4">
             <div className="card-content">
                 <p className="title is-4 mb-2">{livre.titre}</p>
                 <p className="subtitle is-6">
@@ -25,7 +25,12 @@ export default function LivreCard({ livre, onSupprimer }: LivreCardProps) {
                 {livre.genre &&
                     (<p className="subtitle is-6">{livre.genre}</p>)
                 }
-                <DisponibiliteBadge disponibilite={livre.disponible} />
+                <div className="is-flex is-justify-content-space-between">
+                    <div className="">
+                    <DisponibiliteBadge disponibilite={livre.disponible} />
+                    </div>
+                    <div className="has-text-grey is-size-7">id: {livre.id}</div>
+                </div>
             </div>
             
             {/* onSupprimer est optionnel, et son affichage aussi */}
