@@ -2,11 +2,15 @@
 //? Page de gestion des livres
 
 import { useState, useEffect } from 'react';
-import { getLivres, queryLivres } from '../services/api/livreService';
+
 import type { FiltresRechercheLivres, Livre } from '../types/index';
+import { getLivres, queryLivres } from '../services/api/livreService';
+
 import ListeLivres from '../components/ListeLivres';
 import SkeletonLivres from '../components/SkeletonLivres';
-import ModalRechercheLivres from '../components/ModalRechercheLivres';
+
+import ModalLivresRecherche from '../components/ModalLivresRecherche';
+import ModalLivreAjout from '../components/ModalLivreAjout';
 
 export default function LivresPage() {
 
@@ -15,10 +19,12 @@ export default function LivresPage() {
     const [chargement, setChargement] = useState<boolean>(true);
     const [erreur, setErreur] = useState<string | null>(null);
 
+    // Gestion des modals 
+    const [isModalRechercheOpen, setIsModalRechercheOpen] = useState<boolean>(false);
+    const [isModalAjoutOpen, setIsModalAjoutOpen] = useState<boolean>(false);
 
     // Filtres de recherche (nouvel appel API par getLivres)
     const [filtres, setFiltres] = useState<FiltresRechercheLivres>();
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [recherche, setRecherche] = useState<string>('');
     const [genre, setGenre] = useState<string>('');
     const [disponible, setDisponible] = useState<string | undefined>(undefined); // undefined pour tout ou 'true' ou 'false'
@@ -49,10 +55,10 @@ export default function LivresPage() {
     // Fonction de recherche
     const rechercherLivres = async () => {
         try {
-            setIsModalOpen(false);
+            setIsModalRechercheOpen(false);
             setChargement(true);
             const response = await queryLivres(filtres);
-            const data: Livre[] = response.data;
+            const data: Livre[] = response.data ?? [];
             setLivres(data);
         } catch (err) {
             setErreur(err instanceof Error ? err.message : "Erreur inconnue");
@@ -70,7 +76,7 @@ export default function LivresPage() {
                 // attendre 2s pour simuler chargement plus lent
                 await new Promise(resolve => setTimeout(resolve, 2000)); 
                 const response = await getLivres();
-                const data: Livre[] = response.data;
+                const data: Livre[] = response.data ?? [];
                 setLivres(data);
                 
             } catch (err) {
@@ -102,19 +108,33 @@ export default function LivresPage() {
 
     // Rendu normal si chargement OK
     return (
-
-        <div className='section'>
+        <section className='section'>
+            {/* Titre */}
+            <div className='mb-4'> 
+                <h1 className='title'>Catalogue de livres</h1>
+                {!chargement && livres.length === 0 && 
+                    <p className="subtitle ">Aucun livre trouvé avec ces filtres</p>
+                }
+                {!chargement && 
+                    <p className="subtitle ">{livres.length} livre(s)  {livres.length === livresAffiches.length ? '' : '- '+livresAffiches.length + ' correspondants à la recherche'}</p>
+                }
+            </div>
+            {/* Actions */}
             <div className='is-flex is-justify-content-space-between'>
-                <h1 className='title'>Catalogue ({livres.length} livres)</h1>
+                
+                {/*TODO Bouton action - nouveau livre */}
+                <div>
+                    <button className ="button" onClick={() => setIsModalAjoutOpen(true)}>Ajouter un livre</button>
+                </div>
+                {/* Champs de recherche */}
                 <div className='is-flex is-align-items-center'>
                     <button 
                         className={`button is-rounded is-small mx-2 
                             ${(filtres?.disponible || filtres?.genre) ? 'is-dark ' : 'is-light'}`
                         }
-                        onClick={() => setIsModalOpen(true)}>
+                        onClick={() => setIsModalRechercheOpen(true)}>
                             <p>Filtres + </p>
                         </button>
-                    {/* Champs de recherche */}
                     <div className='field'>
                         <div className="control">
                             <input className="input is-rounded" type="text" placeholder="Rechercher un livre" value={recherche} onChange={(e) => setRecherche(e.target.value)} 
@@ -128,22 +148,37 @@ export default function LivresPage() {
                         </div>
                     </div>
                 </div>
-                
-                {/* Modal filtres */}
-                <ModalRechercheLivres
-                    isOpen={isModalOpen}
-                    recherche={recherche}
-                    genre={genre}
-                    disponible={disponible}
-                    onClose={() => setIsModalOpen(false)}
-                    onReset={resetFiltres}
-                    onSearch={rechercherLivres}
-                    onRechercheChange={setRecherche}
-                    onGenreChange={setGenre}
-                    onDisponibleChange={setDisponible}
-                />
             </div>
+
+            {/* Affichage des messages */}
+            <div>
+                {/* Affichage d'erreur */}
+                {erreur && <p>Erreur : {erreur}</p>}
+            </div>
+
+            {/* Affichage des livres */}
             <ListeLivres livres={livresAffiches} />
-        </div>
+
+            {/* Modal filtres */}
+            {isModalRechercheOpen && <ModalLivresRecherche
+                isOpen={isModalRechercheOpen}
+                recherche={recherche}
+                genre={genre}
+                disponible={disponible}
+                onClose={() => setIsModalRechercheOpen(false)}
+                onReset={resetFiltres}
+                onSearch={rechercherLivres}
+                onRechercheChange={setRecherche}
+                onGenreChange={setGenre}
+                onDisponibleChange={setDisponible}
+            />}
+
+            {/* Modal ajouter livre */}
+            {isModalAjoutOpen && <ModalLivreAjout
+                isOpen={isModalAjoutOpen}
+                onClose={() => setIsModalAjoutOpen(false)}
+            />}
+
+        </section>
     );
 }

@@ -2,8 +2,9 @@
 //? Page de gestion des Adherents
 
 import { useState, useEffect } from 'react';
-import { getAdherents } from '../services/api/adherentService';
+
 import type { Adherent } from '../types/index';
+import { getAdherents } from '../services/api/adherentService';
 
 import AdherentCard from '../components/AdherentCard';
 import SkeletonAdherents from '../components/SkeletonAdherents';
@@ -16,19 +17,8 @@ export default function AdherentsPage() {
     const [chargement, setChargement] = useState<boolean>(true);
     const [erreur, setErreur] = useState<string | null>(null);
 
-
-    // Filtres de recherche (nouvel appel API par getLivres)
-    // const [recherche, setRecherche] = useState<string>('');
+    const [recherche, setRecherche] = useState<string>('');
     
-    // Affichage filtrée des Adhérents ( pas de nouvelles requête API pour le moment )
-    // const adherentsAffiches = adherents.filter((adh) =>
-    //     (!recherche || adh.nom.toLowerCase().includes(recherche.toLowerCase()) || adh.prenom.toLowerCase().includes(recherche.toLowerCase())) 
-    // );
-
-    // Reset des filtres
-    // const resetFiltres = () => {
-    //     setRecherche('');
-    // }
 
     // Chargement des adhérents au montage (tous !)
     useEffect(() => {
@@ -39,6 +29,7 @@ export default function AdherentsPage() {
                 // attendre 2s pour simuler chargement plus lent
                 await new Promise(resolve => setTimeout(resolve, 2000)); 
                 const response = await getAdherents();
+                if (!response.data) throw new Error("Aucun adhérent"); // pas d'adhérent = [] ts impose
                 const data: Adherent[] = response.data;
                 setAdherents(data);
                 
@@ -54,6 +45,13 @@ export default function AdherentsPage() {
         }, []   // [] = une seule fois au montage
     ); 
 
+    // Affichage filtrée des adhérents
+    const adherentsAffiches = adherents.filter((adherent) => 
+        (!recherche 
+            || adherent.nom.toLowerCase().includes(recherche.toLowerCase()) 
+            || adherent.prenom.toLowerCase().includes(recherche.toLowerCase())
+        )
+    );
     
     //* Rendu conditionnel selon état
     if (chargement) return (
@@ -71,16 +69,48 @@ export default function AdherentsPage() {
 
     // Rendu normal si chargement OK
     return (
+        <section className='section'>
+            {/* Titre */}
+            <div className='mb-4'>
+                <h1 className="title">Adhérents</h1>
+                {!chargement && adherents.length === 0 && 
+                    <p className="subtitle ">Aucun adhérent trouvé</p>
+                }
+                {!chargement && 
+                    <p className="subtitle ">{adherents.length} adhérent(s) {adherents.length === adherentsAffiches.length ? '' : ' - ' + adherentsAffiches.length + ' correspondants à la recherche'}</p>
+                }
+            </div>
+            <div className="is-flex is-justify-content-space-between">
+                {/*TODO Bouton action - nouvel adhérent */}
+                <div>
+                    <button className ="button" onClick={() => (console.log('TODO'))}>Ajouter un adhérent</button>
+                </div>
+                {/* Champs de recherche */}
+                <div className='is-flex is-align-items-center'>
+                    <div className='field'>
+                        <div className="control">
+                            <input className="input is-rounded" type="text" placeholder="Rechercher un adhérent" value={recherche} onChange={(e) => setRecherche(e.target.value)} 
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <div className='section'>
-            <h1 className='title'>Gestion des Adhérents</h1>
-            <div className='columns is-multiline'>
-                {adherents.map((adh) => (
-                    <div key={adh.numero_adherent} className='column is-full'>
-                        <AdherentCard adherent={adh} />
+            {/* Affichage des messages */}
+            <div>
+                {/* Affichage d'erreur */}
+                {erreur && <p>Erreur : {erreur}</p>}
+            </div>
+
+            {/* Affichage des adhérents */}
+            <div className='columns is-multiline m-4'>
+                {adherentsAffiches.map((adh) => (
+                    <div key={adh.numero_adherent} className='column is-half'>
+                        <AdherentCard adherent={adh} nouvelEmprunt={() => {}} />
+                        
                     </div>
                 ))}
             </div>
-        </div>
+        </section>
     );
 }

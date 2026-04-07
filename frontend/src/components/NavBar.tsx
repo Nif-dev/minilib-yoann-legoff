@@ -28,9 +28,9 @@ const NavBar = () => {
                     </Link>
                 </div>
                 <div className="navbar-item is-flex is-justify-content-center">
-                    <Link to="/livres" className="button navbar-item">Livres</Link>
-                    <Link to="/adherents" className="button navbar-item">Adh&eacute;rents</Link>
-                    <Link to="/emprunts" className="button navbar-item">Emprunts</Link>
+                    <Link to="/livres" className="button is-primary ">Livres</Link>
+                    <Link to="/adherents" className="button is-warning">Adh&eacute;rents</Link>
+                    <Link to="/emprunts" className="button is-info">Emprunts</Link>
                     <Link to="/404" className="button navbar-item">404 temp</Link> 
                 </div>
                 <div className="navbar-end">
