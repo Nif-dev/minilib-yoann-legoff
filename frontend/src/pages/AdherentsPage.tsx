@@ -9,6 +9,8 @@ import { getAdherents } from '../services/api/adherentService';
 import AdherentCard from '../components/AdherentCard';
 import SkeletonAdherents from '../components/SkeletonAdherents';
 
+import ModalAdherentAjout from '../components/ModalAdherentAjout';
+
 
 export default function AdherentsPage() {
 
@@ -19,6 +21,7 @@ export default function AdherentsPage() {
 
     const [recherche, setRecherche] = useState<string>('');
     
+    const [isModalAjoutOpen, setIsModalAjoutOpen] = useState<boolean>(false);
 
     // Chargement des adhérents au montage (tous !)
     useEffect(() => {
@@ -69,41 +72,40 @@ export default function AdherentsPage() {
 
     // Rendu normal si chargement OK
     return (
+        <>
+            {/* Contenu principal */}
         <section className='section'>
-            {/* Titre */}
-            <div className='mb-4'>
-                <h1 className="title">Adhérents</h1>
-                {!chargement && adherents.length === 0 && 
-                    <p className="subtitle ">Aucun adhérent trouvé</p>
-                }
-                {!chargement && 
-                    <p className="subtitle ">{adherents.length} adhérent(s) {adherents.length === adherentsAffiches.length ? '' : ' - ' + adherentsAffiches.length + ' correspondants à la recherche'}</p>
-                }
-            </div>
-            <div className="is-flex is-justify-content-space-between">
-                {/*TODO Bouton action - nouvel adhérent */}
-                <div>
-                    <button className ="button" onClick={() => (console.log('TODO'))}>Ajouter un adhérent</button>
+            {/* Header */}
+                <div className='sticky-header'>
+                {/* Titre */}
+                <div className='mb-4'>
+                    <h1 className="title">Adhérents</h1>
+                    {!chargement && adherents.length === 0 && 
+                        <p className="subtitle ">Aucun adhérent trouvé</p>
+                    }
+                    {!chargement && 
+                        <p className="subtitle ">{adherents.length} adhérent(s) {adherents.length === adherentsAffiches.length ? '' : ' - ' + adherentsAffiches.length + ' correspondants à la recherche'}</p>
+                    }
                 </div>
-                {/* Champs de recherche */}
-                <div className='is-flex is-align-items-center'>
-                    <div className='field'>
-                        <div className="control">
-                            <input className="input is-rounded" type="text" placeholder="Rechercher un adhérent" value={recherche} onChange={(e) => setRecherche(e.target.value)} 
-                            />
+                <div className="is-flex is-justify-content-space-between">
+                    {/* Bouton action - nouvel adhérent */}
+                    <div>
+                        <button className ="button" onClick={() => setIsModalAjoutOpen(true)}>Ajouter un adhérent</button>
+                    </div>
+                    {/* Champs de recherche */}
+                    <div className='is-flex is-align-items-center'>
+                        <div className='field'>
+                            <div className="control">
+                                <input className="input is-rounded" type="text" placeholder="Rechercher un adhérent" value={recherche} onChange={(e) => setRecherche(e.target.value)} 
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            {/* Affichage des messages */}
-            <div>
-                {/* Affichage d'erreur */}
-                {erreur && <p>Erreur : {erreur}</p>}
-            </div>
-
+                
             {/* Affichage des adhérents */}
-            <div className='columns is-multiline m-4'>
+            <div className='columns is-multiline my-4 mx-1' style={{overflowY:'auto', flex:1}}>
                 {adherentsAffiches.map((adh) => (
                     <div key={adh.numero_adherent} className='column is-half'>
                         <AdherentCard adherent={adh} nouvelEmprunt={() => {}} />
@@ -112,5 +114,15 @@ export default function AdherentsPage() {
                 ))}
             </div>
         </section>
+
+            {/* Modals - hors flow classique */}
+        <section>    
+            {/* Modal ajouter adhérent */}
+            {isModalAjoutOpen && <ModalAdherentAjout    
+                isOpen={isModalAjoutOpen}  
+                onClose={() => setIsModalAjoutOpen(false)} />}
+        </section>
+            
+        </>
     );
 }
