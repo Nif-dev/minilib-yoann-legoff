@@ -55,16 +55,6 @@ export default function EmpruntsPage() {
         }
     }, [alertMessage]);
 
-    useEffect(() => {
-        if(erreur) {
-            alert(erreur);
-            setTimeout(() => {
-                setErreur(null);
-            }, 3000);
-        }
-    }, [erreur]);
-
-
     // Chargement des emprunts au montage (tous !)
     useEffect(() => {
         const chargerEmprunts = async () => { 
@@ -109,52 +99,53 @@ export default function EmpruntsPage() {
     );
 
     return (
+        <>
+            {/* Contenu principal */}
         <section className="section">
-            {/* Titre */}
-            <div className='mb-4'>
-                <h1 className="title">Emprunts</h1>
-                {!chargement && emprunts.length === 0 && 
-                    <p className="subtitle ">Aucun emprunt en cours</p>
-                }
-                {!chargement && 
-                    <p className="subtitle ">{emprunts.length} emprunt(s) en cours {emprunts.length === empruntsAffiches.length ? '' : ' - ' + empruntsAffiches.length + ' correspondants à la recherche'}</p>
-                }
-            </div>
-            <div className="is-flex is-justify-content-space-between">
-                {/* Bouton action - nouvel emprunt */}
-                <div>
-                    <button className ="button" onClick={() => setNewEmpruntVisible(true)}>Emprunter un livre</button>
+            {/* Header */}
+            <div className="sticky-header">
+                {/* Titre */}
+                <div className='mb-4'>
+                    <h1 className="title">Emprunts</h1>
+                    {!chargement && emprunts.length === 0 && 
+                        <p className="subtitle ">Aucun emprunt en cours</p>
+                    }
+                    {!chargement && 
+                        <p className="subtitle ">{emprunts.length} emprunt(s) en cours {emprunts.length === empruntsAffiches.length ? '' : ' - ' + empruntsAffiches.length + ' correspondants à la recherche'}</p>
+                    }
                 </div>
-                {/* Champs de recherche */}
-                <div className='is-flex is-align-items-center'>
-                    <div className='field'>
-                        <div className="control">
-                            <input className="input is-rounded" type="text" placeholder="Rechercher un emprunt" value={recherche} onChange={(e) => setRecherche(e.target.value)} 
-                            />
+                <div className="is-flex is-justify-content-space-between">
+                    {/* Bouton action - nouvel emprunt */}
+                    <div>
+                        <button className ="button" onClick={() => setNewEmpruntVisible(true)}>Emprunter un livre</button>
+                    </div>
+                    {/* Champs de recherche */}
+                    <div className='is-flex is-align-items-center'>
+                        <div className='field'>
+                            <div className="control">
+                                <input className="input is-rounded" type="text" placeholder="Rechercher un emprunt" value={recherche} onChange={(e) => setRecherche(e.target.value)} 
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Affichage des messages */}
-            <div>
-                {/* Affichage d'erreur */}
-                {erreur && <p>Erreur : {erreur}</p>}
-                {/* Affichage de l'alerte livre rendu */}
-                {alertMessage && <p>Alert : {alertMessage}</p>} 
-            </div>
-
             {/* Affichage des emprunts */}
             <ListeEmprunts emprunts={empruntsAffiches} rendreLivre={rendreLivre}/>
+        </section>
 
+            {/* Modals - hors flow classique */}
+        <section>
             {/* Formulaire de nouvel emprunt */}
             <ModalEmpruntAjout 
-                newEmpruntVisible={newEmpruntVisible} 
+                isOpen={newEmpruntVisible} 
                 onClose={() => {
                     setNewEmpruntVisible(false); 
                     location.reload(); // rafraichi la page - nouvel emprunt ou non
-                }} />
+                }} 
+            />
         </section>
-        
+        </>
     );
 }
