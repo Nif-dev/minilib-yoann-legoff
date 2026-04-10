@@ -11,6 +11,7 @@ import SkeletonLivres from '../components/SkeletonLivres';
 
 import ModalLivresRecherche from '../components/ModalLivresRecherche';
 import ModalLivreAjout from '../components/ModalLivreAjout';
+import ModalLivreModifier from '../components/ModalLivreModifier';
 
 export default function LivresPage() {
 
@@ -22,7 +23,10 @@ export default function LivresPage() {
     // Gestion des modals 
     const [isModalRechercheOpen, setIsModalRechercheOpen] = useState<boolean>(false);
     const [isModalAjoutOpen, setIsModalAjoutOpen] = useState<boolean>(false);
-
+    const [isModalModifierOpen, setIsModalModifierOpen] = useState(false);
+    
+    const [livreAModifierID, setLivreAModifierID] = useState<number>(0);
+    
     // Filtres de recherche (nouvel appel API par getLivres)
     const [filtres, setFiltres] = useState<FiltresRechercheLivres>();
     const [recherche, setRecherche] = useState<string>('');
@@ -53,7 +57,7 @@ export default function LivresPage() {
     }, [genre, recherche, disponible]);
 
     // Fonction de recherche
-    const rechercherLivres = async () => {
+    const handleRechercherLivres = async () => {
         try {
             setIsModalRechercheOpen(false);
             setChargement(true);
@@ -91,6 +95,12 @@ export default function LivresPage() {
         }, []   // [] = une seule fois au montage
     ); 
 
+    // Gestion pour la modal de modification
+    const handleModalModification = (id: number) => {
+        setLivreAModifierID(id);
+        setIsModalModifierOpen(true);
+    }
+    const livreAModifier = livreAModifierID ? livres.find(livre => livre.id === livreAModifierID) : null;
     
     //* Rendu conditionnel selon état
     if (chargement) return (
@@ -108,48 +118,52 @@ export default function LivresPage() {
 
     // Rendu normal si chargement OK
     return (
+        <>
+            {/* Contenu principal */}
         <section className='section'>
-            {/* Titre */}
-            <div className='mb-4'> 
-                <h1 className='title'>Catalogue de livres</h1>
-                {!chargement && livres.length === 0 && 
-                    <p className="subtitle ">Aucun livre trouvé avec ces filtres</p>
-                }
-                {!chargement && 
-                    <p className="subtitle ">{livres.length} livre(s)  {livres.length === livresAffiches.length ? '' : '- '+livresAffiches.length + ' correspondants à la recherche'}</p>
-                }
-            </div>
-            {/* Actions */}
-            <div className='is-flex is-justify-content-space-between'>
-                
-                {/*TODO Bouton action - nouveau livre */}
-                <div>
-                    <button className ="button" onClick={() => setIsModalAjoutOpen(true)}>Ajouter un livre</button>
+            {/* Header */}
+            <div className="sticky-header">
+                {/* Titre */}
+                <div className='mb-4'> 
+                    <h1 className='title'>Catalogue de livres</h1>
+                    {!chargement && livres.length === 0 && 
+                        <p className="subtitle ">Aucun livre trouvé avec ces filtres</p>
+                    }
+                    {!chargement && 
+                        <p className="subtitle ">{livres.length} livre(s)  {livres.length === livresAffiches.length ? '' : '- '+livresAffiches.length + ' correspondants à la recherche'}</p>
+                    }
                 </div>
-                {/* Champs de recherche */}
-                <div className='is-flex is-align-items-center'>
-                    <button 
-                        className={`button is-rounded is-small mx-2 
-                            ${(filtres?.disponible || filtres?.genre) ? 'is-dark ' : 'is-light'}`
-                        }
-                        onClick={() => setIsModalRechercheOpen(true)}>
-                            <p>Filtres + </p>
-                        </button>
-                    <div className='field'>
-                        <div className="control">
-                            <input className="input is-rounded" type="text" placeholder="Rechercher un livre" value={recherche} onChange={(e) => setRecherche(e.target.value)} 
-                            onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    rechercherLivres();
-                }
-            }}
-                            />
+                {/* Actions */}
+                <div className='is-flex is-justify-content-space-between'>
+                    
+                    {/* Bouton action - nouveau livre */}
+                    <div>
+                        <button className ="button" onClick={() => setIsModalAjoutOpen(true)}>Ajouter un livre</button>
+                    </div>
+                    {/* Champs de recherche */}
+                    <div className='is-flex is-align-items-center'>
+                        <button 
+                            className={`button is-rounded is-small mx-2 
+                                ${(filtres?.disponible || filtres?.genre) ? 'is-dark ' : 'is-light'}`
+                            }
+                            onClick={() => setIsModalRechercheOpen(true)}>
+                                <p>Filtres + </p>
+                            </button>
+                        <div className='field'>
+                            <div className="control">
+                                <input className="input is-rounded" type="text" placeholder="Rechercher un livre" value={recherche} onChange={(e) => setRecherche(e.target.value)} 
+                                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleRechercherLivres();
+                    }
+                }}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             {/* Affichage des messages */}
             <div>
                 {/* Affichage d'erreur */}
@@ -157,8 +171,12 @@ export default function LivresPage() {
             </div>
 
             {/* Affichage des livres */}
-            <ListeLivres livres={livresAffiches} />
+            <ListeLivres livres={livresAffiches} onModifier={handleModalModification}/>
 
+        </section>
+
+            {/* Modals - hors flow classique */}
+        <section>
             {/* Modal filtres */}
             {isModalRechercheOpen && <ModalLivresRecherche
                 isOpen={isModalRechercheOpen}
@@ -167,11 +185,11 @@ export default function LivresPage() {
                 disponible={disponible}
                 onClose={() => setIsModalRechercheOpen(false)}
                 onReset={resetFiltres}
-                onSearch={rechercherLivres}
+                onSearch={handleRechercherLivres}
                 onRechercheChange={setRecherche}
                 onGenreChange={setGenre}
                 onDisponibleChange={setDisponible}
-            />}
+                />}
 
             {/* Modal ajouter livre */}
             {isModalAjoutOpen && <ModalLivreAjout
@@ -179,6 +197,15 @@ export default function LivresPage() {
                 onClose={() => setIsModalAjoutOpen(false)}
             />}
 
+            {/* Modal modifier livre */}
+            {isModalModifierOpen && livreAModifier && <ModalLivreModifier
+                isOpen={isModalModifierOpen}
+                onClose={() => setIsModalModifierOpen(false)}
+                oldLivre={livreAModifier}
+                />}
+
         </section>
+            
+        </>
     );
 }
