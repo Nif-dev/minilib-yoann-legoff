@@ -10,13 +10,28 @@ import DisponibiliteBadge from "./DisponibiliteBadge";
 interface LivreCardProps {
     readonly livre: Livre;
     readonly onSupprimer?: (id: number) => void; // prop optionnelle — callback depuis le parent
+    readonly onModifier?: (id: number) => void;
 }
 
-// Composant avec ses props typées
-export default function LivreCard({ livre, onSupprimer }: LivreCardProps) {
+/**
+ * Composant d'affichage d'un livre uniques, sous forme de card
+ *
+ * @export
+ * @param {LivreCardProps} { 
+ *     livre, 
+ *     onSupprimer, 
+ *     onModifier 
+ * }
+ * @return {*} 
+ */
+export default function LivreCard({ 
+    livre, 
+    onSupprimer, 
+    onModifier 
+}: LivreCardProps) {
 
     return (
-        <div className="card m-4">
+        <div className="card">
             <div className="card-content">
                 <p className="title is-4 mb-2">{livre.titre}</p>
                 <p className="subtitle is-6">
@@ -26,21 +41,29 @@ export default function LivreCard({ livre, onSupprimer }: LivreCardProps) {
                     (<p className="subtitle is-6">{livre.genre}</p>)
                 }
                 <div className="is-flex is-justify-content-space-between">
-                    <div className="">
                     <DisponibiliteBadge disponibilite={livre.disponible} />
-                    </div>
+                    
                     <div className="has-text-grey is-size-7">id: {livre.id}</div>
-                </div>
+                    </div>
             </div>
             
-            {/* onSupprimer est optionnel, et son affichage aussi */}
+            {/* onSupprimer et onModifier sont optionnels, leur affichage aussi */}
+            <footer className="card-footer">
             {onSupprimer && (
-                <footer className="card-footer">
-                    <button className="button card-footer-item" onClick={() => onSupprimer(livre.id)}>
-                        Supprimer
+                    <button 
+                        className="button card-footer-item" 
+                        onClick={() => onSupprimer(livre.id)}
+                        >Supprimer
                     </button>
-                </footer>
             )}
+            {onModifier && <button 
+                        title="Modifier" 
+                        className="button card-footer-item" 
+                        onClick={() => onModifier?.(livre.id)}
+                        >Modifier
+                    </button>}
+            
+            </footer>
         </div>
     );
 }
