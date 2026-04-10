@@ -30,7 +30,7 @@ import type { ApiResponse } from "../../types/api";
 export async function apiRequest <T>(endpoint: string, options?: RequestInit)
 : Promise<ApiResponse<T>> {
     try{
-
+        // Appel de l'API, factory de la requête
         const response = await fetch(`${API_URL}${endpoint}`, {
             headers: {
                 'Content-Type': 'application/json', ...options?.headers
@@ -46,19 +46,19 @@ export async function apiRequest <T>(endpoint: string, options?: RequestInit)
         // Traitement de la réponse de l'API
         const apiResponse = (await response.json()) as ApiResponse<T>;
         
-        // Gestion des erreurs gérés par l'API
+        //! TEMP - Logs console des erreurs renvoyées par l'API
         if (!apiResponse.success) {
-            const errorMsg =
+            console.error(
                 apiResponse.message ??
                 apiResponse.error ??
-                `Erreur API : ${response.status}`;
-            throw new Error(errorMsg);
+                `Erreur API : ${response.status}`
+            );
         }
 
         // Forward de la réponse API vers les services appelants
         return apiResponse;
 
-
+    // Gestion des erreurs de l'API
     } catch (error) {
         // interception des cas type "Failed to fetch" / réseau
         if (error instanceof Error && error.message.includes("Failed to fetch")) {
