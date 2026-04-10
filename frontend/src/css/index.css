@@ -1,5 +1,6 @@
 @import './bulma.min.css';
 @import './custom/LoadingSkeletonLivres.css';
+@import './custom/Sticky-Header.css';
 
 body {
     margin: 0;

@@ -1,0 +1,9 @@
+
+.sticky-header {
+    position: sticky;
+    top: 3.2rem;
+    z-index: 10;
+    background-color: #fff;
+    margin-bottom: 1rem;
+}
+
