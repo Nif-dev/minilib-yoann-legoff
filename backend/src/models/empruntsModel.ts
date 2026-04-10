@@ -25,7 +25,7 @@ export const findRetards = async ()
             SELECT 
                 emprunts.id, 
                 livres.titre AS titre_livre, 
-                adherents.nom || ' ' || adherents.prenom AS nom_adherent,
+                adherents.prenom || ' ' || adherents.nom AS nom_adherent,
                 emprunts.date_retour_prevue,
                 CURRENT_DATE > emprunts.date_retour_prevue AS en_retard,
                 CURRENT_DATE - emprunts.date_retour_prevue AS jours_retard
@@ -59,7 +59,7 @@ export const findAll = async ()
             SELECT 
                 emprunts.id, 
                 livres.titre                                AS titre_livre, 
-                adherents.nom || ' ' || adherents.prenom    AS nom_adherent,
+                adherents.prenom || ' ' || adherents.nom    AS nom_adherent,
                 emprunts.date_emprunt,
                 emprunts.date_retour_prevue,
                 emprunts.date_retour_effective,
@@ -148,7 +148,7 @@ export const findById = async (id: number)
             SELECT 
                 emp.*, 
                 livres.titre                                AS titre_livre, 
-                adherents.nom || ' ' || adherents.prenom    AS adherent,
+                adherents.prenom || ' ' || adherents.nom    AS adherent,
                 CASE
                     WHEN emp.date_retour_effective IS NULL THEN 'en_cours'
                     WHEN CURRENT_DATE > emp.date_retour_prevue THEN 'en_retard'
