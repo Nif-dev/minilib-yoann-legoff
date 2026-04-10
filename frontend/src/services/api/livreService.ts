@@ -1,7 +1,7 @@
 //% frontend/src/services/api/livres.ts
 //? Services API pour les livres
 
-import type { ApiResponse, Livre, CreateLivreDTO, FiltresRechercheLivres } from '../../types';
+import type { ApiResponse, Livre, CreateLivreDTO, FiltresRechercheLivres, UpdateLivreDTO } from '../../types';
 import { apiRequest } from './api';
 
 //? Usage dans un composant :
@@ -25,7 +25,6 @@ export async function getLivres(
     // if (filtres.recherche)  params.append("recherche", filtres.recherche);
     // if (filtres.disponible  !== undefined)
     // params.append("disponible", String(filtres.disponible));
-
     // const query = params.toString() ? `?${params.toString()}` : "";
     // return apiRequest<Livre[]>(`/livres${query}`);
     return apiRequest<Livre[]>(`/livres`);
@@ -67,6 +66,18 @@ export async function creerLivre(data: CreateLivreDTO): Promise<ApiResponse<Livr
         body: JSON.stringify(data),
     });
 }
+/**
+ * Modifie un livre existant.
+ * @param { number } id - id du livre à modifier
+ * @param { UpdateLivreDTO } data - Données de modification
+ */
+export async function modifierLivre(id: number, data: UpdateLivreDTO): Promise<ApiResponse<Livre>> {
+    return apiRequest<Livre>(`/livres/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+    });
+}
+
 /**
  * Supprime un livre.
  *
