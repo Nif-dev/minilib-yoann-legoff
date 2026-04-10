@@ -16,7 +16,7 @@ export default function ListeEmprunts({ emprunts, rendreLivre }: ListeEmpruntsPr
     }
 
     return (
-        <div>
+        <div className="my-4 mx-1">
             <ul className="liste-livres columns is-multiline">
                 {emprunts?.map((emprunt) => (
                     <li className="column is-one-quarter" key={emprunt.id}> 

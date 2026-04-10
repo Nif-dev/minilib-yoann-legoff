@@ -5,8 +5,8 @@ export default function SkeletonEmprunts() {
     return (
         <div className="columns is-multiline">
             {/* 2 emprunts shimmer */}
-            {new Array(2).fill(0).map((_, i) => (
-                <div key={i+1} className="column is-full">
+            {new Array(4).fill(0).map((_, i) => (
+                <div key={i+1} className="column is-quarter">
                     <div className="card m-4">
                         <div className="card-header p-5">
                             {/* Titre shimmer */}
