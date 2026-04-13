@@ -1,0 +1,25 @@
+#% docker-compose.yml
+
+services:
+
+    # Database
+    db :
+      image: postgres:18
+      restart: unless-stopped
+
+      environment:
+        POSTGRES_DB: ${DB_NAME}
+        POSTGRES_USER: ${DB_USER}
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+      volumes: 
+        - postgres_data:/var/lib/postgresql/
+        - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+        - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+
+      ports:
+        - "5432:5432"
+
+# Volumes - persistance des données 
+volumes:
+    postgres_data:
