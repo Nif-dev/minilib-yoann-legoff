@@ -40,6 +40,16 @@ services:
 
     depends_on:
       - db
+
+  # Application Frontend
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
 # Volumes - persistance des données 
 volumes:
   postgres_data:

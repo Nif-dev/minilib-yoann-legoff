@@ -1,6 +1,7 @@
 #% backend/Dockerfile
 #? Dockerfile pour le backend de MiniLib
 
+# ! Stage 1 : Compilation sur une image Node depuis TS + création du dossier dist/
 # Partant d'une image Node complète pour compiler le TypeScript
 # ? image non final, elle build l'app, et l'image finale sera basé dessus
 FROM node:24-alpine AS builder
@@ -27,6 +28,7 @@ COPY openapi.yaml ./
 RUN npm run build
 
 
+# ! Stage 2 : Distribution de l'image finale
 # Nouvelle image vierge : partant d'une autre base alpine, sans les devDependencies, les sources - uniquement le JS de prod
 FROM node:24-alpine
 
