@@ -8,7 +8,6 @@
   "main": "src/app.ts",
   "scripts": {
     "start": "tsx --env-files=.env src/app.ts",
-    "start:prod": "tsx --env-files=.env.dev dist/app.ts",
     "dev": "tsx watch --env-file=.env.dev src/app.ts",
     "build": "tsc",
     "check": "tsc --noEmit",

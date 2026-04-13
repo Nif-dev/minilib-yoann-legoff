@@ -1,0 +1,10 @@
+# % backend/dockerignore
+# ? évite de copier dans l'image ( trop lourd, inutiles, etc ...)
+
+node_modules/
+
+.env.dev
+
+*.log
+
+dist/

@@ -11,6 +11,7 @@ export * from './adherent.ts';
 export * from './emprunt.ts';
 
 // types de données PostgreSQL spécifiques
-export * from './livre.pg.ts';
-export * from './adherent.pg.ts';
-export * from './emprunt.pg.ts';
+// ! non utilisé pour l'instant
+// export * from './livre.pg.ts';
+// export * from './adherent.pg.ts';
+// export * from './emprunt.pg.ts';

@@ -9,11 +9,14 @@
 "strict": true,
 "esModuleInterop": true,
 "skipLibCheck": true,
-"allowImportingTsExtensions": true,
-"noEmit": true,
-// noEmit: true = vérifie les types sans générer de fichiers
+// permet de compiler les imports relatifs - passe les .ts en .js sur imports
+"rewriteRelativeImportExtensions": true,
+// noEmit vérifie les types sans générer de fichiers
+// noEmit: true,
+// "allowImportingTsExtensions": true,
+//! attention pas de building ! ./dist/ est vide si noEmit = true
 // On garde Node 24 natif pour exécuter -- pas de compilation réelle
-"checkJs": true,
+// "checkJs": true,
 "allowJs": true,
 "types": ["node", "@types/express"],
 },
