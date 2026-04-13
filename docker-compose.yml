@@ -2,24 +2,44 @@
 
 services:
 
-    # Database
-    db :
-      image: postgres:18
-      restart: unless-stopped
+  # Database
+  db :
+    image: postgres:18
+    restart: unless-stopped
 
-      environment:
-        POSTGRES_DB: ${DB_NAME}
-        POSTGRES_USER: ${DB_USER}
-        POSTGRES_PASSWORD: ${DB_PASSWORD}
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
 
-      volumes: 
-        - postgres_data:/var/lib/postgresql/
-        - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-        - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    volumes: 
+      - postgres_data:/var/lib/postgresql/
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/constraints.sql:/docker-entrypoint-initdb.d/02-constraints.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/03-seed.sql
 
-      ports:
-        - "5432:5432"
+    ports:
+      - "5432:5432"
 
+  # Application Backend
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    
+    environment:
+      PORT: 5000
+      NODE_ENV: production
+      # DB Connection - nom du service, pas localhost
+      DB_HOST: db
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    
+    ports:
+      - "5000:5000"
+
+    depends_on:
+      - db
 # Volumes - persistance des données 
 volumes:
-    postgres_data:
+  postgres_data:
