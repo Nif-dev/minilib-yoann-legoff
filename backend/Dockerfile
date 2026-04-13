@@ -49,5 +49,5 @@ COPY --from=builder /app/openapi.yaml ./openapi.yaml
 # Exposition du port 5000
 EXPOSE 5000
 
-# Commande de lancement de l'app, avec Node
+# Commande de lancement de l'app, avec Node sur le fichier JS compilé
 CMD ["node", "dist/app.js"]
