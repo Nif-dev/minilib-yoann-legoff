@@ -12,8 +12,9 @@ RUN npm ci
 
 COPY . .
 
+# En production Docker, Nginx proxy /api/ → backend:5000
 # Récupération des variables d'environnement
-ENV VITE_API_URL=
+# ENV VITE_API_URL=
 
 # Compilation -> génération des fichiers JS dans ./dist/
 RUN npm run build

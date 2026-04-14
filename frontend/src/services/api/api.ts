@@ -3,7 +3,7 @@
 
 
 /** Configuration de l'URL de base et les headers communs */
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000/api/v1';
+const API_URL = import.meta.env.VITE_API_URL ;
 
 // todo Bonne pratique ? à voir avec El, différence entre traitement data seul ou corps réponse complet
 // Type générique pour les appels API
