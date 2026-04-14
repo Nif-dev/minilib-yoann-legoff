@@ -1,11 +1,11 @@
-#% docker-compose.yml
+#% docker-compose.prod.yml
 
 services:
 
   # Database
   db :
     image: postgres:18
-    restart: unless-stopped
+    restart: always
 
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -18,37 +18,36 @@ services:
       - ./database/constraints.sql:/docker-entrypoint-initdb.d/02-constraints.sql
       - ./database/seed.sql:/docker-entrypoint-initdb.d/03-seed.sql
 
-    ports:
-      - "5432:5432"
-
   # Application Backend
   backend:
-    build: ./backend
-    restart: unless-stopped
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    
+    restart: always
     
     environment:
       PORT: 5000
-      NODE_ENV: dev
+      NODE_ENV: production
       # DB Connection - nom du service, pas localhost
       DB_HOST: db
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-    
+      DB_PORT: 5432
     ports:
       - "5000:5000"
 
-    depends_on:
-      - db
+    depends_on: [db]
 
   # Application Frontend
   frontend:
     build: ./frontend
-    restart: unless-stopped
+    restart: always
     ports:
-      - "3000:80"
-    depends_on:
-      - backend
+      - "80:80"
+    depends_on: [backend]
+
 
 # Volumes - persistance des données 
 volumes:
