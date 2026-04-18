@@ -5,6 +5,7 @@ show_help() {
     echo ""
     echo "Commandes:"
     echo "  dev         - Lance les conteneurs en mode dev          - docker compose up --build (dev mode)"
+    echo "  dev-db      - Lance le conteneur db en mode dev         - docker compose up --build db (dev mode)"
     echo "  prod        - Lance les conteneurs en mode prod         - docker compose -f docker-compose.prod.yml up -d --build"
     echo "  stop        - Arrête les conteneurs du dossier          - docker compose down"
     echo "  logs        - Affiche les logs des conteneurs           - docker compose logs -f"
@@ -24,6 +25,9 @@ get_env_status() {
 case "$1" in
     "dev")
         docker compose --env-file .env.dev up --build
+        ;;
+    "dev-db")
+        docker compose --env-file .env.dev up --build db
         ;;
     "prod")
         docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
