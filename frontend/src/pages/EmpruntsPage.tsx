@@ -1,10 +1,11 @@
 //% frontend/src/pages/EmpruntsPage.tsx
 //? Page de gestion des Emprunts
 
-import { useState, useEffect } from 'react';
+import { useContext,useState, useEffect } from 'react';
+import { AppContext } from '../context/AppContext';
 
-import type { EmpruntAvecDetails } from '../types/index';
-import { getEmprunts, retourEmprunt } from '../services/api/empruntService';
+// import type { EmpruntAvecDetails } from '../types/index';
+import { retourEmprunt } from '../services/api/empruntService';
 
 import ListeEmprunts from '../components/ListeEmprunts';
 import SkeletonEmprunts from '../components/SkeletonEmprunts';
@@ -12,9 +13,19 @@ import SkeletonEmprunts from '../components/SkeletonEmprunts';
 import ModalEmpruntAjout from '../components/ModalEmpruntAjout';
 
 export default function EmpruntsPage() {
-    const [emprunts, setEmprunts] = useState<EmpruntAvecDetails[]>([]);
-    const [chargement, setChargement] = useState<boolean>(true);
-    const [erreur, setErreur] = useState<string | null>(null);
+        // Récupération des données du context
+    const {
+        emprunts,
+        setEmprunts,
+        chargementContext,
+        erreurContext,
+        livres,
+        adherents
+    } = useContext(AppContext);
+
+    // Données propres à la page
+    const [chargement, setChargement] = useState<boolean>(chargementContext);
+    const [erreur, setErreur] = useState<string | null>(erreurContext);
 
     const [recherche, setRecherche] = useState<string>('');
     const [newEmpruntVisible, setNewEmpruntVisible] = useState<boolean>(false);
@@ -61,11 +72,12 @@ export default function EmpruntsPage() {
             // async directement dans useEffect : on déclare une fonction async
             try {
                 setChargement(true);
-                // attendre 2s pour simuler chargement plus lent
-                await new Promise(resolve => setTimeout(resolve, 2000)); 
-                const response = await getEmprunts();
-                const data: EmpruntAvecDetails[] = response.data?? [];
-                setEmprunts(data);
+                // attendre 0.5s pour simuler chargement
+                // await new Promise(resolve => setTimeout(resolve, 500)); 
+
+                // const response = await getEmprunts();
+                // const data: EmpruntAvecDetails[] = response.data?? [];
+                // setEmprunts(data);
                 
             } catch (err) {
                 setErreur(err instanceof Error ? err.message : "Erreur inconnue");
@@ -140,10 +152,9 @@ export default function EmpruntsPage() {
             {/* Formulaire de nouvel emprunt */}
             <ModalEmpruntAjout 
                 isOpen={newEmpruntVisible} 
-                onClose={() => {
-                    setNewEmpruntVisible(false); 
-                    location.reload(); // rafraichi la page - nouvel emprunt ou non
-                }} 
+                onClose={() => {setNewEmpruntVisible(false)}}
+                livres={livres}
+                adherents={adherents} 
             />
         </section>
         </>

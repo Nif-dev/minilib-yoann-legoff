@@ -1,10 +1,11 @@
 //% frontend/src/pages/AdherentsPage.tsx
 //? Page de gestion des Adherents
 
-import { useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
+import { AppContext } from '../context/AppContext';
 
-import type { Adherent } from '../types/index';
-import { getAdherents } from '../services/api/adherentService';
+// import type { Adherent } from '../types/index';
+// import { getAdherents } from '../services/api/adherentService';
 
 import AdherentCard from '../components/AdherentCard';
 import SkeletonAdherents from '../components/SkeletonAdherents';
@@ -13,11 +14,17 @@ import ModalAdherentAjout from '../components/ModalAdherentAjout';
 
 
 export default function AdherentsPage() {
+        // Récupération des données du context
+    const {
+        adherents,
+        // setAdherents,
+        chargementContext,
+        erreurContext
+    } = useContext(AppContext);
 
-    // Les 3 états à toujours prévoir pour un fetch
-    const [adherents, setAdherents] = useState<Adherent[]>([]);
-    const [chargement, setChargement] = useState<boolean>(true);
-    const [erreur, setErreur] = useState<string | null>(null);
+    // Données propres à la page
+    const [chargement, setChargement] = useState<boolean>(chargementContext);
+    const [erreur, setErreur] = useState<string | null>(erreurContext);
 
     const [recherche, setRecherche] = useState<string>('');
     
@@ -30,11 +37,7 @@ export default function AdherentsPage() {
             try {
                 setChargement(true);
                 // attendre 2s pour simuler chargement plus lent
-                await new Promise(resolve => setTimeout(resolve, 2000)); 
-                const response = await getAdherents();
-                if (!response.data) throw new Error("Aucun adhérent"); // pas d'adhérent = [] ts impose
-                const data: Adherent[] = response.data;
-                setAdherents(data);
+                // await new Promise(resolve => setTimeout(resolve, 500)); 
                 
             } catch (err) {
                 setErreur(err instanceof Error ? err.message : "Erreur inconnue");

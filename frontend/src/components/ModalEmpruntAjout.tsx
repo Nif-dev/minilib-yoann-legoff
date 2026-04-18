@@ -3,7 +3,8 @@
 
 import { useState } from "react";
 
-import type { CreateEmpruntDTO } from "../types/index";
+
+import type { CreateEmpruntDTO, Livre, Adherent } from "../types/index";
 import { createEmprunt } from "../services/api/empruntService";
 
 
@@ -12,6 +13,9 @@ interface ModalEmpruntAjoutProps {
     readonly onClose: () => void;
     readonly idLivre?: number;
     readonly idAdherent?: number;
+    readonly livres?: Livre[];
+    readonly adherents?: Adherent[];
+
 }
 
 export default function ModalEmpruntAjout({ 
@@ -19,6 +23,9 @@ export default function ModalEmpruntAjout({
     onClose, 
     idLivre, 
     idAdherent, 
+    livres, 
+    adherents, 
+    
 } : ModalEmpruntAjoutProps) {
 
     const [chargement, setChargement] = useState<boolean>(false);
@@ -59,6 +66,8 @@ export default function ModalEmpruntAjout({
         }
         setChargement(false);
     }
+
+
     
     const clearInfos = () => {
         setChargement(false);
@@ -87,16 +96,36 @@ export default function ModalEmpruntAjout({
                     <div className="field">
                         <label htmlFor="adherent_field" className="label has-text-centered">Adhérent</label>
                         <div id="adherent_field" className="control ">
+                            {adherents ? 
+                            <div className="select">
+                                <select onChange={(e) => setAdherent_id(Number(e.target.value))}>
+                                    <option value={0}>Sélectionnez un adhérent</option>
+                                    {adherents.map((adherent) => (
+                                    <option key={adherent.id} value={adherent.id}>{adherent.nom} {adherent.prenom}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            :
                             <input className="input has-text-centered" type="number" required placeholder="ID adhérent..."
                                 onChange={(e) => setAdherent_id(Number(e.target.value))} />
+                            }
                         </div>
                     </div>
                     {/* id du livre */}
                     <div className="field">
                         <label htmlFor="livre_field" className="label has-text-centered">Livre</label>
                         <div id="livre_field" className="control ">
-                            <input className="input has-text-centered" type="number" required placeholder="ID livre"
-                                onChange={(e) => setLivre_id(Number(e.target.value))} />
+                            {livres ? 
+                            <div className="select is-small">
+                                <select onChange={(e) => setLivre_id(Number(e.target.value))} >
+                                    <option value={0}>Sélectionnez un livre</option>
+                                    {livres.map((livre) => (
+                                    <option key={livre.id} value={livre.id}>{livre.titre}</option>
+                                ))}
+                                </select>
+                            </div>
+                            :<input className="input has-text-centered" type="number" required placeholder="ID livre"
+                                onChange={(e) => setLivre_id(Number(e.target.value))} /> }
                         </div>
                     </div>
                     </div>

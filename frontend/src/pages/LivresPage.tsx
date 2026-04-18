@@ -1,10 +1,11 @@
 //% frontend/src/pages/LivresPage.tsx
 //? Page de gestion des livres
 
-import { useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
+import { AppContext } from '../context/AppContext';
 
 import type { FiltresRechercheLivres, Livre } from '../types/index';
-import { getLivres, queryLivres } from '../services/api/livreService';
+import { queryLivres } from '../services/api/livreService';
 
 import ListeLivres from '../components/ListeLivres';
 import SkeletonLivres from '../components/SkeletonLivres';
@@ -15,10 +16,17 @@ import ModalLivreModifier from '../components/ModalLivreModifier';
 
 export default function LivresPage() {
 
-    // Les 3 états à toujours prévoir pour un fetch
-    const [livres, setLivres] = useState<Livre[]>([]);
-    const [chargement, setChargement] = useState<boolean>(true);
-    const [erreur, setErreur] = useState<string | null>(null);
+    // Récupération des données du context
+    const {
+        livres,
+        setLivres,
+        chargementContext,
+        erreurContext,
+    } = useContext(AppContext);
+
+    // Données propres à la page
+    const [chargement, setChargement] = useState<boolean>(chargementContext);
+    const [erreur, setErreur] = useState<string | null>(erreurContext);
 
     // Gestion des modals 
     const [isModalRechercheOpen, setIsModalRechercheOpen] = useState<boolean>(false);
@@ -77,11 +85,9 @@ export default function LivresPage() {
             // async directement dans useEffect : on déclare une fonction async
             try {
                 setChargement(true);
-                // attendre 2s pour simuler chargement plus lent
-                await new Promise(resolve => setTimeout(resolve, 2000)); 
-                const response = await getLivres();
-                const data: Livre[] = response.data ?? [];
-                setLivres(data);
+                // attendre 0.5s pour simuler chargement
+                // await new Promise(resolve => setTimeout(resolve, 500)); 
+                //! ancienne logique appel API ici - maintenant Context
                 
             } catch (err) {
                 setErreur(err instanceof Error ? err.message : "Erreur inconnue");

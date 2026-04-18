@@ -39,3 +39,10 @@ export async function createEmprunt(data: CreateEmpruntDTO): Promise<ApiResponse
 export async function retourEmprunt(id: number): Promise<ApiResponse<void>> {
     return apiRequest<void>(`/emprunts/${id}/retour`, { method: 'put' });
 }
+
+/**
+* Requête de recherche de tous les emprunts en retard
+*/
+export async function getRetards (): Promise<ApiResponse<EmpruntAvecDetails[]>> {
+    return apiRequest<EmpruntAvecDetails[]>('/emprunts/retards');
+}
