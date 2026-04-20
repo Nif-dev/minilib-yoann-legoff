@@ -1,55 +1,30 @@
 //% frontend/src/pages/AdherentsPage.tsx
 //? Page de gestion des Adherents
 
-import { useContext, useState, useEffect } from 'react';
-import { AppContext } from '../context/AppContext';
+import { useState, useEffect } from 'react';
+import { useAdherents } from '../hooks';
 
-// import type { Adherent } from '../types/index';
-// import { getAdherents } from '../services/api/adherentService';
+import AdherentCard from '../components/cards/AdherentCard';
+import SkeletonAdherents from '../components/skeletons/SkeletonAdherents';
 
-import AdherentCard from '../components/AdherentCard';
-import SkeletonAdherents from '../components/SkeletonAdherents';
+import ModalAdherentAjout  from '../components/modals/ModalAdherentAjout';
+import ModalAdherentModifier from '../components/modals/ModalAdherentModifier';
 
-import ModalAdherentAjout from '../components/ModalAdherentAjout';
+import ModalEmpruntAjout from '../components/modals/ModalEmpruntAjout';
 
 
 export default function AdherentsPage() {
-        // Récupération des données du context
+
+    // Hook : TOUT le métier (données + actions + états)
     const {
         adherents,
-        // setAdherents,
-        chargementContext,
-        erreurContext
-    } = useContext(AppContext);
+        chargerAdherents,
+        chargement,
+        erreur
+    } = useAdherents();
 
     // Données propres à la page
-    const [chargement, setChargement] = useState<boolean>(chargementContext);
-    const [erreur, setErreur] = useState<string | null>(erreurContext);
-
     const [recherche, setRecherche] = useState<string>('');
-    
-    const [isModalAjoutOpen, setIsModalAjoutOpen] = useState<boolean>(false);
-
-    // Chargement des adhérents au montage (tous !)
-    useEffect(() => {
-        const chargerAdherents = async () => { 
-            // async directement dans useEffect : on déclare une fonction async
-            try {
-                setChargement(true);
-                // attendre 2s pour simuler chargement plus lent
-                // await new Promise(resolve => setTimeout(resolve, 500)); 
-                
-            } catch (err) {
-                setErreur(err instanceof Error ? err.message : "Erreur inconnue");
-            } finally {
-                setChargement(false); // toujours exécuté
-            }
-            
-        };
-        // et on l'appelle immédiatement — useEffect ne peut pas être async lui-même
-        chargerAdherents();
-        }, []   // [] = une seule fois au montage
-    ); 
 
     // Affichage filtrée des adhérents
     const adherentsAffiches = adherents.filter((adherent) => 
@@ -58,6 +33,36 @@ export default function AdherentsPage() {
             || adherent.prenom.toLowerCase().includes(recherche.toLowerCase())
         )
     );
+
+    // Gestion des modals
+    const [isModalAjoutOpen, setIsModalAjoutOpen] = useState<boolean>(false);
+    const [isModalModifierOpen, setIsModalModifierOpen] = useState<boolean>(false);
+    const [adherentAModifier, setAdherentAModifier] = useState<number>();
+    const [isModalEmpruntOpen, setIsModalEmpruntOpen] = useState<boolean>(false);
+
+    // Chargement des adhérents au montage (tous !)
+    useEffect(() => {
+        chargerAdherents();
+        }, []   // [] = une seule fois au montage
+    ); 
+
+    // Gestion des actions sur chaque adhérent ( card-footer )
+    const handleCardAction = (action: string, id: number) => {
+    switch(action) {
+        case 'modifier':
+            setAdherentAModifier(id);
+            setIsModalModifierOpen(true);
+            break;
+        case 'supprimer':
+            // Logique suppression
+            break;
+        case 'emprunt':
+            setAdherentAModifier(id);
+            setIsModalEmpruntOpen(true);
+            break;
+    }
+};
+
     
     //* Rendu conditionnel selon état
     if (chargement) return (
@@ -111,7 +116,10 @@ export default function AdherentsPage() {
             <div className='columns is-multiline my-4 mx-1' style={{overflowY:'auto', flex:1}}>
                 {adherentsAffiches.map((adh) => (
                     <div key={adh.numero_adherent} className='column is-half'>
-                        <AdherentCard adherent={adh} nouvelEmprunt={() => {}} />
+                        <AdherentCard 
+                            adherent={adh} 
+                            onAction={handleCardAction}
+                            />
                         
                     </div>
                 ))}
@@ -124,6 +132,20 @@ export default function AdherentsPage() {
             {isModalAjoutOpen && <ModalAdherentAjout    
                 isOpen={isModalAjoutOpen}  
                 onClose={() => setIsModalAjoutOpen(false)} />}
+
+            {/* Modal modifier adhérent */}
+            {isModalModifierOpen && <ModalAdherentModifier    
+                adherentID={adherentAModifier!} 
+                isOpen={isModalModifierOpen}  
+                onClose={() => setIsModalModifierOpen(false)} />}
+
+            {/* Modal emprunt */}
+            {isModalEmpruntOpen && <ModalEmpruntAjout
+                idAdherent={adherentAModifier}    
+                isOpen={isModalEmpruntOpen}  
+                onClose={() => setIsModalEmpruntOpen(false)} />}
+
+
         </section>
             
         </>

@@ -1,45 +1,45 @@
 //% frontend/src/pages/LivresPage.tsx
 //? Page de gestion des livres
 
-import { useContext, useState, useEffect } from 'react';
-import { AppContext } from '../context/AppContext';
+import { useState, useEffect } from 'react';
+import { useLivres } from '../hooks';
+import type { FiltresRechercheLivres } from '../types';
 
-import type { FiltresRechercheLivres, Livre } from '../types/index';
-import { queryLivres } from '../services/api/livreService';
+import ListeLivres from '../components/listes/ListeLivres';
+import SkeletonLivres from '../components/skeletons/SkeletonLivres';
 
-import ListeLivres from '../components/ListeLivres';
-import SkeletonLivres from '../components/SkeletonLivres';
-
-import ModalLivresRecherche from '../components/ModalLivresRecherche';
-import ModalLivreAjout from '../components/ModalLivreAjout';
-import ModalLivreModifier from '../components/ModalLivreModifier';
+import ModalLivresRecherche from '../components/modals/ModalLivresRecherche';
+import ModalLivreAjout from '../components/modals/ModalLivreAjout';
+import ModalLivreModifier from '../components/modals/ModalLivreModifier';
 
 export default function LivresPage() {
 
-    // Récupération des données du context
-    const {
-        livres,
-        setLivres,
-        chargementContext,
-        erreurContext,
-    } = useContext(AppContext);
-
-    // Données propres à la page
-    const [chargement, setChargement] = useState<boolean>(chargementContext);
-    const [erreur, setErreur] = useState<string | null>(erreurContext);
+    // Hook : TOUT le métier (données + actions + états)
+    const { 
+        livres, 
+        chargerLivres, 
+        rechercherLivres,
+        chargement, 
+        erreur 
+    } = useLivres();
 
     // Gestion des modals 
     const [isModalRechercheOpen, setIsModalRechercheOpen] = useState<boolean>(false);
     const [isModalAjoutOpen, setIsModalAjoutOpen] = useState<boolean>(false);
     const [isModalModifierOpen, setIsModalModifierOpen] = useState(false);
-    
+
     const [livreAModifierID, setLivreAModifierID] = useState<number>(0);
     
-    // Filtres de recherche (nouvel appel API par getLivres)
-    const [filtres, setFiltres] = useState<FiltresRechercheLivres>();
+    // Filtres de recherche (nouvel appel API par queryLivres dans le hook)
     const [recherche, setRecherche] = useState<string>('');
     const [genre, setGenre] = useState<string>('');
-    const [disponible, setDisponible] = useState<string | undefined>(undefined); // undefined pour tout ou 'true' ou 'false'
+    const [disponible, setDisponible] = useState<string | undefined>(undefined); // undefined pour tous
+    
+    const filtres: FiltresRechercheLivres = {
+        recherche: recherche || undefined,
+        genre: genre || undefined,
+        disponible: disponible || undefined
+    };
     
     // Affichage filtrée des livres ( avant de faire une requête API )
     const livresAffiches = livres.filter((livre) =>
@@ -53,50 +53,16 @@ export default function LivresPage() {
         setRecherche('');
         setGenre('');
         setDisponible(undefined);
-        setFiltres({});
     }
-    // Gestion de la recherche
-    useEffect(() => {
-        const nouveauxFiltres: FiltresRechercheLivres = {}
-        if (recherche) nouveauxFiltres.recherche = recherche;
-        if (genre) nouveauxFiltres.genre = genre;
-        if (disponible && disponible !== '') nouveauxFiltres.disponible = disponible;
-        setFiltres(nouveauxFiltres);
-    }, [genre, recherche, disponible]);
 
     // Fonction de recherche
     const handleRechercherLivres = async () => {
-        try {
-            setIsModalRechercheOpen(false);
-            setChargement(true);
-            const response = await queryLivres(filtres);
-            const data: Livre[] = response.data ?? [];
-            setLivres(data);
-        } catch (err) {
-            setErreur(err instanceof Error ? err.message : "Erreur inconnue");
-        } finally {
-            setChargement(false);
-        }
+        setIsModalRechercheOpen(false);
+        await rechercherLivres(filtres); // Hook gère tout !
     };
 
     // Chargement des livres au montage (tout les livres !)
     useEffect(() => {
-        const chargerLivres = async () => { 
-            // async directement dans useEffect : on déclare une fonction async
-            try {
-                setChargement(true);
-                // attendre 0.5s pour simuler chargement
-                // await new Promise(resolve => setTimeout(resolve, 500)); 
-                //! ancienne logique appel API ici - maintenant Context
-                
-            } catch (err) {
-                setErreur(err instanceof Error ? err.message : "Erreur inconnue");
-            } finally {
-                setChargement(false); // toujours exécuté
-            }
-            
-        };
-        // et on l'appelle immédiatement — useEffect ne peut pas être async lui-même
         chargerLivres();
         }, []   // [] = une seule fois au montage
     ); 
