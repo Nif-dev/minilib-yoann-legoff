@@ -1,13 +1,9 @@
 //% frontend/src/context/AppContext.tsx
-//? Contexte global de gestion de objets de l'app (cache et actions)
+//? Contexte global de gestion de objets de l'app (cache uniquement - actions en HOOKS)
 
-import { createContext, useState, useEffect } from "react";
+import React, { createContext, useState } from "react";
 
 import type { Livre, Adherent, EmpruntAvecDetails } from '../types';
-
-import { getLivres } from '../services/api/livreService';
-import { getAdherents } from '../services/api/adherentService';
-import { getEmprunts, getRetards } from '../services/api/empruntService';
 
 /**
  *
@@ -15,35 +11,21 @@ import { getEmprunts, getRetards } from '../services/api/empruntService';
  */
 interface AppContextType {
     livres: Livre[];
-    setLivres: (livres: Livre[]) => void;
+    setLivres: React.Dispatch<React.SetStateAction<Livre[]>>;
     adherents: Adherent[];
-    setAdherents: (adherents: Adherent[]) => void;
+    setAdherents: React.Dispatch<React.SetStateAction<Adherent[]>>;
     emprunts: EmpruntAvecDetails[];
-    setEmprunts: (emprunts: EmpruntAvecDetails[]) => void;
+    setEmprunts: React.Dispatch<React.SetStateAction<EmpruntAvecDetails[]>>;
     retards: EmpruntAvecDetails[];
-    setRetards: (retards: EmpruntAvecDetails[]) => void;
-
-    chargementContext: boolean;
-    setChargementContext: (chargementContext: boolean) => void;
-    erreurContext: string | null;
-    setErreurContext: (erreurContext: string) => void;
-}
+    setRetards: React.Dispatch<React.SetStateAction<EmpruntAvecDetails[]>>;
+};
 
 const AppContext = createContext<AppContextType>( {
-    livres: [],
-    setLivres: () => {},
-    adherents: [],
-    setAdherents: () => {},
-    emprunts: [],
-    setEmprunts: () => {},
-    retards: [],
-    setRetards: () => {},
-    chargementContext: false,
-    setChargementContext: () => {},
-    erreurContext: null,
-    setErreurContext: () => {}
-})
-
+    livres: [], setLivres: () => {},
+    adherents: [], setAdherents: () => {},
+    emprunts: [], setEmprunts: () => {},
+    retards: [], setRetards: () => {},
+});
 
 /**
  * Composant fournisseur de contexte de l'application
@@ -56,78 +38,12 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const [emprunts, setEmprunts] = useState<EmpruntAvecDetails[]>([]);
     const [retards, setRetards] = useState<EmpruntAvecDetails[]>([]);
 
-    const [chargementContext, setChargementContext] = useState<boolean>(false);
-    const [erreurContext, setErreurContext] = useState<string | null>(null);
-    
-    useEffect(() => {
-        const chargerApp = async () => {
-            setChargementContext(true);
-            try {
-            await Promise.all([
-                chargerLivres(),
-                chargerAdherents(),
-                chargerEmprunts(),
-                chargerRetards(),
-            ]);
-            } finally {
-                setChargementContext(false);
-            }
-        };
-        chargerApp();
-    }, []);
-
-    const chargerLivres = async () => {
-        try {
-            const response = await getLivres();
-            const data: Livre[] = response.data ?? [];
-            setLivres(data);
-            
-        } catch (err) {
-            setErreurContext(err instanceof Error ? err.message : "Erreur inconnue");
-        }
-    };
-
-    const chargerAdherents = async () => {
-        try {
-            const response = await getAdherents();
-            const data: Adherent[] = response.data ?? [];
-            setAdherents(data);
-
-        } catch (err) {
-            setErreurContext(err instanceof Error ? err.message : "Erreur inconnue");
-        } 
-    }
-
-    const chargerEmprunts = async () => {
-        try {
-            const response = await getEmprunts();
-            const data: EmpruntAvecDetails[] = response.data ?? [];
-            setEmprunts(data);
-            
-        } catch (err) {
-            setErreurContext(err instanceof Error ? err.message : "Erreur inconnue");
-        }
-    }
-
-    const chargerRetards = async () => {
-        try {
-            const response = await getRetards();
-            const data: EmpruntAvecDetails[] = response.data ?? [];
-            setRetards(data);
-            
-        } catch (err) {
-            setErreurContext(err instanceof Error ? err.message : "Erreur inconnue");
-        } 
-    }
-
     return (
         <AppContext value={{ 
             livres, setLivres, 
             adherents, setAdherents, 
             emprunts, setEmprunts, 
             retards, setRetards,
-            chargementContext, setChargementContext,
-            erreurContext, setErreurContext
         }}>
             {children}
         </AppContext>
