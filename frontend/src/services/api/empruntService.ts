@@ -1,7 +1,7 @@
 //% frontend/src/services/api/empruntService.ts
 //? Services API Emprunts
 
-import type { ApiResponse, EmpruntAvecDetails, CreateEmpruntDTO } from '../../types';
+import type { ApiResponse, Emprunt, EmpruntAvecDetails, CreateEmpruntDTO } from '../../types';
 import { apiRequest } from './api';
 
 /**
@@ -25,7 +25,7 @@ export async function getEmpruntByID(id: number): Promise<ApiResponse<EmpruntAve
 * 
 * @param {CreateEmpruntDTO} data - données de l'emprunt
 */
-export async function createEmprunt(data: CreateEmpruntDTO): Promise<ApiResponse<EmpruntAvecDetails>> {
+export async function createEmprunt(data: CreateEmpruntDTO): Promise<ApiResponse<Emprunt>> {
     return apiRequest<EmpruntAvecDetails>('/emprunts', {
         method: 'post',
         body: JSON.stringify(data) });

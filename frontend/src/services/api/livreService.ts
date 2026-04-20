@@ -60,7 +60,7 @@ export async function getLivreById(id: number): Promise<ApiResponse<Livre>> {
  * Crée un nouveau livre.
  * @param { CreateLivreDTO } data - Données de création
  */
-export async function creerLivre(data: CreateLivreDTO): Promise<ApiResponse<Livre>> {
+export async function createLivre(data: CreateLivreDTO): Promise<ApiResponse<Livre>> {
     return apiRequest<Livre>("/livres", {
         method: "POST",
         body: JSON.stringify(data),
@@ -71,7 +71,7 @@ export async function creerLivre(data: CreateLivreDTO): Promise<ApiResponse<Livr
  * @param { number } id - id du livre à modifier
  * @param { UpdateLivreDTO } data - Données de modification
  */
-export async function modifierLivre(id: number, data: UpdateLivreDTO): Promise<ApiResponse<Livre>> {
+export async function updateLivre(id: number, data: UpdateLivreDTO): Promise<ApiResponse<Livre>> {
     return apiRequest<Livre>(`/livres/${id}`, {
         method: "PUT",
         body: JSON.stringify(data),
@@ -83,6 +83,6 @@ export async function modifierLivre(id: number, data: UpdateLivreDTO): Promise<A
  *
  * @param { number } id - id du livre à supprimer
  */
-export async function supprimerLivre(id: number): Promise<ApiResponse<void>> {
+export async function deleteLivre(id: number): Promise<ApiResponse<void>> {
     return apiRequest<void>(`/livres/${id}`, { method: "DELETE" });
 }
