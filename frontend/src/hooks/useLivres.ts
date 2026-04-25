@@ -1,10 +1,10 @@
 //% src/hooks/useLivres.ts
 // ? Hook de gestion des livres
 
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import type { ApiResponse, Livre, CreateLivreDTO, UpdateLivreDTO, FiltresRechercheLivres  } from '../types';
-import { getLivres, queryLivres, createLivre, updateLivre } from '../services/api/livreService';
+import { getLivres, queryLivres, createLivre, updateLivre, deleteLivre } from '../services/api/livreService';
 
 
 export const useLivres = () => {
@@ -12,6 +12,16 @@ export const useLivres = () => {
     if (!context.emprunts) throw new Error('useLivres doit être dans AppProvider');
 
     const { livres, setLivres } = context;
+
+    const [livresDispo, setLivresDispo] = useState<Livre[]>([])
+
+    useEffect(()=> 
+        {
+            const tmpLivresDispo = livres.filter(livre => livre.disponible)
+            setLivresDispo(tmpLivresDispo);
+            
+        } ,[livres]
+    )
 
      // States locaux pour feedback (exposés aux composants enfants)
     const [erreur, setErreur] = useState<string | null>(null);
@@ -127,8 +137,34 @@ export const useLivres = () => {
         }
     }
 
+    // Suppression d'un livre
+    const supprimerLivre = async (id: number)
+    : Promise<ApiResponse<void>> => {
+        setChargement(true);
+        resetFeedback();
+        try {
+            const response = await deleteLivre(id);
+            if (!response.success) {
+                setErreur(response.error || 'Échec modification');
+                if (response.champs) setChampsErreurs(response.champs);
+                if (response.message) setMessage(response.message);
+                return response;
+            }
+            setLivres(prev => prev.filter(livre => livre.id !== id));
+            setMessage(response.message || 'Livre supprimé');
+            return response;
+        
+        } catch (err) {
+            setErreur(err instanceof Error ? err.message : 'Erreur chargement');
+            return { success: false, error: err instanceof Error ? err.message : 'Erreur chargement'};
+        } finally {
+            setChargement(false);
+        }
+    }
+
     return {
         livres,
+        livresDispo,
         erreur,
         chargement,
         message,
@@ -137,6 +173,7 @@ export const useLivres = () => {
         rechercherLivres,
         ajouterLivre,
         modifierLivre,
+        supprimerLivre,
         resetFeedback
     };
 };

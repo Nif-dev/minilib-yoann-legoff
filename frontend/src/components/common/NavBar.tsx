@@ -29,7 +29,7 @@ const NavBar = () => {
                 </div>
                 <div className="navbar-item is-flex is-justify-content-center">
                     <Link to="/livres" className="button is-primary ">Livres</Link>
-                    <Link to="/adherents" className="button is-warning">Adh&eacute;rents</Link>
+                    <Link to="/adherents" className="button is-warning">Adhérents</Link>
                     <Link to="/emprunts" className="button is-info">Emprunts</Link>
                     <Link to="/404" className="button navbar-item">404 temp</Link> 
                 </div>

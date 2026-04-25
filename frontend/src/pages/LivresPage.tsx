@@ -11,6 +11,8 @@ import SkeletonLivres from '../components/skeletons/SkeletonLivres';
 import ModalLivresRecherche from '../components/modals/ModalLivresRecherche';
 import ModalLivreAjout from '../components/modals/ModalLivreAjout';
 import ModalLivreModifier from '../components/modals/ModalLivreModifier';
+import ModalLivreSupprimer from '../components/modals/ModalLivreSupprimer';
+import ModalEmpruntAjout from "../components/modals/ModalEmpruntAjout";
 
 export default function LivresPage() {
 
@@ -23,13 +25,16 @@ export default function LivresPage() {
         erreur 
     } = useLivres();
 
-    // Gestion des modals 
+    // Gestion des modals global
     const [isModalRechercheOpen, setIsModalRechercheOpen] = useState<boolean>(false);
     const [isModalAjoutOpen, setIsModalAjoutOpen] = useState<boolean>(false);
-    const [isModalModifierOpen, setIsModalModifierOpen] = useState(false);
 
-    const [livreAModifierID, setLivreAModifierID] = useState<number>(0);
-    
+    // Gestion des modals spécifiques à un item - Livre Card ici
+    const [isModalModifierOpen, setIsModalModifierOpen] = useState(false);
+    const [isModalEmpruntOpen, setIsModalEmpruntOpen] = useState(false);
+    const [isModalSuppressionOpen, setIsModalSuppressionOpen] = useState(false);
+    const [livreIdAction, setLivreIdAction] = useState<number>(0);
+
     // Filtres de recherche (nouvel appel API par queryLivres dans le hook)
     const [recherche, setRecherche] = useState<string>('');
     const [genre, setGenre] = useState<string>('');
@@ -69,11 +74,24 @@ export default function LivresPage() {
 
     // Gestion pour la modal de modification
     const handleModalModification = (id: number) => {
-        setLivreAModifierID(id);
+        setLivreIdAction(id);
         setIsModalModifierOpen(true);
     }
-    const livreAModifier = livreAModifierID ? livres.find(livre => livre.id === livreAModifierID) : null;
+    const livreAModifier = livreIdAction ? livres.find(livre => livre.id === livreIdAction) : null;
     
+    // Gestion pour la modal d'emprunt
+    const handleModalEmprunt = (id: number) => {
+        setLivreIdAction(id);
+        setIsModalEmpruntOpen(true);
+    }
+
+
+    // Gestion pour la modal de suppression
+    const handleModalSuppression = (id: number) => {
+        setLivreIdAction(id);
+        setIsModalSuppressionOpen(true);
+    }
+
     //* Rendu conditionnel selon état
     if (chargement) return (
         <div className='section'>
@@ -143,11 +161,11 @@ export default function LivresPage() {
             </div>
 
             {/* Affichage des livres */}
-            <ListeLivres livres={livresAffiches} onModifier={handleModalModification}/>
+            <ListeLivres livres={livresAffiches} onModifier={handleModalModification} onEmprunter={handleModalEmprunt} onSupprimer={handleModalSuppression}/>
 
         </section>
 
-            {/* Modals - hors flow classique */}
+            {/* Modals - hors flow classique de la page */}
         <section>
             {/* Modal filtres */}
             {isModalRechercheOpen && <ModalLivresRecherche
@@ -176,6 +194,19 @@ export default function LivresPage() {
                 oldLivre={livreAModifier}
                 />}
 
+            {/* Modal emprunter le livre */}
+            { isModalEmpruntOpen && livreIdAction !== 0 && <ModalEmpruntAjout
+                isOpen={isModalEmpruntOpen}
+                idLivre={livreIdAction}
+                onClose={() => setIsModalEmpruntOpen(false)}
+            />}
+
+            {/* Modal supprimer livre */}
+            {isModalSuppressionOpen && livreIdAction !== 0 && <ModalLivreSupprimer
+                isOpen={isModalSuppressionOpen}
+                livreID={livreIdAction}
+                onClose={() => setIsModalSuppressionOpen(false)}
+            />}
         </section>
             
         </>

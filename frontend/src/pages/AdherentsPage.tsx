@@ -9,6 +9,7 @@ import SkeletonAdherents from '../components/skeletons/SkeletonAdherents';
 
 import ModalAdherentAjout  from '../components/modals/ModalAdherentAjout';
 import ModalAdherentModifier from '../components/modals/ModalAdherentModifier';
+import ModalAdherentSupprimer from '../components/modals/ModalAdherentSupprimer';
 
 import ModalEmpruntAjout from '../components/modals/ModalEmpruntAjout';
 
@@ -34,11 +35,14 @@ export default function AdherentsPage() {
         )
     );
 
-    // Gestion des modals
+    // Gestion des modals global
     const [isModalAjoutOpen, setIsModalAjoutOpen] = useState<boolean>(false);
+
+    // Gestion des modals spécifiques à un item - Adherent Card ici
     const [isModalModifierOpen, setIsModalModifierOpen] = useState<boolean>(false);
-    const [adherentAModifier, setAdherentAModifier] = useState<number>();
+    const [isModalSupprimerOpen, setIsModalSupprimerOpen] = useState<boolean>(false);
     const [isModalEmpruntOpen, setIsModalEmpruntOpen] = useState<boolean>(false);
+    const [adherentIdAction, setAdherentIdAction] = useState<number>();
 
     // Chargement des adhérents au montage (tous !)
     useEffect(() => {
@@ -50,14 +54,15 @@ export default function AdherentsPage() {
     const handleCardAction = (action: string, id: number) => {
     switch(action) {
         case 'modifier':
-            setAdherentAModifier(id);
+            setAdherentIdAction(id);
             setIsModalModifierOpen(true);
             break;
         case 'supprimer':
-            // Logique suppression
+            setAdherentIdAction(id);
+            setIsModalSupprimerOpen(true)
             break;
         case 'emprunt':
-            setAdherentAModifier(id);
+            setAdherentIdAction(id);
             setIsModalEmpruntOpen(true);
             break;
     }
@@ -135,17 +140,22 @@ export default function AdherentsPage() {
 
             {/* Modal modifier adhérent */}
             {isModalModifierOpen && <ModalAdherentModifier    
-                adherentID={adherentAModifier!} 
+                adherentID={adherentIdAction!} 
                 isOpen={isModalModifierOpen}  
                 onClose={() => setIsModalModifierOpen(false)} />}
 
             {/* Modal emprunt */}
             {isModalEmpruntOpen && <ModalEmpruntAjout
-                idAdherent={adherentAModifier}    
+                idAdherent={adherentIdAction}    
                 isOpen={isModalEmpruntOpen}  
                 onClose={() => setIsModalEmpruntOpen(false)} />}
 
-
+            {/* Modal suppression */}
+            {isModalSupprimerOpen && <ModalAdherentSupprimer 
+                adherentID={adherentIdAction!}
+                isOpen={isModalSupprimerOpen}
+                onClose={() => setIsModalSupprimerOpen(false)} />}
+            
         </section>
             
         </>

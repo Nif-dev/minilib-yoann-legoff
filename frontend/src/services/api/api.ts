@@ -55,6 +55,9 @@ export async function apiRequest <T>(endpoint: string, options?: RequestInit)
             );
         }
 
+        // Attente de 400ms avant de renvoyer la réponse ( UI )
+        await new Promise(resolve => setTimeout(resolve, 400));
+
         // Forward de la réponse API vers les services appelants
         return apiResponse;
 

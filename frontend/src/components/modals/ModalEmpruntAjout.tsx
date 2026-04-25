@@ -21,10 +21,10 @@ export default function ModalEmpruntAjout({
     idAdherent,
 } : ModalEmpruntAjoutProps) {
 
-    const { livres } = useLivres();
+    const { livres, livresDispo } = useLivres();
     const { adherents } = useAdherents();
 
-    const livresDispo = livres.filter(livre => livre.disponible);
+
 
     const [livre_id, setLivre_id] = useState(idLivre || 0);
     const [adherent_id, setAdherent_id] = useState(idAdherent || 0);

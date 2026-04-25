@@ -7,7 +7,7 @@ import { useAdherents } from "../../hooks";
 import type { UpdateAdherentDTO } from "../../types";
 
 
-interface ModalAdherentAjoutProps {
+interface ModalAdherentModifierProps {
     readonly adherentID: number
     readonly isOpen: boolean;
     readonly onClose: () => void;
@@ -17,7 +17,7 @@ export default function ModalAdherentModifier({
     adherentID,
     isOpen,
     onClose
-}: ModalAdherentAjoutProps) {
+}: ModalAdherentModifierProps) {
 
     // utilisation des hooks de gestion des adhérents
     const {

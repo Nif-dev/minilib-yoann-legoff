@@ -7,11 +7,15 @@ import LivreCard from "../cards/LivreCard";
 interface ListeLivresProps {
     readonly livres: Livre[];
     readonly onModifier?: (id: number) => void
+    readonly onEmprunter?: (id: number) => void
+    readonly onSupprimer?: (id: number) => void
 }
 
 export default function ListeLivres({ 
     livres, 
-    onModifier 
+    onEmprunter,
+    onModifier, 
+    onSupprimer
 }: ListeLivresProps) {
 
     if (!livres?.length) {
@@ -27,7 +31,11 @@ export default function ListeLivres({
                         <LivreCard 
                             livre={livre} 
                             {...(livre.disponible && 
-                                { onModifier : () => onModifier?.(livre.id) }
+                                {
+                                onModifier : () => onModifier?.(livre.id), 
+                                onEmprunter : () => onEmprunter?.(livre.id),
+                                onSupprimer : () => onSupprimer?.(livre.id)
+                                }
                             )}
                             />
                     </li>

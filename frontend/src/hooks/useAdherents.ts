@@ -4,7 +4,7 @@
 import { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import type { ApiResponse, Adherent, CreateAdherentDTO, UpdateAdherentDTO  } from '../types';
-import { getAdherents, createAdherent, updateAdherent } from '../services/api/adherentService';
+import { getAdherents, createAdherent, updateAdherent, deleteAdherent } from '../services/api/adherentService';
 
 
 export const useAdherents = () => {
@@ -27,7 +27,11 @@ export const useAdherents = () => {
 
 
     //? Actions isolées
-    // Chargement des adhérents
+    /**
+     * Chargement des adhérents
+     *
+     * @return {*}  {Promise<ApiResponse<Adherent[]>>}
+     */
     const chargerAdherents = async ()
     :Promise<ApiResponse<Adherent[]>> => {
         setChargement(true);
@@ -36,7 +40,7 @@ export const useAdherents = () => {
             const response = await getAdherents();
             if (response.success) {
                 setAdherents(response.data ?? []);
-                setMessage(response.message || 'Livres chargés');
+                setMessage(response.message || 'Adhérents chargés');
             } else {
                 setErreur(response.error || 'Échec chargement');
             }
@@ -104,6 +108,28 @@ export const useAdherents = () => {
         }
     }
 
+    // Désactivation d'un adhérent
+    const supprimerAdherent = async ( id: number )
+    : Promise<ApiResponse<void>> => {
+        setChargement(true);
+        resetFeedback();
+        try{
+            const response = await deleteAdherent(id);
+            if (!response.success) {
+                setErreur(response.error || 'Échec suppression');
+                if (response.message) setMessage(response.message);
+                return response;
+            }
+            return response;
+
+        } catch(err) {
+            setErreur(err instanceof Error ? err.message : 'Erreur Chargement');
+            return { success: false, error: err instanceof Error ? err.message : 'Erreur chargement'};
+        } finally {
+            setChargement(false)
+        }
+    }
+
     return {
         adherents,
         erreur,
@@ -113,6 +139,7 @@ export const useAdherents = () => {
         chargerAdherents,
         ajouterAdherent,
         modifierAdherent,
+        supprimerAdherent,
         resetFeedback
     };
 };

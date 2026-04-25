@@ -10,6 +10,7 @@ import DisponibiliteBadge from "../ui/DisponibiliteBadge";
 interface LivreCardProps {
     readonly livre: Livre;
     readonly onSupprimer?: (id: number) => void; // prop optionnelle — callback depuis le parent
+    readonly onEmprunter?: (id: number) => void;
     readonly onModifier?: (id: number) => void;
 }
 
@@ -19,14 +20,15 @@ interface LivreCardProps {
  * @export
  * @param {LivreCardProps} { 
  *     livre, 
- *     onSupprimer, 
+ *     onSupprimer,
+ *     onEmprunter, 
  *     onModifier 
  * }
- * @return {*} 
  */
 export default function LivreCard({ 
     livre, 
-    onSupprimer, 
+    onSupprimer,
+    onEmprunter,
     onModifier 
 }: LivreCardProps) {
 
@@ -48,27 +50,32 @@ export default function LivreCard({
             </div>
             
             {/* onSupprimer et onModifier sont optionnels, leur affichage aussi */}
-            <footer className="card-footer">
-            {onSupprimer && (
+            <div className="card-footer">
+            {onSupprimer && 
                     <button 
-                        className="button card-footer-item" 
-                        onClick={() => onSupprimer(livre.id)}
+                        className="button is-danger is-light card-footer-item" 
+                        onClick={() => onSupprimer?.(livre.id)}
                         >Supprimer
                     </button>
-            )}
-            {onModifier && <button 
+            }
+            {onModifier && 
+                    <button 
                         title="Modifier" 
-                        className="button card-footer-item" 
+                        className="button is-warning is-light card-footer-item" 
                         onClick={() => onModifier?.(livre.id)}
                         >Modifier
                     </button>}
+            {onEmprunter && 
+                    <button 
+                        title="Emprunter" 
+                        className="button is-success is-light card-footer-item" 
+                        onClick={() => onEmprunter?.(livre.id)}
+                        >Emprunter
+                    </button>}
             
-            </footer>
+            
+            </div>
         </div>
     );
 }
 
-// Utilisation — TypeScript vérifie que livre est bien un Livre :
-// <LivreCard livre={monLivre} />
-// <LivreCard livre={monLivre} onSupprimer={(id) => console.log(id)} />
-//! onSupprimer est défini par le parent, déclenché par le composant LivreCard
