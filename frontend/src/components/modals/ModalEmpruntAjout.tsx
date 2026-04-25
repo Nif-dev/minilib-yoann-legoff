@@ -3,34 +3,43 @@
 
 import { useState } from "react";
 
-import { useLivres, useAdherents, useEmprunts } from "../../hooks";
 import type { CreateEmpruntDTO } from "../../types";
+import { useLivres, useAdherents, useEmprunts } from "../../hooks";
 
 interface ModalEmpruntAjoutProps {
     readonly isOpen: boolean;
     readonly onClose: () => void;
-    readonly idLivre?: number;
-    readonly idAdherent?: number;
-
+    readonly livreIdLock?: number;
+    readonly adherentIdLock?: number;
 }
 
+/**
+ *  Composant Modal pour ajouter un nouvel emprunt de livre
+ *  Peut être utiliser avec un livre ou un adhérent verrouillé
+ * @export function ModalEmpruntAjout
+ * @param isOpen
+ * @param onClose
+ * @param livreIdLock - si renseigné, livre verrouillé
+ * @param adherentIdLock - si renseigné, adhérent verrouillé
+ * @returns ModalEmpruntAjout
+ */
 export default function ModalEmpruntAjout({ 
     isOpen, 
     onClose, 
-    idLivre, 
-    idAdherent,
+    livreIdLock, 
+    adherentIdLock,
 } : ModalEmpruntAjoutProps) {
 
+    // Données du formulaire
+    const [livre_id, setLivre_id] = useState(livreIdLock || 0);
+    const [adherent_id, setAdherent_id] = useState(adherentIdLock || 0);
+
+    // utilisation des hooks de gestion des livres et adhérents
     const { livres, livresDispo } = useLivres();
     const { adherents } = useAdherents();
 
-
-
-    const [livre_id, setLivre_id] = useState(idLivre || 0);
-    const [adherent_id, setAdherent_id] = useState(idAdherent || 0);
-
     // utilisation des hooks de gestion des emprunts
-    const { 
+    const {
         ajouterEmprunt, 
         chargement, 
         message, 
@@ -39,16 +48,16 @@ export default function ModalEmpruntAjout({
         resetFeedback 
     } = useEmprunts();
 
+    // DTO de création d'un nouvel emprunt
     const newEmprunt: CreateEmpruntDTO = {
         livre_id: livre_id,
         adherent_id: adherent_id
     }
 
-    // fonction d'emprunt - callback
+    // fonction d'appels API via hook
     const emprunterLivre = async () => {
         await ajouterEmprunt(newEmprunt);
     };
-
 
     // UX : clear erreur sur saisie
     const onFieldChange = () => {
@@ -74,11 +83,11 @@ export default function ModalEmpruntAjout({
                     <div className="field">
                         <label htmlFor="adherent_field" className="label has-text-centered">Adhérent</label>
                         <div id="adherent_field" className="control ">
-                            { idAdherent 
+                            { adherentIdLock 
                             ? // adhérent bloqué
                             <div className="select">
                                 <select disabled>
-                                    <option>{adherents.find(adherent => adherent.id === idAdherent)?.nom} {adherents.find(adherent => adherent.id === idAdherent)?.prenom}</option>
+                                    <option>{adherents.find(adherent => adherent.id === adherentIdLock)?.nom} {adherents.find(adherent => adherent.id === adherentIdLock)?.prenom}</option>
                                 </select>
                             </div>
                             : // adhérent libre
@@ -100,11 +109,11 @@ export default function ModalEmpruntAjout({
                     <div className="field">
                         <label htmlFor="livre_field" className="label has-text-centered">Livre</label>
                         <div id="livre_field" className="control ">
-                            { idLivre 
+                            { livreIdLock
                             ? // livre bloqué
                             <div className="select">
                                 <select disabled>
-                                    <option>{livres.find(livre => livre.id === idLivre)?.titre}</option>
+                                    <option>{livres.find(livre => livre.id === livreIdLock)?.titre}</option>
                                 </select>
                             </div>
                             : // livre libre
@@ -125,15 +134,9 @@ export default function ModalEmpruntAjout({
                     </div>
                     {/* affichage des messages /erreurs */}
                     <div className="field has-text-centered">
-
                         { chargement && <div className="has-text-success has-text-centered my-4">Requête en cours ...</div> }
-                        
                         {!erreur && message && <div className="has-text-success has-text-centered my-4">{message}</div>}
-                        
                         {erreur && message && <div className="has-text-danger has-text-centered my-4">{message}</div>}
-                        
-                        
-                        
                         {champsErreurs.length > 0 && <div className="has-text-danger has-text-left my-4">
                             <ul>
                                 {champsErreurs.map((champ, index) => (
@@ -149,20 +152,20 @@ export default function ModalEmpruntAjout({
                     <div className="field is-grouped">
                         <div className="control buttons ">
                             <button type='button' 
+                                className={erreur ? "button is-danger is-inactive" : "button is-success is-light"} 
                                 disabled={erreur !== null || chargement || adherent_id === 0 || livre_id === 0 } 
-                                className={erreur ? "button is-danger is-inactive" : "button is-success"} 
                                 onClick={() => emprunterLivre()}
                                 >
                                 Valider Emprunt !
                             </button>
                             
                             <button type="button" 
+                                className="button is-link is-light"
                                 disabled={chargement}
                                 onClick={() => {
                                     onClose();
                                     resetFeedback();
                                 }} 
-                                className="button is-link is-light"
                                 >
                                 Fermer
                                 </button>
@@ -171,5 +174,6 @@ export default function ModalEmpruntAjout({
                     </div>
                 </footer>
             </div>
-        </div>)
+        </div>
+    );
 }

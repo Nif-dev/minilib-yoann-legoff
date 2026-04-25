@@ -1,9 +1,9 @@
 //% frontend/src/components/ModalAdherentSupprimer.tsx
 //? Confirmation de suppression d'un adherent
 
-import { useAdherents } from "../../hooks";
-
 import { useState } from "react";
+
+import { useAdherents } from "../../hooks";
 
 interface ModalAdherentSupprimerProps {
     readonly adherentID: number
@@ -11,6 +11,14 @@ interface ModalAdherentSupprimerProps {
     readonly onClose: () => void;
 }
 
+/**
+ *  Composant Modal de suppression d'adhérent
+ * @export function ModalAdherentSupprimer
+ * @param adherentID
+ * @param isOpen
+ * @param onClose
+ * @returns ModalAdherentSupprimer -> visuel de suppression d'adhérent
+ */
 export default function ModalAdherentSupprimer({ 
     adherentID,
     isOpen,
@@ -34,20 +42,21 @@ export default function ModalAdherentSupprimer({
 
     // Adhérent chargé pour modification
     const adherent = adherents.find(adh => adh.id === adherentID);
-    
+
+    // Détails de l'adhérent
     const prenom = adherent?.prenom
     const nom = adherent?.nom
     const email = adherent?.email
     const code = adherent?.numero_adherent
 
-
-    // fonction de modification adhérent - callback
+    // fonction d'appel API via hook
     const suppressionAdherent = async () => {
         await supprimerAdherent(adherentID);
     }
 
+    if (!isOpen) return null;
+
     return (
-        isOpen && (
         <div className="modal is-active">
             <div className="modal-background" onClick={onClose}></div>
             <div className="modal-card">
@@ -56,7 +65,6 @@ export default function ModalAdherentSupprimer({
                     <p className="modal-card-title">
                         Suppression de l'adhérent : {code}
                     </p>
-                    
                     <button type="button" className="delete" aria-label="close" onClick={onClose}>
                     </button>
                 </header>
@@ -113,13 +121,9 @@ export default function ModalAdherentSupprimer({
 
                     {/* affichage des messages /erreurs */}
                     <div className="field has-text-centered">
-
                         { chargement && <div className="has-text-success has-text-centered my-4">Requête en cours ...</div> }
-                        
                         { !erreur && message && <div className="has-text-success has-text-centered my-4">{message}</div>}
-                        
                         { erreur && message && <div className="has-text-danger has-text-centered my-4">{message}</div>}
-                        
                         {champsErreurs.length > 0 && <div className="has-text-danger has-text-left my-4">
                             <ul>
                                 {champsErreurs.map((champ, index) => (
@@ -138,47 +142,52 @@ export default function ModalAdherentSupprimer({
                             {!confirmationSuppression && (
                                 <div className="is-flex is-justify-content-space-between p-1">
                                     <button type='button' 
-                                        disabled={erreur !== null || chargement } 
                                         className={erreur ? "button is-danger is-inactive" : "button is-danger is-light"} 
+                                        disabled={erreur !== null || chargement } 
                                         onClick={() => {
                                             resetFeedback();
                                             setConfirmationSuppression(true)
-                                            
                                         }}
                                         > Désactiver l'adhérent
                                     </button>
                                 
                                     <button type="button" 
+                                        className="button is-link is-light"
                                         disabled={chargement}
                                         onClick={()=> {
                                             onClose();
                                             resetFeedback();
                                         }} 
-                                        className="button is-link is-light"
                                         > Fermer
                                     </button>
-                            </div>
+                                </div>
                             )}
                             {confirmationSuppression && (
                                 <div>
-                        <p>
-                            Confirmer la suppression ?
-                        </p>
-                        <button className="button is-success is-light m-1" 
-                            onClick={() => suppressionAdherent()}
-                            > Oui
-                        </button>
-                        <button className="button is-link is-light m-1" 
-                            onClick={() => setConfirmationSuppression(false)}
-                            > Annuler
-                        </button>
-                    </div>
+                                    <p>
+                                        Confirmer la suppression ?
+                                    </p>
+                                    <button type="button" 
+                                        className="button is-success is-light m-1" 
+                                        onClick={() => 
+                                            suppressionAdherent()
+                                        }
+                                        > Oui
+                                    </button>
+                                    <button type="button" 
+                                        className="button is-link is-light m-1" 
+                                        onClick={() => 
+                                            setConfirmationSuppression(false)
+                                        }
+                                        > Annuler
+                                    </button>
+                                </div>
                             )}
                         
                         </div>
                     </div>
                 </div>
             </div>
-        </div>)
+        </div>
     );
 }

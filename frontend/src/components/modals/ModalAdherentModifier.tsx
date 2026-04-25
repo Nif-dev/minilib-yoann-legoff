@@ -3,9 +3,8 @@
 
 import { useState } from "react";
 
-import { useAdherents } from "../../hooks";
 import type { UpdateAdherentDTO } from "../../types";
-
+import { useAdherents } from "../../hooks";
 
 interface ModalAdherentModifierProps {
     readonly adherentID: number
@@ -13,6 +12,14 @@ interface ModalAdherentModifierProps {
     readonly onClose: () => void;
 }
 
+/**
+ *  Composant Modal de modification d'adhérent
+ * @export function ModalAdherentModifier
+ * @param adherentID
+ * @param isOpen
+ * @param onClose
+ * @returns ModalAdherentModifier -> visuel formulaire de modification d'adhérent
+ */
 export default function ModalAdherentModifier({ 
     adherentID,
     isOpen,
@@ -32,43 +39,46 @@ export default function ModalAdherentModifier({
 
     // Adhérent chargé pour modification
     const adherent = adherents.find(adh => adh.id === adherentID);
-    
 
     // Données du formulaire
-    const [nom, setNom] = useState(adherent?.nom || '');
-    const [prenom, setPrenom] = useState(adherent?.prenom || '');
-    const [email, setEmail] = useState(adherent?.email || '');
+    const [nom, setNom] = useState(adherent?.nom);
+    const [prenom, setPrenom] = useState(adherent?.prenom);
+    const [email, setEmail] = useState(adherent?.email);
 
-    
+    // reset des champs du formulaire
+    const resetChamps = () => {
+        setNom(adherent?.nom);
+        setPrenom(adherent?.prenom);
+        setEmail(adherent?.email);
+    }
+
+    // DTO de modification d'adhérent pour l'API
     const modifiedAdherent: UpdateAdherentDTO = {
         nom: nom,
         prenom: prenom,
         email: email
     }
 
-    // fonction de modification adhérent - callback
+    // fonction d'appel API via hook + contrôle qu'une modif ait lieu
     const modificationAdherent = async () => {
-        if (nom === adherent?.nom && prenom === adherent?.prenom && email === adherent?.email) {
+        if (nom === adherent?.nom && 
+            prenom === adherent?.prenom && 
+            email === adherent?.email) 
             return;
-        }
         await modifierAdherent(adherentID,modifiedAdherent);
     }
 
-    // reset des champs
-    const resetChamps = () => {
-        setNom(adherent?.nom || '');
-        setPrenom(adherent?.prenom || '');
-        setEmail(adherent?.email || '');
-    }
+    if (!isOpen) return null;
 
     return (
-        isOpen && (
         <div className="modal is-active">
             <div className="modal-background" onClick={onClose}></div>
             <div className="modal-card">
 
                 <header className="modal-card-head">
-                    <p className="modal-card-title">Modification de l'adhérent</p>
+                    <p className="modal-card-title">
+                        Modification de l'adhérent
+                    </p>
                     <button type="button" className="delete" aria-label="close" onClick={onClose}>
                     </button>
                 </header>
@@ -112,13 +122,9 @@ export default function ModalAdherentModifier({
                     
                     {/* affichage des messages /erreurs */}
                     <div className="field has-text-centered">
-
                         { chargement && <div className="has-text-success has-text-centered my-4">Requête en cours ...</div> }
-                        
                         { !erreur && message && <div className="has-text-success has-text-centered my-4">{message}</div>}
-                        
                         { erreur && message && <div className="has-text-danger has-text-centered my-4">{message}</div>}
-                        
                         {champsErreurs.length > 0 && <div className="has-text-danger has-text-left my-4">
                             <ul>
                                 {champsErreurs.map((champ, index) => (
@@ -131,13 +137,13 @@ export default function ModalAdherentModifier({
                 </div>
 
                 {/* Actions du formulaire */}
-                <footer className="modal-card-foot">
+                <div className="modal-card-foot">
                     <div className="field is-grouped">
                         <div className="control buttons ">
                             
                             <button type='button' 
+                                className={erreur ? "button is-danger is-inactive" : "button is-success is-light"} 
                                 disabled={erreur !== null || chargement || nom === '' || prenom === '' || email === ''} 
-                                className={erreur ? "button is-danger is-inactive" : "button is-success"} 
                                 onClick={() => {
                                     resetFeedback();
                                     modificationAdherent();
@@ -146,29 +152,29 @@ export default function ModalAdherentModifier({
                             </button>
 
                             <button type="button" 
+                                className="button is-warning is-light"
                                 disabled={chargement}
-                                className="button is-link is-light"
                                 onClick={()=> {
                                     resetChamps(); 
                                     resetFeedback();
                                 }} 
-                                > Annuler modification
+                                > Annuler les modifications
                             </button>
                             
                             <button type="button" 
+                                className="button is-link is-light"
                                 disabled={chargement}
                                 onClick={()=> {
                                     onClose();
                                     resetFeedback();
                                 }} 
-                                className="button is-link is-light"
                                 > Fermer
                             </button>
                         
                         </div>
                     </div>
-                </footer>
+                </div>
             </div>
-        </div>)
+        </div>
     );
 }

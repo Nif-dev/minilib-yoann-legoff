@@ -5,10 +5,6 @@ import React, { createContext, useState } from "react";
 
 import type { Livre, Adherent, EmpruntAvecDetails } from '../types';
 
-/**
- *
- * @interface AppContextType
- */
 interface AppContextType {
     livres: Livre[];
     setLivres: React.Dispatch<React.SetStateAction<Livre[]>>;
@@ -20,6 +16,15 @@ interface AppContextType {
     setRetards: React.Dispatch<React.SetStateAction<EmpruntAvecDetails[]>>;
 };
 
+/**
+ *  Contexte de gestion de l'application
+ * @property livres <Livre[]> -- Liste des livres
+ * @property setLivres <SetStateAction<Livre[]>> -- Fonction de mise à jour de la liste des livres
+ * @property adherents <Adherent[]> -- Liste des adherents
+ * @property setAdherents <SetStateAction<Adherent[]>> -- Fonction de mise à jour de la liste des adherents
+ * @property emprunts <EmpruntAvecDetails[]> -- Liste des emprunts
+ * @property setEmprunts <SetStateAction<EmpruntAvecDetails[]>> -- Fonction de mise à jour de la liste des emprunts
+ *  */
 const AppContext = createContext<AppContextType>( {
     livres: [], setLivres: () => {},
     adherents: [], setAdherents: () => {},
@@ -28,9 +33,9 @@ const AppContext = createContext<AppContextType>( {
 });
 
 /**
- * Composant fournisseur de contexte de l'application
- * Fournit les objets de l'application à l'ensemble de l'application.
- * 
+ *  Composant fournisseur de contexte de l'application - 
+ *  Fournit les objets de l'application à l'ensemble de l'application.
+ * @param { React.ReactNode } children - Enfants du composant - ici l'app Minilib
  */
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const [livres, setLivres] = useState<Livre[]>([]);

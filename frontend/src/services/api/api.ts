@@ -1,22 +1,11 @@
 //% src/services/api/api.ts
 //? Point d'entrée des services API, gestion des appels API
 
-
-/** Configuration de l'URL de base et les headers communs */
+// Configuration de l'URL de base et les headers communs
 const API_URL = import.meta.env.VITE_API_URL ;
 
-// todo Bonne pratique ? à voir avec El, différence entre traitement data seul ou corps réponse complet
 // Type générique pour les appels API
 import type { ApiResponse } from "../../types/api";
-
-
-// Type générique pour uniformiser les réponses d'erreurs
-// export interface ApiError {
-//     success: false;
-//     error: string;
-//     message?: string;
-//     champs?: string[];
-// }
 
 /**
 * Fonction de base pour les appels API
@@ -35,7 +24,8 @@ export async function apiRequest <T>(endpoint: string, options?: RequestInit)
             headers: {
                 'Content-Type': 'application/json', ...options?.headers
             },
-            ...options } // options peut contenir method, body, etc.
+            ...options } // options peut contenir method, body, etc. 
+            // -- par défaut la methode est GET
         );
 
         // Gestion de la non-réponse de l'API

@@ -4,7 +4,8 @@
 import { useState, useEffect } from 'react';
 import { useAdherents } from '../hooks';
 
-import AdherentCard from '../components/cards/AdherentCard';
+import ListeAdherents from '../components/listes/ListeAdherents';
+
 import SkeletonAdherents from '../components/skeletons/SkeletonAdherents';
 
 import ModalAdherentAjout  from '../components/modals/ModalAdherentAjout';
@@ -13,7 +14,12 @@ import ModalAdherentSupprimer from '../components/modals/ModalAdherentSupprimer'
 
 import ModalEmpruntAjout from '../components/modals/ModalEmpruntAjout';
 
-
+/**
+ *  Page d'affichage et de gestion des adhérents
+ * - Gestion des adhérents - centralise la logique et expose les actions aux composants enfants
+ * - Récupère et affiche les adhérents à chaque chargement du composant
+ * - Gestion des modals au niveau de la page
+ */
 export default function AdherentsPage() {
 
     // Hook : TOUT le métier (données + actions + états)
@@ -118,17 +124,10 @@ export default function AdherentsPage() {
             </div>
                 
             {/* Affichage des adhérents */}
-            <div className='columns is-multiline my-4 mx-1' style={{overflowY:'auto', flex:1}}>
-                {adherentsAffiches.map((adh) => (
-                    <div key={adh.numero_adherent} className='column is-half'>
-                        <AdherentCard 
-                            adherent={adh} 
-                            onAction={handleCardAction}
-                            />
-                        
-                    </div>
-                ))}
-            </div>
+            <ListeAdherents 
+                adherents={adherentsAffiches}
+                onAction={handleCardAction}
+            />
         </section>
 
             {/* Modals - hors flow classique */}
@@ -146,7 +145,7 @@ export default function AdherentsPage() {
 
             {/* Modal emprunt */}
             {isModalEmpruntOpen && <ModalEmpruntAjout
-                idAdherent={adherentIdAction}    
+                adherentIdLock={adherentIdAction}    
                 isOpen={isModalEmpruntOpen}  
                 onClose={() => setIsModalEmpruntOpen(false)} />}
 

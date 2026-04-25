@@ -5,7 +5,7 @@ import type { ApiResponse, Adherent, CreateAdherentDTO, UpdateAdherentDTO } from
 import { apiRequest } from './api';
 
 /**
-* Requête de recherche de tous les adhérents actifs
+*  Requête de recherche de tous les adhérents actifs
 */
 export async function getAdherents()
 : Promise <ApiResponse<Adherent[]>> {
@@ -13,18 +13,18 @@ export async function getAdherents()
 }
 
 /**
-* Requête de recherche d'un adhérent unique par son id
-* 
+*  Requête de recherche d'un adhérent unique par son id
+
 * @param {number} id - id de l'adhérent recherché
 */
-export async function getAdherentByID ( id: number )
-: Promise<ApiResponse<Adherent>> {
+export async function getAdherentByID ( 
+    id: number 
+) : Promise<ApiResponse<Adherent>> {
     return apiRequest<Adherent>(`/adherents/${id}`);
 }
 
 /**
-* Requête de création d'un nouvel adhérent
-* 
+*  Requête de création d'un nouvel adhérent
 * @param {CreateAdherentDTO} data - données de l'adhérent
 */
 export async function createAdherent( data: CreateAdherentDTO )
@@ -34,21 +34,21 @@ export async function createAdherent( data: CreateAdherentDTO )
         body: JSON.stringify(data) });
 }
 /**
-* Requête de mise à jour d'un adhérent existant
-* 
+*  Requête de mise à jour d'un adhérent existant
 * @param {number} id - id de l'adhérent à modifier
 * @param {UpdateAdherentDTO} data - nouvelles données de l'adhérent
 */
-    export async function updateAdherent ( id: number, data:UpdateAdherentDTO)
-: Promise<ApiResponse<Adherent>> {
+    export async function updateAdherent ( 
+        id: number, 
+        data:UpdateAdherentDTO
+    ) : Promise<ApiResponse<Adherent>> {
     return apiRequest<Adherent>(`/adherents/${id}`, {
         method: 'put',
         body: JSON.stringify(data) });
 
 }
 /**
-* Requête de suppression d'un adhérent existant
-* 
+*  Requête de suppression d'un adhérent existant
 * @param {number} id - id de l'adhérent à supprimer
 */
 export async function deleteAdherent (id: number)

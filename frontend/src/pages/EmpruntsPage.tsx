@@ -5,10 +5,17 @@ import { useState, useEffect } from 'react';
 import { useEmprunts } from '../hooks';
 
 import ListeEmprunts from '../components/listes/ListeEmprunts';
+
 import SkeletonEmprunts from '../components/skeletons/SkeletonEmprunts';
 
 import ModalEmpruntAjout from '../components/modals/ModalEmpruntAjout';
 
+/**
+ *  Page d'affichage et de gestion des emprunts
+ * - Gestion des emprunts - centralise la logique et expose les actions aux composants enfants
+ * - Récupère et affiche les emprunts à chaque chargement du composant
+ * - Gestion des modals au niveau de la page
+ */
 export default function EmpruntsPage() {
 
         // Hook : TOUT le métier (données + actions + états)
@@ -20,7 +27,15 @@ export default function EmpruntsPage() {
         erreur 
     } = useEmprunts();
 
+    // Fonction de retour d'un emprunt
+    const handleRetourLivre = (id: number) => {
+        rendreLivre(id);
+    }
+
+    // Données propres à la page
     const [recherche, setRecherche] = useState<string>('');
+
+    // Gestion des modals global
     const [newEmpruntVisible, setNewEmpruntVisible] = useState<boolean>(false);
 
     // Chargement des emprunts au montage (tous !)
@@ -28,7 +43,7 @@ export default function EmpruntsPage() {
         chargerEmprunts();
     }, []);
     
-    // Affichage filtrée des livres ( UI pure, pas de requête API )
+    // Affichage filtrée par titre de livre ou nom d'adhérent ( UI pure, pas de requête API )
     const empruntsAffiches = emprunts.filter((emprunt) =>
         !recherche 
             || emprunt.titre_livre.toLowerCase().includes(recherche.toLowerCase()) 
@@ -50,6 +65,7 @@ export default function EmpruntsPage() {
             </div>
     );
 
+    // Rendu principal
     return (
         <>
             {/* Contenu principal */}
@@ -84,7 +100,7 @@ export default function EmpruntsPage() {
             </div>
 
             {/* Affichage des emprunts */}
-            <ListeEmprunts emprunts={empruntsAffiches} rendreLivre={rendreLivre}/>
+            <ListeEmprunts emprunts={empruntsAffiches} onRetourLivre={handleRetourLivre}/>
         </section>
 
             {/* Modals - hors flow classique */}

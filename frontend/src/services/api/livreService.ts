@@ -13,65 +13,66 @@ import { apiRequest } from './api';
 // const totalLivres = reponse.total;
 
 /**
- * Récupère tous les livres avec filtres optionnels.
- * @param { FiltresRechercheLivres } filtres - genre, disponible, recherche
+ *  Requête de recherche de tous les livres
  */
-export async function getLivres(
-    // filtres: FiltresRechercheLivres = {}
-): Promise<ApiResponse<Livre[]>> {
-    // Construire les query params depuis les filtres 'non-undefined'
-    // const params = new URLSearchParams();
-    // if (filtres.genre)      params.append("genre", filtres.genre);
-    // if (filtres.recherche)  params.append("recherche", filtres.recherche);
-    // if (filtres.disponible  !== undefined)
-    // params.append("disponible", String(filtres.disponible));
-    // const query = params.toString() ? `?${params.toString()}` : "";
-    // return apiRequest<Livre[]>(`/livres${query}`);
+export async function getLivres()
+: Promise<ApiResponse<Livre[]>> {
     return apiRequest<Livre[]>(`/livres`);
 }
 
-//TODO identifier selon cas d'usage la diff FRONT et BACK entre ces 2 approches
 /**
- * Récupère les livres par une recherche, filtres
+ *  Requête de récuperation de livres par une recherche, filtres
  * @param { FiltresRechercheLivres } filtres - genre, disponible, recherche
  */
-export async function queryLivres(filtres: FiltresRechercheLivres = {}): Promise<ApiResponse<Livre[]>> {
+export async function queryLivres(
+    filtres: FiltresRechercheLivres
+) : Promise<ApiResponse<Livre[]>> {
 // Construire les query params depuis les filtres 'non-undefined'
     const params = new URLSearchParams();
-    if (filtres.genre)      params.append("genre", filtres.genre);
-    if (filtres.recherche)  params.append("recherche", filtres.recherche);
-    if (filtres.disponible  !== undefined)
-    params.append("disponible", String(filtres.disponible));
+    if (filtres.genre) params.append("genre", filtres.genre);
+    if (filtres.recherche) params.append("recherche", filtres.recherche);
+    if (filtres.disponible  !== undefined) params.append("disponible", String(filtres.disponible));
 
-    const query = params.toString() ? `?${params.toString()}` : "";
+    const query = params.toString()
+        ? `?${params.toString()}` 
+        : "" 
+    ;
+    
     return apiRequest<Livre[]>(`/livres/recherche${query}`);
 }
 
-
 /**
- * Récupère un livre par son id.
- *
+ *  Requête de récupération d'un livre par son id.
  * @param { number } id - id du livre rechercher
  */
-export async function getLivreById(id: number): Promise<ApiResponse<Livre>> {
+export async function getLivreById(
+    id: number
+) : Promise<ApiResponse<Livre>> {
     return apiRequest<Livre>(`/livres/${id}`);
 }
+
 /**
- * Crée un nouveau livre.
+ *  Requête de création d'un nouveau livre.
  * @param { CreateLivreDTO } data - Données de création
  */
-export async function createLivre(data: CreateLivreDTO): Promise<ApiResponse<Livre>> {
+export async function createLivre(
+    data: CreateLivreDTO
+) : Promise<ApiResponse<Livre>> {
     return apiRequest<Livre>("/livres", {
         method: "POST",
         body: JSON.stringify(data),
     });
 }
+
 /**
- * Modifie un livre existant.
+ *  Requête de modification d'un livre existant.
  * @param { number } id - id du livre à modifier
  * @param { UpdateLivreDTO } data - Données de modification
  */
-export async function updateLivre(id: number, data: UpdateLivreDTO): Promise<ApiResponse<Livre>> {
+export async function updateLivre(
+    id: number, 
+    data: UpdateLivreDTO
+): Promise<ApiResponse<Livre>> {
     return apiRequest<Livre>(`/livres/${id}`, {
         method: "PUT",
         body: JSON.stringify(data),
@@ -79,10 +80,11 @@ export async function updateLivre(id: number, data: UpdateLivreDTO): Promise<Api
 }
 
 /**
- * Supprime un livre.
- *
+ *  Requête de suppression d'un livre.
  * @param { number } id - id du livre à supprimer
  */
-export async function deleteLivre(id: number): Promise<ApiResponse<void>> {
+export async function deleteLivre(
+    id: number
+) : Promise<ApiResponse<void>> {
     return apiRequest<void>(`/livres/${id}`, { method: "DELETE" });
 }

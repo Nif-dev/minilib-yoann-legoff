@@ -4,13 +4,19 @@
 // On réutilise l'interface Adherent du backend — cohérence garantie
 import type { Adherent } from "../../types/index";
 
-// Interface des props du composant
 interface AdherentCardProps {
     readonly adherent: Adherent;
-    readonly onAction: (action: 'modifier' | 'supprimer' | 'emprunt', id: number) => void;
+    readonly onAction: (action: 'modifier' | 'supprimer' | 'emprunter', id: number) => void;
     }
 
-// Composant avec ses props typées
+/**
+ *  Composant de carte de présentation d'un adhérent
+ * @export function AdherentCard
+ * @param adherent
+ * @param onAction - action + id d'un adhérent
+ * @enum => onAction - modifier - supprimer - emprunt
+ * @returns AdherentCard -> rendu d'un adhérent sous forme de carte
+ */
 export default function AdherentCard({ 
     adherent,
     onAction
@@ -43,21 +49,21 @@ export default function AdherentCard({
             {/* Boutons d'actions */}
             <div className="card-footer">
             
-                <button 
-                    className="button is-danger is-light card-footer-item"
+                <button type="button" title="Supprimer"
+                    className="card-footer-item button is-danger is-light"
                     onClick={() => onAction('supprimer', adherent.id)}
                     >Désactiver 
                 </button>
             
-                <button type="button"
-                    className="button card-footer-item is-warning is-light"
+                <button type="button" title="Modifier"
+                    className="card-footer-item button is-warning is-light"
                     onClick={() => onAction('modifier', adherent.id)}
                     > Modifier
                 </button>
             
-                <button type="button"
-                    className="button card-footer-item is-primary is-light" 
-                    onClick={() => onAction('emprunt', adherent.id)}
+                <button type="button" title="Emprunter"
+                    className="card-footer-item button is-primary is-light" 
+                    onClick={() => onAction('emprunter', adherent.id)}
                     > Nouvel emprunt
                 </button>
             

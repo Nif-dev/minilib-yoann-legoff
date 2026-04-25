@@ -77,7 +77,6 @@ export default function LivresPage() {
         setLivreIdAction(id);
         setIsModalModifierOpen(true);
     }
-    const livreAModifier = livreIdAction ? livres.find(livre => livre.id === livreIdAction) : null;
     
     // Gestion pour la modal d'emprunt
     const handleModalEmprunt = (id: number) => {
@@ -188,16 +187,16 @@ export default function LivresPage() {
             />}
 
             {/* Modal modifier livre */}
-            {isModalModifierOpen && livreAModifier && <ModalLivreModifier
+            {isModalModifierOpen && livreIdAction !==0 && <ModalLivreModifier
                 isOpen={isModalModifierOpen}
                 onClose={() => setIsModalModifierOpen(false)}
-                oldLivre={livreAModifier}
+                livreID={livreIdAction}
                 />}
 
             {/* Modal emprunter le livre */}
             { isModalEmpruntOpen && livreIdAction !== 0 && <ModalEmpruntAjout
                 isOpen={isModalEmpruntOpen}
-                idLivre={livreIdAction}
+                livreIdLock={livreIdAction}
                 onClose={() => setIsModalEmpruntOpen(false)}
             />}
 

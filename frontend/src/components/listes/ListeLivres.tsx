@@ -11,6 +11,15 @@ interface ListeLivresProps {
     readonly onSupprimer?: (id: number) => void
 }
 
+/**
+ *  Composant de liste de livres - liste de cards
+ * @export function ListeLivres
+ * @param livres
+ * @param onModifier
+ * @param onEmprunter
+ * @param onSupprimer
+ * @returns ListeLivres -> JSX de la liste de livres
+ */
 export default function ListeLivres({ 
     livres, 
     onEmprunter,
@@ -21,6 +30,7 @@ export default function ListeLivres({
     if (!livres?.length) {
         return <p className="subtitle m-6">Aucun livre pour cette recherche</p>;
     }
+
     return (
         <div className="my-4">
             <ul className="liste-livres columns is-multiline">
@@ -30,6 +40,7 @@ export default function ListeLivres({
                         {/* <LivreCard livre={livre} /> */}
                         <LivreCard 
                             livre={livre} 
+                            // onSupprimer={onSupprimer}
                             {...(livre.disponible && 
                                 {
                                 onModifier : () => onModifier?.(livre.id), 
@@ -37,7 +48,7 @@ export default function ListeLivres({
                                 onSupprimer : () => onSupprimer?.(livre.id)
                                 }
                             )}
-                            />
+                        />
                     </li>
                 ))}
             </ul>

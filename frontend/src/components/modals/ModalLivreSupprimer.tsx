@@ -1,9 +1,9 @@
 //% frontend/src/components/ModalLivreSupprimer.tsx
 //? Confirmation de suppression d'un livre
 
-import { useLivres } from "../../hooks";
-
 import { useState } from "react";
+
+import { useLivres } from "../../hooks";
 
 interface ModalLivreSupprimerProps {
     readonly livreID: number
@@ -11,6 +11,14 @@ interface ModalLivreSupprimerProps {
     readonly onClose: () => void;
 }
 
+/**
+ *  Composant Modal de suppression d'un livre
+ * @export function ModalLivreSupprimer
+ * @param livreID
+ * @param isOpen
+ * @param onClose
+ * @returns ModalLivreSupprimer -> visuel de suppression d'un livre
+ */
 export default function ModalLivreSupprimer({ 
     livreID,
     isOpen,
@@ -32,22 +40,23 @@ export default function ModalLivreSupprimer({
 
     const [voirDetails, setVoirDetails] = useState<boolean>(false)
 
-    // Adhérent chargé pour modification
+    // Livre chargé pour modification
     const livre = livres.find(livre => livre.id === livreID);
     
+    // Détails du livre
     const titre = livre?.titre;
     const isbn = livre?.isbn;
     const auteur = livre?.auteur;
     const annee = livre?.annee;
 
-
-    // fonction de modification adhérent - callback
+    // fonction d'appel API via hook
     const suppressionLivre = async () => {
         await supprimerLivre(livreID);
     }
 
+    if (!isOpen) return null;
+
     return (
-        isOpen && (
         <div className="modal is-active">
             <div className="modal-background" onClick={onClose}></div>
             <div className="modal-card">
@@ -56,7 +65,6 @@ export default function ModalLivreSupprimer({
                     <p className="modal-card-title">
                         Suppression du livre : {livreID}
                     </p>
-                    
                     <button type="button" className="delete" aria-label="close" onClick={onClose}>
                     </button>
                 </header>
@@ -76,7 +84,6 @@ export default function ModalLivreSupprimer({
                                     readOnly disabled
                                     value={titre}/>
                             </div>
-                            
                         </div>
                         {/* auteur du livre */}
                         <div className="field">
@@ -86,7 +93,6 @@ export default function ModalLivreSupprimer({
                                     readOnly disabled
                                     value={auteur}/>
                             </div>
-
                         </div>
                         {/* année de sortie du livre */}
                         <div className="field">
@@ -113,13 +119,9 @@ export default function ModalLivreSupprimer({
 
                     {/* affichage des messages /erreurs */}
                     <div className="field has-text-centered">
-
                         { chargement && <div className="has-text-success has-text-centered my-4">Requête en cours ...</div> }
-                        
                         { !erreur && message && <div className="has-text-success has-text-centered my-4">{message}</div>}
-                        
                         { erreur && message && <div className="has-text-danger has-text-centered my-4">{message}</div>}
-                        
                         {champsErreurs.length > 0 && <div className="has-text-danger has-text-left my-4">
                             <ul>
                                 {champsErreurs.map((champ, index) => (
@@ -179,6 +181,6 @@ export default function ModalLivreSupprimer({
                     </div>
                 </div>
             </div>
-        </div>)
+        </div>
     );
 }

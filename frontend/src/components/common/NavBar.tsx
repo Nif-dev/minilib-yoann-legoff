@@ -4,9 +4,13 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
-const NavBar = () => {
+/**
+ *  Barre de navigation MiniLib
+ * @export const NavBar
+ * @returns NavBar -> rendu de la barre de navigation
+ */
+export const NavBar = () => {
     const [isActive, setIsActive] = useState(false);
-
 
     return (
         <nav className="navbar is-fixed-top" role="navigation" aria-label="main navigation">
@@ -42,5 +46,3 @@ const NavBar = () => {
         </nav>
     );
 };
-
-export default NavBar;

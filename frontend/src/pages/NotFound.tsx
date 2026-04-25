@@ -3,6 +3,9 @@
 
 import { Link } from 'react-router-dom';
 
+/**
+ *  Page 404
+ */
 const NotFound = () => (
     <div style={{ textAlign: 'center', padding: '2rem' }}>
         <h1>404 - Page Non Trouvée</h1>

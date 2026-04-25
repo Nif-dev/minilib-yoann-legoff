@@ -1,12 +1,27 @@
 //% frontend/src/components/SkeletonEmprunts.tsx
 //? Skeleton loader identique à EmpruntCard
 
-export default function SkeletonEmprunts() {
+interface SkeletonEmpruntsProps {
+    readonly nombreEmprunts?: number
+}
+
+/**
+ *  Composant de skeleton loader calqué sur le rendu de EmpruntCard
+ *  Ici une liste fantôme de 8 emprunts par défaut
+ * @param nombreEmprunts
+ * @returns SkeletonEmprunts -> visuel shimmer de la liste des emprunts
+ */
+export default function SkeletonEmprunts({
+    nombreEmprunts
+}: SkeletonEmpruntsProps) {
+
+    // shimmer pour 8 cards emprunt par défaut
+    const nombreShimmer = nombreEmprunts || 8 
+
     return (
         <div className="columns is-multiline">
-            {/* 2 emprunts shimmer */}
-            {new Array(4).fill(0).map((_, i) => (
-                <div key={i+1} className="column is-quarter">
+            {new Array(nombreShimmer).fill(0).map((_, i) => (
+                <div key={i+1} className="column is-one-quarter">
                     <div className="card m-4">
                         <div className="card-header p-5">
                             {/* Titre shimmer */}

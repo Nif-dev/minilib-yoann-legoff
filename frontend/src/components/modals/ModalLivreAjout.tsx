@@ -4,41 +4,43 @@
 import { useState } from "react";
 
 import type { CreateLivreDTO } from "../../types/index";
-import { createLivre } from "../../services/api/livreService";
+import { useLivres } from "../../hooks";
 
 interface ModalLivreAjoutProps {
-    
     readonly isOpen: boolean;
     readonly onClose: () => void;
 }
 
-export default function ModalLivreAjout({ isOpen, onClose }: ModalLivreAjoutProps) {
+/**
+ *  Composant Modal de création de livre
+ * @export function ModalLivreAjout
+ * @param isOpen
+ * @param onClose
+ * @returns ModalLivreAjout -> visuel formulaire de création de livre
+ */
+export default function ModalLivreAjout({ 
+    isOpen, 
+    onClose 
+}: ModalLivreAjoutProps) {
 
-    const [chargement, setChargement] = useState<boolean>(false);
-    const [message, setMessage] = useState<string | null>(null);
-    const [erreur, setErreur] = useState<string | null>(null);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [champs, setChamps] = useState<string[]>([]);
-
-    
-    const modalOpen = isOpen;
-
-    const clearInfos = () => {
-        setChargement(false);
-        setMessage(null);
-        setErreur(null);
-        setErrorMessage(null);
-        setChamps([]);
-    }
+    // utilisation des hooks de gestion des livres
+    const {
+        ajouterLivre,
+        chargement,
+        message,
+        erreur,
+        champsErreurs,
+        resetFeedback
+    } = useLivres();
 
     // Données du formulaire
     const [isbn, setISBN] = useState('');
     const [titre, setTitre] = useState('');
     const [auteur, setAuteur] = useState('');
     const [genre, setGenre] = useState('');
-    const [annee, setAnnee] = useState(0);
+    const [annee, setAnnee] = useState(2000);
     
-    
+    // DTO pour la création d'un livre
     const newLivre: CreateLivreDTO = {
         isbn: isbn,
         titre: titre,
@@ -47,35 +49,14 @@ export default function ModalLivreAjout({ isOpen, onClose }: ModalLivreAjoutProp
         annee: annee,
     }
 
-    const ajouterLivre = async () => {
-        clearInfos();
-        setChargement(true);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        try {
-            const response = await createLivre(newLivre);
-
-            if (!response.success) {
-                setChargement(false);
-                setErreur(response.error ?? "Erreur inconnue"); 
-                // message renvoyé par l'API - typiquement un message d'erreur 
-                setErrorMessage((response.message ?? response.error ?? '') + " Livre non ajouté"); 
-                // récupération des champs de formulaires fautifs
-                if (response.champs) {
-                    setChamps(response.champs);
-                }
-                return;
-            }
-            setMessage(response.message ?? 'Livre ajouté');
-            // autres traitements sur la réponse api si besoin
-
-        } catch (err) {
-            setErreur(err instanceof Error ? err.message : "Erreur inconnue");
-        }
-        setChargement(false);
+    // fonction appel API via hook
+    const ajoutLivre = async () => {
+        await ajouterLivre(newLivre);
     }
 
+    if (!isOpen) return null;
+
     return (
-        modalOpen && (
         <div className="modal is-active">
             <div className="modal-background" onClick={onClose}></div>
             <div className="modal-card">
@@ -136,18 +117,12 @@ export default function ModalLivreAjout({ isOpen, onClose }: ModalLivreAjoutProp
                     </div>
                     {/* affichage des messages /erreurs */}
                     <div className="field has-text-centered">
-
                         { chargement && <div className="has-text-success has-text-centered my-4">Requête en cours ...</div> }
-                        
                         {message && <div className="has-text-success has-text-centered my-4">{message}</div>}
-                        
-                        {errorMessage && <div className="has-text-danger has-text-centered my-4">{errorMessage}</div>}
-                        
-                        
-                        
-                        {champs.length > 0 && <div className="has-text-danger has-text-left my-4">
+                        {erreur && <div className="has-text-danger has-text-centered my-4">{erreur}</div>}
+                        {champsErreurs.length > 0 && <div className="has-text-danger has-text-left my-4">
                             <ul>
-                                {champs.map((champ, index) => (
+                                {champsErreurs.map((champ, index) => (
                                     <li key={index+1}> - {champ}</li>
                                 ))}
                             </ul>
@@ -165,14 +140,14 @@ export default function ModalLivreAjout({ isOpen, onClose }: ModalLivreAjoutProp
                             ? <button type="button"
                                 disabled={chargement} 
                                 className="button is-warning " 
-                                onClick={() => clearInfos()}
+                                onClick={() => resetFeedback()}
                                 >
                                 Correction OK ?
                             </button>
                             : <button type='button' 
                                 disabled={erreur !== null || chargement || titre === '' || auteur === '' || isbn === ''} 
                                 className={erreur ? "button is-danger is-inactive" : "button is-success"} 
-                                onClick={() => ajouterLivre()}
+                                onClick={() => ajoutLivre()}
                                 >
                                 Ajouter le livre !
                             </button>
@@ -188,6 +163,6 @@ export default function ModalLivreAjout({ isOpen, onClose }: ModalLivreAjoutProp
                     </div>
                 </footer>
             </div>
-        </div>)
+        </div>
     );
 }

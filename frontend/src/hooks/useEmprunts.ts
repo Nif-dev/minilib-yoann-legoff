@@ -6,11 +6,27 @@ import { AppContext } from '../context/AppContext';
 import type { ApiResponse, Emprunt, EmpruntAvecDetails, CreateEmpruntDTO } from '../types';
 import { getEmprunts, createEmprunt, retourEmprunt } from '../services/api/empruntService';
 
+/**
+ *  Hook centralisant les valeurs et actions concernant les adhérents
+ * @property adherents <Adherent[]> -- Liste des adhérents
+ * @property erreur <string> -- Message d'erreur pour feedback
+ * @property chargement <boolean> -- Etat de chargement des adhérents
+ * @property message <string> -- Message d'information pour feedback
+ * @property champsErreurs <string[]> -- Liste des champs ayant des erreurs de validation
+ * @function resetFeedback -- Fonction de remise à zéro des feedback
 
+ * @private setters -- Fonctions privées de mise à jour des valeurs dans le contexte
+ * - évitant de modifier directement les valeurs dans le contexte depuis les composants
+
+ * @function chargerEmprunts <Promise<ApiResponse<Emprunt[]>>> -- Fonction de chargement des emprunts
+ * @function ajouterEmprunt <Promise<ApiResponse<Emprunt>>> -- Fonction d'ajout d'un emprunt
+ * @function retourEmprunt <Promise<ApiResponse<void>>> -- Fonction de retour d'un emprunt
+ */
 export const useEmprunts = () => {
     const context = useContext(AppContext);
     if (!context.emprunts) throw new Error('useEmprunts doit être dans AppProvider');
 
+    // *emprunts* est transmis/accessibles,aux composants utilisant le contexte via les hooks, mais pas le *set* - reste privé pour éviter des mutations directes
     const { emprunts, setEmprunts, setRetards } = context;
 
      // States locaux pour feedback (exposés aux composants enfants)
@@ -19,6 +35,12 @@ export const useEmprunts = () => {
     const [message, setMessage] = useState<string | null>(null);
     const [champsErreurs, setChampsErreurs] = useState<string[]>([]);
 
+    /**
+     *  Fonction de remise à zéro du feedback API
+     * @function setErreur(null)
+     * @function setMessage(null)
+     * @function setChampsErreurs([]) -- vide
+     */
     const resetFeedback = () => {
         setErreur(null);
         setMessage(null);
@@ -26,8 +48,12 @@ export const useEmprunts = () => {
     };
 
 
-    //? Actions isolées
-    // Chargement des emprunts
+    //? Actions isolées -- spécifiques aux emprunts
+    /**
+     *  Chargement des emprunts depuis l'API
+     * @function setEmprunts(response.data)
+     * @returns {Promise<ApiResponse<Emprunt[]>>}
+     */
     const chargerEmprunts = async ()
     :Promise<ApiResponse<EmpruntAvecDetails[]>> => {
         setChargement(true);
@@ -50,7 +76,12 @@ export const useEmprunts = () => {
         }
     };
 
-    // Ajout d'un emprunt
+    /**
+     *  Ajout d'un nouvel emprunt via l'API
+     *  - mutation locale et serveur si action réussie
+     * @param {CreateEmpruntDTO} dto - Données de l'emprunt à créer 
+     * @returns {Promise<ApiResponse<Emprunt>>} Résultat de la requête
+     */
     const ajouterEmprunt = async ( dto: CreateEmpruntDTO )
     : Promise<ApiResponse<Emprunt>> => {
         setChargement(true);
@@ -88,7 +119,12 @@ export const useEmprunts = () => {
         }
     };
 
-    // Retour d'un livre
+    /**
+     *  Retour d'un emprunt via l'API
+     *  - mutation locale et serveur si action réussie
+     * @param {number} id - Identifiant de l'emprunt à retourner
+     * @returns {Promise<ApiResponse<void>>} Résultat de la requête
+     */
     const rendreLivre = async ( id: number )
     : Promise<ApiResponse<void>> => {
         setChargement(true);
@@ -126,16 +162,16 @@ export const useEmprunts = () => {
         }
     };
 
-
     return {
-        emprunts,
         erreur,
         chargement,
         message,
         champsErreurs,
+        resetFeedback,
+        // Emprunts
+        emprunts,
         chargerEmprunts,
         ajouterEmprunt,
         rendreLivre,
-        resetFeedback
     };
 };

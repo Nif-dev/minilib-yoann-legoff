@@ -6,7 +6,6 @@ import type { Livre } from "../../types/index";
 
 import DisponibiliteBadge from "../ui/DisponibiliteBadge";
 
-// Interface des props du composant
 interface LivreCardProps {
     readonly livre: Livre;
     readonly onSupprimer?: (id: number) => void; // prop optionnelle — callback depuis le parent
@@ -15,15 +14,13 @@ interface LivreCardProps {
 }
 
 /**
- * Composant d'affichage d'un livre uniques, sous forme de card
- *
- * @export
- * @param {LivreCardProps} { 
- *     livre, 
- *     onSupprimer,
- *     onEmprunter, 
- *     onModifier 
- * }
+ *  Composant d'affichage d'un livre unique, sous forme de card
+ * @export function Livrecard
+ * @param livre
+ * @param onSupprimer
+ * @param onEmprunter
+ * @param onModifier
+ * @returns LivreCard -> rendu d'un livre sous forme de carte
  */
 export default function LivreCard({ 
     livre, 
@@ -49,30 +46,29 @@ export default function LivreCard({
                     </div>
             </div>
             
-            {/* onSupprimer et onModifier sont optionnels, leur affichage aussi */}
+            {/* les actions sont optionnels, leurs affichages aussi, distinctement */}
             <div className="card-footer">
-            {onSupprimer && 
-                    <button 
-                        className="button is-danger is-light card-footer-item" 
+
+                {onSupprimer && 
+                    <button type="button" title="Supprimer"
+                        className="card-footer-item button is-danger is-light" 
                         onClick={() => onSupprimer?.(livre.id)}
                         >Supprimer
-                    </button>
-            }
-            {onModifier && 
-                    <button 
-                        title="Modifier" 
-                        className="button is-warning is-light card-footer-item" 
+                    </button>}
+                
+                {onModifier && 
+                    <button type="button" title="Modifier" 
+                        className="card-footer-item button is-warning is-light" 
                         onClick={() => onModifier?.(livre.id)}
                         >Modifier
                     </button>}
-            {onEmprunter && 
-                    <button 
-                        title="Emprunter" 
-                        className="button is-success is-light card-footer-item" 
+                
+                {onEmprunter && 
+                    <button type="button" title="Emprunter" 
+                        className="card-footer-item button is-success is-light" 
                         onClick={() => onEmprunter?.(livre.id)}
                         >Emprunter
                     </button>}
-            
             
             </div>
         </div>

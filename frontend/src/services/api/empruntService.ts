@@ -12,8 +12,7 @@ export async function getEmprunts(): Promise<ApiResponse<EmpruntAvecDetails[]>> 
 }
 
 /**
-* Requête de recherche d'un emprunt unique par son id
-* 
+*  Requête de recherche d'un emprunt unique par son id
 * @param {number} id - id de l'emprunt recherché
 */
 export async function getEmpruntByID(id: number): Promise<ApiResponse<EmpruntAvecDetails>> {
@@ -21,8 +20,7 @@ export async function getEmpruntByID(id: number): Promise<ApiResponse<EmpruntAve
 }
 
 /**
-* Requête de création d'un emprunt 
-* 
+*  Requête de création d'un emprunt 
 * @param {CreateEmpruntDTO} data - données de l'emprunt
 */
 export async function createEmprunt(data: CreateEmpruntDTO): Promise<ApiResponse<Emprunt>> {
@@ -32,8 +30,7 @@ export async function createEmprunt(data: CreateEmpruntDTO): Promise<ApiResponse
 }
 
 /**
-* Requête de retour d'un emprunt, par l'id du livre
-* 
+*  Requête de retour d'un emprunt, par l'id du livre
 * @param {number} id - id du livre
 */
 export async function retourEmprunt(id: number): Promise<ApiResponse<void>> {
@@ -41,7 +38,7 @@ export async function retourEmprunt(id: number): Promise<ApiResponse<void>> {
 }
 
 /**
-* Requête de recherche de tous les emprunts en retard
+*  Requête de recherche de tous les emprunts en retard
 */
 export async function getRetards (): Promise<ApiResponse<EmpruntAvecDetails[]>> {
     return apiRequest<EmpruntAvecDetails[]>('/emprunts/retards');

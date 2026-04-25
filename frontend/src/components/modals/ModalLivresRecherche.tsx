@@ -1,7 +1,7 @@
 //% frontend/src/components/ModalLivresRecherche.tsx
 //? Modal de recherche de livres
 
-type ModalLivresRechercheProps = {
+interface ModalLivresRechercheProps {
     // Etats du composant, définis par le parent
     readonly isOpen: boolean;
     readonly recherche: string;
@@ -16,6 +16,22 @@ type ModalLivresRechercheProps = {
     readonly onDisponibleChange: (value: string | undefined) => void;
 };
 
+/**
+ *  Composant Modal de recherche d'un livre
+ *  Recherche sur contexte puis étendue sur serveur à la soumission du formulaire
+ *  Les fonctions sont des callbacks, gestion de la logique via le parent uniquement
+ *  @export function ModalLivresRecherche
+ *  @param isOpen
+ *  @param recherche
+ *  @param genre
+ *  @param disponible
+ *  @param onClose
+ *  @param onReset
+ *  @param onSearch
+ *  @param onRechercheChange
+ *  @param onGenreChange
+ *  @param onDisponibleChange
+ */
 export default function ModalLivresRecherche({
     isOpen,
     recherche,
@@ -28,6 +44,7 @@ export default function ModalLivresRecherche({
     onGenreChange,
     onDisponibleChange,
     }: ModalLivresRechercheProps) {
+    
     return (
         <div className={`modal ${isOpen ? 'is-active' : ''}`}>
         <div className="modal-background" onClick={onClose}></div>
@@ -36,11 +53,11 @@ export default function ModalLivresRecherche({
             <header className="modal-card-head">
             <p className="modal-card-title">Filtres avancés</p>
             <button
-                className="button is-rounded is-small mr-6"
+                className="button is-rounded is-danger is-light mr-6"
                 onClick={onReset}
                 aria-label="clear"
             >
-                Reset
+                Effacer les filtres
             </button>
             <button className="delete" onClick={onClose} aria-label="close"></button>
             </header>
@@ -75,52 +92,49 @@ export default function ModalLivresRecherche({
                 </div>
 
                 <div className="field">
-                    <label className="label" htmlFor="disponibilite-livre">Disponibilité</label>
-                    <div className="control" id="disponibilite-livre">
-                        <label className="radio mr-6">
-                            <input
-                                type="radio"
-                                name="dispo"
-                                checked={disponible === undefined}
-                                onChange={() => onDisponibleChange(undefined)} 
-                            />
-                            Tous
-                        </label>
+                    <fieldset>
+                        <legend className="label">Disponibilité</legend>
+                        <div className="control" id="disponibilite-livre">
+                            <label className="radio mr-6">
+                                <input type="radio" 
+                                    checked={disponible === undefined}
+                                    onChange={() => onDisponibleChange(undefined)} 
+                                /> Tous
+                            </label>
 
-                        <label className="radio mr-6">
-                            <input
-                                type="radio"
-                                name="dispo"
-                                checked={disponible === 'true'}
-                                onChange={() => onDisponibleChange('true')}
-                            />
-                            Disponible
-                        </label>
+                            <label className="radio mr-6">
+                                <input type="radio" 
+                                    checked={disponible === 'true'}
+                                    onChange={() => onDisponibleChange('true')}
+                                /> Disponible
+                            </label>
 
-                        <label className="radio mr-6">
-                            <input
-                                type="radio"
-                                name="dispo"
-                                checked={disponible === 'false'}
-                                onChange={() => onDisponibleChange('false')}
-                            />
-                            Indisponible
-                        </label>
-                    </div>
+                            <label className="radio mr-6">
+                                <input type="radio" 
+                                    checked={disponible === 'false'}
+                                    onChange={() => onDisponibleChange('false')}
+                                /> Indisponible
+                            </label>
+                        </div>
+                    </fieldset>
                 </div>
             </section>
 
-            <footer className="modal-card-foot is-flex is-justify-content-space-between">
-                <button className="button" onClick={onClose}>
-                    Annuler
-                </button>
-                <button className="button is-warning is-light" onClick={onSearch}>
-                    Rechercher
-                </button>
-                <button className="button is-primary" onClick={onClose}>
-                    Appliquer les filtres
-                </button>
-            </footer>
+            <div className="modal-card-foot">
+                <div className="field is-grouped">
+                    <div className="control buttons">
+                        <button className="button is-primary is-light" onClick={onClose}>
+                            Appliquer les filtres
+                        </button>
+                        <button className="button is-warning is-light" onClick={onSearch}>
+                            Rechercher sur le serveur
+                        </button>
+                        <button className="button is-link is-light" onClick={onClose}>
+                            Fermer la fenêtre
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
         </div>
     );
