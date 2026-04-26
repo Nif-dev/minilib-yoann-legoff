@@ -45,7 +45,7 @@ services:
     build: ./frontend
     restart: always
     ports:
-      - "81:80"
+      - "81:81"
     depends_on: [backend]
 
 
