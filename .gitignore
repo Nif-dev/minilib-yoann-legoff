@@ -7,6 +7,8 @@
 # pas .env.example qui sert de référence/doc
 !.env.example
 
+# Script custom pour récupérer puis injecter de la donnée - WIP 
+scripts/data-feeder
 
 # Dépendances locales
 node_modules/
