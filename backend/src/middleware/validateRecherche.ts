@@ -7,7 +7,7 @@ import { ERRORS } from '../constants/errors.ts';
 
 /**
  * Middleware Express qui valide le body d'une requête de recherche de livre. (POST/PUT)
- * S'utilise comme suit : router.post('/livres', validateLivre, controller.createLivre);
+ * S'utilise comme suit : router.post('/livres', validateRecherche, controller.createLivre);
  * 
  * @param { Request } req - Requête Express
  * @param { Response <ApiResponse<null>> } res - Réponse Express
@@ -16,6 +16,7 @@ import { ERRORS } from '../constants/errors.ts';
 const validateRecherche = (req: Request, res: Response <ApiResponse<null>>, next: NextFunction) => {
     const { q } = req.query;
     const erreurs = [];
+    // recherche vide
     if (!q || q === '') {
         erreurs.push('Le champ recherche ne peut etre vide');
         res.status(400).json({ 
@@ -26,7 +27,7 @@ const validateRecherche = (req: Request, res: Response <ApiResponse<null>>, next
         });
         return;
     };
-    
+    // recherche non string
     if (q && typeof q !== 'string' ){
         erreurs.push('Le champ recherche doit etre une chaine de caractères');
         res.status(400).json({ 

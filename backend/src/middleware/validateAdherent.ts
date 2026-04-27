@@ -16,6 +16,7 @@ import { ERRORS } from '../constants/errors.ts';
  */
 const validateAdherent = (req: Request, res: Response <ApiResponse<null>>, next: NextFunction) => {
     const { nom, prenom, email } = req.body;
+    const regexMail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const erreurs = [];
 
     if (!nom || nom.trim() === '') erreurs.push('Le champ "nom" est obligatoire');
@@ -27,7 +28,7 @@ const validateAdherent = (req: Request, res: Response <ApiResponse<null>>, next:
     if ( prenom && prenom.length < 2) erreurs.push('Le champ "prénom" doit avoir au moins 2 caractères');
 
     if (!email || email.trim() === '') erreurs.push('Le champ "email" est obligatoire');
-    // TODO regex email
+    if (email && new RegExp(regexMail).test(email) === false) erreurs.push('Le champ "email" doit avoir une adresse email valide');
 
     if (erreurs.length > 0) {
         res.status(400).json({

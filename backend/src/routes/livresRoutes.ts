@@ -22,6 +22,7 @@ router.get('/', asyncWrapper(controller.getLivres));
 // Route de recherche (OPTIONNELS: filtres -> query params)
 // GET /api/v1/livres/recherche?q=clean
 router.get('/recherche', asyncWrapper(controller.queryLivres));
+// router.get('/recherche',validateRecherche, asyncWrapper(controller.queryLivres));
 
 // Détails d'un livre (id en param)
 // GET /api/v1/livres/:id
