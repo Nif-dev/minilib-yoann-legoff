@@ -9,6 +9,7 @@
 
 # Script custom pour récupérer puis injecter de la donnée - WIP 
 scripts/data-feeder
+scripts/data-feeder.sh
 
 # Dépendances locales
 node_modules/

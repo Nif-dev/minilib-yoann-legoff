@@ -22,7 +22,7 @@ const genererNumeroAdherent = async ()
 : Promise <string> => {
     // Récupère le nombre d'adhérents
     try {
-        //TODO appliquer ce typage spécifique via type.pg.ts partout ensuite, puis mapper en sortie pour usage interne app
+        //! to-do ? appliquer un typage spécifique via, puis mapper en sortie pour usage interne app
         const result: QueryResult <{ count: string }> 
         = await pool.query(
             'SELECT COUNT(*) FROM adherents'

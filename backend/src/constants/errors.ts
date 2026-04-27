@@ -2,12 +2,14 @@
 //? Codes et messages d'erreurs centralisés
 
 /**
- * Objet contenant les codes et les messages d'erreurs communs
- * S'utilise comme suit : - erreur générique
- * return res.status(400).json({
+ *  Objet contenant les codes et les messages d'erreurs communs de l'API
+ * @property { () => { error: string; message: string; } }
+ * @return - { error: string; message: string; }
+ * @example *Utilisation dans un controller*
+ * - {res.status(400).json({
  *     error: ERRORS.GENERIC().error,
- *     message: ERRORS.GENERIC().message,
- * });
+ *     message: ERRORS.GENERIC().message });
+ *    }
  */
 export const ERRORS = {
     GENERIC: () => ({
@@ -66,4 +68,4 @@ export const ERRORS = {
         error: "RESOURCE_NOT_DELETED",
         message: `${resource} non supprimé`,
     }),
-} as const;
+};
