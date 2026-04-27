@@ -4,6 +4,8 @@
 // On réutilise l'interface Adherent du backend — cohérence garantie
 import type { Adherent } from "../../types/index";
 
+import { useState } from "react";
+
 interface AdherentCardProps {
     readonly adherent: Adherent;
     readonly onAction: (action: 'modifier' | 'supprimer' | 'emprunter', id: number) => void;
@@ -24,6 +26,20 @@ export default function AdherentCard({
 
     const date = new Date(adherent.created_at);
     
+    const [ showEmail, setShowEmail ] = useState(false);
+
+    // Obfuscation de l'email sur l'affichage
+    const emailObf = () => {
+        let obf = '';
+        for (let i = 0; i < adherent.email.length; i++) {
+            obf += '*';
+        } 
+        return obf
+    }
+
+    const toggleEmail = () => {
+        setShowEmail(!showEmail);
+    }
 
     return (
         <div className="card">
@@ -31,7 +47,9 @@ export default function AdherentCard({
                 <div className="is-flex is-justify-content-space-between">
                     <div className="title is-4 mb-2">
                         {adherent.prenom} {adherent.nom}
+                        
                     </div>
+                    
                     <div className="has-text-grey is-size-7">
                         <p>
                             {adherent.numero_adherent}
@@ -39,11 +57,24 @@ export default function AdherentCard({
                         <p className="has-text-grey">
                             id: {adherent.id}
                         </p>
+                        
                     </div>
                 </div>
-                <p className="subtitle is-6"> 
-                    Inscrit depuis le : {date.toLocaleDateString()}
-                </p>
+                <div className="subtitle is-6"> 
+                    <p>
+                        Inscrit depuis le : {date.toLocaleDateString()}
+                    </p>
+                    <div className="is-flex is-right is-align-items-center mt-3">
+                        <p className="has-text-grey is-size-5">Email</p>
+                        <button className="button is-small is-light ml-3" onClick={toggleEmail}>
+                            {showEmail ? 'Cacher' : 'Afficher'}
+                        </button>
+                    </div>
+                    <div>
+                        { showEmail && <p> {adherent.email}</p>}
+                        <strong>{ !showEmail && <p> {emailObf()}</p>}</strong>
+                        </div>
+                </div>
             </div>
 
             {/* Boutons d'actions */}
