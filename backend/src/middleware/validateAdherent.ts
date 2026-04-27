@@ -5,7 +5,6 @@ import { Request, Response, NextFunction } from 'express';
 import { ApiResponse } from '../types/api.ts';
 import { ERRORS } from '../constants/errors.ts';
 
-//TODO  implémentation a revoir
 /**
  * Middleware Express qui valide le body d'une requête de création ou mise à jour de livre. (POST/PUT)
  * S'utilise comme suit : router.post('/livres', validateLivre, controller.createLivre);
