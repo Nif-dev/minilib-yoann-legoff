@@ -40,12 +40,13 @@ export default function ListeLivres({
                         {/* <LivreCard livre={livre} /> */}
                         <LivreCard 
                             livre={livre} 
-                            // onSupprimer={onSupprimer}
+                            onSupprimer={onSupprimer}
+                            onModifier={onModifier}
                             {...(livre.disponible && 
                                 {
-                                onModifier : () => onModifier?.(livre.id), 
+                                // onModifier : () => onModifier?.(livre.id), 
                                 onEmprunter : () => onEmprunter?.(livre.id),
-                                onSupprimer : () => onSupprimer?.(livre.id)
+                                // onSupprimer : () => onSupprimer?.(livre.id)
                                 }
                             )}
                         />

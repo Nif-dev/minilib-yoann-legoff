@@ -13,24 +13,33 @@ export default function Home () {
             <h1 className="title">Bienvenue sur Minilib !</h1>
             <p className="subtitle">Application web complète de gestion de bibliothèque municipale.</p>
             <br />
+                
+                {/* Navigation mobile */}
+            <div className="is-hidden-desktop is-flex is-flex-direction-column">
+                <Link 
+                    to="/livres" 
+                    className="button is-primary mt-6">
+                    Gestion des livres
+                </Link> 
 
-            <Link 
-                to="/livres" 
-                className="button is-primary mt-6">
-                Gestion des livres
-            </Link> 
+                <Link 
+                    to="/adherents" 
+                    className="button is-warning mt-6">
+                    Gestion des adhérents
+                </Link>
 
-            <Link 
-                to="/adherents" 
-                className="button is-warning mt-6 ml-4">
-                Gestion des adhérents
-            </Link>
+                <Link 
+                    to="/emprunts" 
+                    className="button is-info mt-6">
+                    Gestion des emprunts
+                </Link>
+            </div>
 
-            <Link 
-                to="/emprunts" 
-                className="button is-info mt-6 ml-4">
-                Gestion des emprunts
-            </Link>
+            <div className="is-hidden-touch">
+                <Link to="/livres" className="button is-primary mt-6 mr-4">Gestion des livres</Link>
+                <Link to="/adherents" className="button is-warning mt-6 mr-4">Gestion des adhérents</Link>
+                <Link to="/emprunts" className="button is-info mt-6 mr-4">Gestion des emprunts</Link>
+            </div>
 
         </section>
         

@@ -148,9 +148,9 @@ export default function ModalEmpruntAjout({
                     
                 </div>
                 {/* Actions du formulaire */}
-                <footer className="modal-card-foot">
-                    <div className="field is-grouped">
-                        <div className="control buttons ">
+                <div className="modal-card-foot  is-flex is-justify-content-space-between control buttons">
+                    <div className="field">
+                        
                             <button type='button' 
                                 className={erreur ? "button is-danger is-inactive" : "button is-success is-light"} 
                                 disabled={erreur !== null || chargement || adherent_id === 0 || livre_id === 0 } 
@@ -170,9 +170,9 @@ export default function ModalEmpruntAjout({
                                 Fermer
                                 </button>
                         
-                        </div>
+                        
                     </div>
-                </footer>
+                </div>
             </div>
         </div>
     );

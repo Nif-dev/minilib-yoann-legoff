@@ -25,7 +25,27 @@ export const NavBar = () => {
                 </button>
             </div>
 
-            <div className={`navbar-menu ${isActive ? 'is-active' : ''}`}>
+            <div className={`is-hidden-desktop navbar-menu ${isActive ? 'is-active' : ''}`}>
+                <div className="navbar-start">
+                    <Link to="/" className="navbar-item" >
+                        <img src="/favicon.ico" alt="favicon renard Nif"/>
+                    </Link>
+                </div>
+                <div className="navbar-item is-flex is-justify-content-space-between">
+                    <Link to="/livres" className="button is-primary ">Livres</Link>
+                    <Link to="/adherents" className="button is-warning">Adhérents</Link>
+                    <Link to="/emprunts" className="button is-info">Emprunts</Link>
+                </div>
+                    <Link to="/404" className="button navbar-item">404 temp</Link> 
+                
+                <div className="navbar-end">
+                    <div className="navbar-item">
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div className={`is-hidden-touch navbar-menu ${isActive ? 'is-active' : ''}`}>
                 <div className="navbar-start">
                     <Link to="/" className="navbar-item" >
                         <img src="/favicon.ico" alt="favicon renard Nif"/>
