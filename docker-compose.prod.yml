@@ -42,7 +42,10 @@ services:
 
   # Application Frontend
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    
     restart: always
     ports:
       - "81:81"
