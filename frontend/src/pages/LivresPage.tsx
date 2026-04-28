@@ -160,7 +160,11 @@ export default function LivresPage() {
             </div>
 
             {/* Affichage des livres */}
-            <ListeLivres livres={livresAffiches} onModifier={handleModalModification} onEmprunter={handleModalEmprunt} onSupprimer={handleModalSuppression}/>
+            <ListeLivres livres={livresAffiches} 
+                onModifier={handleModalModification} 
+                onEmprunter={handleModalEmprunt} 
+                onSupprimer={handleModalSuppression}
+            />
 
         </section>
 
