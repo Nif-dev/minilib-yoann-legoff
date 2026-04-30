@@ -22,6 +22,17 @@ Pas de framework meta (Next.js trop lourd pour MVP).
 
 ## Alternatives considérées
 
+### Angular 17 (rejetée)
+- Très lourd pour un projet de cette taille
+- Courbe d'apprentissage très raide
+- Aucune expérience dans l'équipe
+ 
+### Next.js 14 (rejetée)
+- Excellent framework tout-en-un
+- SSR inutile pour une app interne authentifiée
+- Complexité supplémentaire (App Router, Server Components)
+- Notre besoin se limite à du CSR
+
 ### Vue.js (rejetée)
 
 **Pour :**  
