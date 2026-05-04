@@ -60,6 +60,7 @@
 ## 🚀 Installation
 
 ```bash
+cd database/        # Se positionner sur le dossier database/
 psql -U minilib_user -d minilib -f schema.sql      # Tables + contraintes basiques
 psql -U minilib_user -d minilib -f constraints.sql  # Triggers métiers
 ```
