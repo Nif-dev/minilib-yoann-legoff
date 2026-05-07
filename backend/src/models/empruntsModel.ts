@@ -22,21 +22,10 @@ export const findRetards = async ()
 : Promise <EmpruntAvecDetails[]> => {
     try{
         const result: QueryResult = await pool.query(`
-            SELECT 
-                emprunts.id, 
-                livres.titre AS titre_livre, 
-                adherents.prenom || ' ' || adherents.nom AS nom_adherent,
-                emprunts.date_retour_prevue,
-                CURRENT_DATE > emprunts.date_retour_prevue AS en_retard,
-                CURRENT_DATE - emprunts.date_retour_prevue AS jours_retard
-            FROM emprunts
-            JOIN livres         
-                ON emprunts.livre_id = livres.id
-            JOIN adherents      
-                ON emprunts.adherent_id = adherents.id
+            SELECT * FROM v_emprunts
             WHERE 
-                emprunts.date_retour_effective IS NULL 
-                AND emprunts.date_retour_prevue < CURRENT_DATE
+                date_retour_effective IS NULL 
+                AND date_retour_prevue < CURRENT_DATE
             ORDER BY jours_retard DESC
         `);
         return result.rows;
@@ -56,21 +45,9 @@ export const findAll = async ()
     try{
 
         const result = await pool.query(`
-            SELECT 
-                emprunts.id, 
-                livres.titre                                AS titre_livre, 
-                adherents.prenom || ' ' || adherents.nom    AS nom_adherent,
-                emprunts.date_emprunt,
-                emprunts.date_retour_prevue,
-                emprunts.date_retour_effective,
-                CURRENT_DATE > emprunts.date_retour_prevue  AS en_retard
-            FROM emprunts
-            JOIN livres         
-                ON emprunts.livre_id = livres.id
-            JOIN adherents      
-                ON emprunts.adherent_id = adherents.id
-            WHERE emprunts.date_retour_effective IS NULL
-            ORDER BY emprunts.id
+            SELECT * FROM v_emprunts
+            WHERE date_retour_effective IS NULL
+            ORDER BY id
             `);
         return result.rows;
     } catch (error) {

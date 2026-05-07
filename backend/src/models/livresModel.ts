@@ -70,7 +70,7 @@ export const findAll = async (filtres?: FiltresRechercheLivres)
     // Envoi de la requête SQL dynamiquement
     try{
         const result: QueryResult = await pool.query(
-            `SELECT * FROM livres ${where} ORDER BY titre`,
+            `SELECT * FROM v_livres ${where} ORDER BY titre`,
             valeurs
         );
         return result.rows;
@@ -90,7 +90,7 @@ export const findById = async (id: number)
 : Promise <Livre | null> => {
     try{
         const result: QueryResult = await pool.query(
-            'SELECT * FROM livres WHERE id = $1', 
+            'SELECT * FROM v_livres WHERE id = $1', 
             [id]
         );
         return result.rows[0] || null;
@@ -162,7 +162,7 @@ export const findByISBN = async (isbn: string):
 Promise <Livre | null> => {
     try{
         const result: QueryResult = await pool.query(
-            'SELECT * FROM livres WHERE isbn = $1', 
+            'SELECT * FROM v_livres WHERE isbn = $1', 
             [isbn]
         );
         return result.rows[0] || null;
@@ -182,7 +182,7 @@ export const findDispoById = async (id: number)
 : Promise <boolean> => {
     try{
         const result: QueryResult = await pool.query(
-            'SELECT * FROM livres WHERE id = $1 AND disponible = true', 
+            'SELECT * FROM v_livres WHERE id = $1 AND disponible = true', 
             [id]
         );
         return (result.rowCount === 1) ;

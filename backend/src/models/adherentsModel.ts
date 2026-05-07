@@ -22,7 +22,6 @@ const genererNumeroAdherent = async ()
 : Promise <string> => {
     // Récupère le nombre d'adhérents
     try {
-        //! to-do ? appliquer un typage spécifique via, puis mapper en sortie pour usage interne app
         const result: QueryResult <{ count: string }> 
         = await pool.query(
             'SELECT COUNT(*) FROM adherents'
@@ -66,7 +65,7 @@ export const findAll = async ()
 : Promise <Adherent[]> => {
     try{
         const result: QueryResult = await pool.query(
-            'SELECT * FROM adherents WHERE actif = true ORDER BY numero_adherent'
+            'SELECT * FROM v_adherents WHERE actif = true ORDER BY numero_adherent'
         );
         return result.rows;
     } catch (error) {
@@ -84,7 +83,7 @@ export const findById = async (id: number)
 : Promise <Adherent | null> => {
     try {
         const result: QueryResult = await pool.query(
-            'SELECT * FROM adherents WHERE id = $1',
+            'SELECT * FROM v_adherents WHERE id = $1',
             [id]
         );
         return result.rows[0] || null;
@@ -103,7 +102,7 @@ export const findByEmail = async ({email}: Pick<Adherent, 'email'>) // email: st
 : Promise <Adherent | null> => {
     try{
         const result: QueryResult = await pool.query(
-            'SELECT * FROM adherents WHERE email = $1',
+            'SELECT * FROM v_adherents WHERE email = $1',
             [email]
         );
         return result.rows[0] || null;
